@@ -4,12 +4,12 @@ import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
-import { menuIndex } from "@/data/menu";
+import { roleIndex } from "@/data/role";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
 
-const MenuPage = async (props: {
+const RolePage = async (props: {
   searchParams?: Promise<{
     q?: string;
     page?: string;
@@ -21,10 +21,10 @@ const MenuPage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const result = await menuIndex(currentPage, size, query);
+  const result = await roleIndex(currentPage, size, query);
   if (result.isUnauthorized) {
-      redirect("/login");
-    }
+    redirect("/login");
+  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -38,9 +38,9 @@ const MenuPage = async (props: {
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">Menu</h2>
+        <h2 className="mb-4 text-3xl font-bold">Role</h2>
 
-        <Link href="/setup-aplikasi/menu/new" className={buttonVariants()}>
+        <Link href="/setup-aplikasi/role/new" className={buttonVariants()}>
           Add New
         </Link>
       </div>
@@ -56,4 +56,4 @@ const MenuPage = async (props: {
   );
 };
 
-export default MenuPage;
+export default RolePage;

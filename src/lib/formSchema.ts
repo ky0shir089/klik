@@ -34,3 +34,11 @@ export const menuSchema = z.object({
   module_id: z.number().positive(),
 });
 export type menuSchemaType = z.infer<typeof menuSchema>;
+
+export const roleSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  menus: z.array(z.number()).min(1, "Select at least one menu"),
+  permissions: z.array(z.number()).min(1, "Select at least one permission"),
+});
+export type roleSchemaType = z.infer<typeof roleSchema>;
