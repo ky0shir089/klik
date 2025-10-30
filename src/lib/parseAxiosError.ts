@@ -8,6 +8,9 @@ export async function parseAxiosError(error: unknown) {
     if (error.response?.status === 403) {
       return { isForbidden: true };
     }
+    if (error.response?.status === 404) {
+      return { isNotFound: true };
+    }
     return error.response?.data || error.message;
   }
   return "Unknown error";

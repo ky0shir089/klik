@@ -6,14 +6,27 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default async function DashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const user = cookieStore.get("user");
+
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex items-center h-16 gap-2 shrink-0">
+        <header className="sticky top-0 flex items-center h-16 gap-2 shrink-0">
           <div className="flex items-center w-full gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator

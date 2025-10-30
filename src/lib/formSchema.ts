@@ -17,3 +17,20 @@ export const changePasswordSchema = z
     path: ["password_confirmation"],
   });
 export type changePasswordSchemaType = z.infer<typeof changePasswordSchema>;
+
+export const moduleSchema = z.object({
+  name: z.string().min(1),
+  icon: z.string().optional(),
+  position: z.number().positive(),
+});
+export type moduleSchemaType = z.infer<typeof moduleSchema>;
+
+export const menuSchema = z.object({
+  name: z.string().min(1),
+  url: z.string(),
+  position: z.number().positive(),
+  is_active: z.boolean(),
+  slug: z.string().optional(),
+  module_id: z.number().positive(),
+});
+export type menuSchemaType = z.infer<typeof menuSchema>;
