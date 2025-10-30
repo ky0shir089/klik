@@ -13,7 +13,7 @@ export const columns: ColumnDef<menuShowType>[] = [
   },
   {
     header: "Module",
-    accessorKey: "module.name",
+    accessorKey: "module?.name",
   },
   {
     header: "Title",
