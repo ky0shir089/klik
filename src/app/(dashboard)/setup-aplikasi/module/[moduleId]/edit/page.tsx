@@ -14,7 +14,7 @@ const EditModulePage = async ({ params }: { params: Params }) => {
   if (result.isForbidden) {
     return <Unauthorized />;
   }
-  if (result.isNotFound == 404) {
+  if (result.isNotFound) {
     return notFound();
   }
   const { data } = result;

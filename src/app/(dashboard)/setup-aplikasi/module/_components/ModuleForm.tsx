@@ -17,10 +17,10 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 import { moduleSchema, moduleSchemaType } from "@/lib/formSchema";
 import { moduleStore, moduleUpdate } from "../action";
 import { moduleShowType } from "@/data/module";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 
 interface iAppProps {
   data?: moduleShowType;
@@ -114,14 +114,9 @@ const ModuleForm = ({ data }: iAppProps) => {
             />
 
             <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? (
-                <>
-                  {data?.id ? "Updating..." : "Creating..."}{" "}
-                  <Loader2 className="animate-spin" />
-                </>
-              ) : (
-                <>{data?.id ? "Update" : "Create"}</>
-              )}
+              <LoadingSwap isLoading={isPending}>
+                {data?.id ? "Update" : "Create"}
+              </LoadingSwap>
             </Button>
           </form>
         </Form>
