@@ -31,7 +31,7 @@ export async function typeTrxUpdate(id: number, values: typeTrxSchemaType) {
   if (!validation.success) {
     return {
       success: false,
-      error: "invalid form data",
+      message: "invalid form data",
     };
   }
 

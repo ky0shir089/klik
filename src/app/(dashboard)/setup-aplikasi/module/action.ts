@@ -31,7 +31,7 @@ export async function moduleUpdate(id: number, values: moduleSchemaType) {
   if (!validation.success) {
     return {
       success: false,
-      error: "invalid form data",
+      message: "invalid form data",
     };
   }
 

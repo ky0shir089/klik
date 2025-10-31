@@ -10,7 +10,7 @@ export async function roleStore(values: roleSchemaType) {
   if (!validation.success) {
     return {
       success: false,
-      error: "invalid form data",
+      message: "invalid form data",
     };
   }
 

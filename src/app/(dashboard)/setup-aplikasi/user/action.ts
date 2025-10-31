@@ -31,7 +31,7 @@ export async function userUpdate(id: number, values: userSchemaType) {
   if (!validation.success) {
     return {
       success: false,
-      error: "invalid form data",
+      message: "invalid form data",
     };
   }
 
