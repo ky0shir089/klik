@@ -1,11 +1,11 @@
 "use server";
 
 import axiosInstance from "@/lib/axios";
-import { moduleSchema, moduleSchemaType } from "@/lib/formSchema";
+import { typeTrxSchema, typeTrxSchemaType } from "@/lib/formSchema";
 import { parseAxiosError } from "@/lib/parseAxiosError";
 
-export async function moduleStore(values: moduleSchemaType) {
-  const validation = moduleSchema.safeParse(values);
+export async function typeTrxStore(values: typeTrxSchemaType) {
+  const validation = typeTrxSchema.safeParse(values);
 
   if (!validation.success) {
     return {
@@ -16,7 +16,7 @@ export async function moduleStore(values: moduleSchemaType) {
 
   try {
     const { data } = await axiosInstance.post(
-      `/setup-aplikasi/v1/module`,
+      `/accounting/v1/type-trx`,
       values
     );
     return data;
@@ -25,8 +25,8 @@ export async function moduleStore(values: moduleSchemaType) {
   }
 }
 
-export async function moduleUpdate(id: number, values: moduleSchemaType) {
-  const validation = moduleSchema.safeParse(values);
+export async function typeTrxUpdate(id: number, values: typeTrxSchemaType) {
+  const validation = typeTrxSchema.safeParse(values);
 
   if (!validation.success) {
     return {
@@ -37,7 +37,7 @@ export async function moduleUpdate(id: number, values: moduleSchemaType) {
 
   try {
     const { data } = await axiosInstance.put(
-      `/setup-aplikasi/v1/module/${id}`,
+      `/accounting/v1/type-trx/${id}`,
       values
     );
     return data;

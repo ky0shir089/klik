@@ -16,3 +16,8 @@ export async function selectRole() {
   const { data } = await axiosInstance.get(`/select/v1/role`);
   return data;
 }
+
+export async function selectCoa() {
+  const { data } = await axiosInstance.get(`/select/v1/coa`);
+  return data;
+}

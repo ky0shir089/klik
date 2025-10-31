@@ -29,7 +29,7 @@ export default async function DashboardLayout({
     <SidebarProvider>
       <AppSidebar user={JSON.parse(user)} navigation={data} />
       <SidebarInset>
-        <header className="sticky top-0 flex items-center h-16 gap-2 shrink-0">
+        <header className="flex items-center h-16 gap-2 shrink-0">
           <div className="flex items-center w-full gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator

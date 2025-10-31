@@ -31,7 +31,7 @@ export async function menuUpdate(id: number, values: menuSchemaType) {
   if (!validation.success) {
     return {
       success: false,
-      error: "invalid form data",
+      message: "invalid form data",
     };
   }
 

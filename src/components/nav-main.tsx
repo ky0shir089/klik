@@ -34,7 +34,7 @@ export function NavMain({ items }: { items: navigationType[] }) {
           <Collapsible
             key={item.id}
             asChild
-            defaultOpen={item.menus?.some((m: { menu: { url: string } }) =>
+            defaultOpen={item.menus?.some((m: menuShowType) =>
               pathname.startsWith(m.menu.url)
             )}
             className="group/collapsible"
