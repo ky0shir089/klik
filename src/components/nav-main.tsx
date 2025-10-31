@@ -34,9 +34,9 @@ export function NavMain({ items }: { items: navigationType[] }) {
           <Collapsible
             key={item.id}
             asChild
-            defaultOpen={
-              item.name.toLowerCase().replace(" ", "-") === splitPathname[1]
-            }
+            defaultOpen={item.menus?.some((m: { menu: { url: string } }) =>
+              pathname.startsWith(m.menu.url)
+            )}
             className="group/collapsible"
           >
             <SidebarMenuItem>

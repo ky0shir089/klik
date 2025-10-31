@@ -45,7 +45,7 @@ const UserForm = ({ data, roles }: iAppProps) => {
       user_id: data?.user_id || "",
       name: data?.name || "",
       change_password: data?.change_password ?? true,
-      role_id: data?.role?.id || 0,
+      role_id: data?.role?.id || undefined,
     },
   });
 

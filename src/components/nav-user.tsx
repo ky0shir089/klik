@@ -52,7 +52,9 @@ export function NavUser({
                   src={`https://avatar.vercel.sh/${user.user_id}.svg?text=${initial}`}
                   alt={user.name}
                 />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {initial}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-sm leading-tight text-left">
                 <span className="font-medium truncate">{user.name}</span>
@@ -74,7 +76,9 @@ export function NavUser({
                     src={`https://avatar.vercel.sh/${user.user_id}.svg?text=${initial}`}
                     alt={user.name}
                   />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {initial}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-sm leading-tight text-left">
                   <span className="font-medium truncate">{user.name}</span>

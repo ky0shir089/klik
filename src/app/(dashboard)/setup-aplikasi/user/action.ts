@@ -10,7 +10,7 @@ export async function userStore(values: userSchemaType) {
   if (!validation.success) {
     return {
       success: false,
-      error: "invalid form data",
+      message: "invalid form data",
     };
   }
 
