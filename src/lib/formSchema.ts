@@ -51,3 +51,20 @@ export const userSchema = z.object({
   role_id: z.number().positive(),
 });
 export type userSchemaType = z.infer<typeof userSchema>;
+
+export const coaSchema = z.object({
+  code: z.string().min(7),
+  description: z.string().min(1),
+  type: z.enum(["ASSET", "EQUITY", "EXPENSE", "LIABILITIES", "REVENUE"]),
+  parent_id: z.number().nullable().optional(),
+});
+export type coaSchemaType = z.infer<typeof coaSchema>;
+
+export const typeTrxSchema = z.object({
+  code: z.string().min(1),
+  name: z.string().min(1),
+  in_out: z.enum(["IN", "OUT"]),
+  is_active: z.boolean(),
+  coa_id: z.number().nullable().optional(),
+});
+export type typeTrxSchemaType = z.infer<typeof typeTrxSchema>;
