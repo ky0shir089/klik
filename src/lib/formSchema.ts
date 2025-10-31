@@ -42,3 +42,12 @@ export const roleSchema = z.object({
   permissions: z.array(z.number()).min(1, "Select at least one permission"),
 });
 export type roleSchemaType = z.infer<typeof roleSchema>;
+
+export const userSchema = z.object({
+  user_id: z.string().min(5),
+  name: z.string().min(1),
+  change_password: z.boolean(),
+  role: z.object({ id: z.number().positive() }).optional(),
+  role_id: z.number().positive(),
+});
+export type userSchemaType = z.infer<typeof userSchema>;

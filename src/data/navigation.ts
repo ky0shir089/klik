@@ -11,3 +11,4 @@ export async function navigation() {
     return error;
   }
 }
+export type navigationType = Awaited<ReturnType<typeof navigation>>;

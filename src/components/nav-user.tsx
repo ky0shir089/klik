@@ -1,19 +1,10 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
-
+import { ChevronsUpDown, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -32,11 +23,20 @@ export function NavUser({
 }: {
   user: {
     name: string;
-    email: string;
-    avatar: string;
+    user_id: string;
   };
 }) {
   const { isMobile } = useSidebar();
+
+  let initial = "";
+
+  const splitName = user.name.toUpperCase().split(" ");
+  if (splitName.length == 1) {
+    const splitFirstName = splitName[0].split("");
+    initial = splitFirstName[0] + splitFirstName[1];
+  } else {
+    initial = splitName[0][0] + splitName[1][0];
+  }
 
   return (
     <SidebarMenu>
@@ -48,12 +48,17 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="w-8 h-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarImage
+                  src={`https://avatar.vercel.sh/${user.user_id}.svg?text=${initial}`}
+                  alt={user.name}
+                />
+                <AvatarFallback className="rounded-lg">
+                  {initial}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-sm leading-tight text-left">
                 <span className="font-medium truncate">{user.name}</span>
-                <span className="text-xs truncate">{user.email}</span>
+                <span className="text-xs truncate">{user.user_id}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -67,37 +72,21 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="w-8 h-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarImage
+                    src={`https://avatar.vercel.sh/${user.user_id}.svg?text=${initial}`}
+                    alt={user.name}
+                  />
+                  <AvatarFallback className="rounded-lg">
+                    {initial}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-sm leading-tight text-left">
                   <span className="font-medium truncate">{user.name}</span>
-                  <span className="text-xs truncate">{user.email}</span>
+                  <span className="text-xs truncate">{user.user_id}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={useSignOut}>
               <LogOut />
