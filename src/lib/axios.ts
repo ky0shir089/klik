@@ -1,6 +1,6 @@
 import axios from "axios";
 import { env } from "./env";
-import { cookies } from "next/headers";
+import { getCookieData } from "./cookieData";
 
 const headers = {
   Accept: "application/json",
@@ -8,7 +8,7 @@ const headers = {
 };
 
 const axiosInstance = axios.create({
-  baseURL: `${env.BASE_URL}/api`,
+  baseURL: `${env.API_URL}`,
   withCredentials: true,
   headers,
   timeout: 30_000,
@@ -17,11 +17,10 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {
-      const cookieStore = await cookies();
-      const token = cookieStore.get("access_token");
+      const token = await getCookieData("access_token");
 
       if (token) {
-        config.headers.Authorization = `Bearer ${JSON.parse(token.value)}`;
+        config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
       console.error("Error:", error);

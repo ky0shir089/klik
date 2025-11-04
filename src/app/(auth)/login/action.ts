@@ -31,7 +31,7 @@ export async function signIn(values: signInSchemaType) {
       sameSite: "lax",
     });
 
-    cookieStore.set("access_token", JSON.stringify(data.access_token), {
+    cookieStore.set("access_token", data.access_token, {
       path: "/",
       expires: endOfDay,
       httpOnly: true,

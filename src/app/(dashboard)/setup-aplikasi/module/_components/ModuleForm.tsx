@@ -46,6 +46,7 @@ const ModuleForm = ({ data }: iAppProps) => {
         : await moduleStore(values);
 
       if (result.success) {
+        form.reset();
         toast.success(result.message);
         router.push("/setup-aplikasi/module");
       } else {

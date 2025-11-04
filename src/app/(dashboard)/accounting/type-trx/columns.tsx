@@ -20,17 +20,13 @@ export const columns: ColumnDef<typeTrxShowType>[] = [
     accessorKey: "name",
   },
   {
-    header: "in_out",
+    header: "Type",
     accessorKey: "in_out",
   },
   {
-    header: "is_active",
+    header: "Status",
     accessorKey: "is_active",
     cell: ({ getValue }) => (getValue() ? "ACTIVE" : "INACTIVE"),
-  },
-  {
-    header: "CoA",
-    accessorFn: (row) => row.coa?.code,
   },
   {
     header: "Action",

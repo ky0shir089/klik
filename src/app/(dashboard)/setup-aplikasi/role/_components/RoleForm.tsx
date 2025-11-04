@@ -71,6 +71,7 @@ const RoleForm = ({ data, menuPermission }: iAppProps) => {
         : await roleStore(values);
 
       if (result.success) {
+        form.reset();
         toast.success(result.message);
         router.push("/setup-aplikasi/role");
       } else {

@@ -58,6 +58,7 @@ const MenuForm = ({ data, modules }: iAppProps) => {
         : await menuStore(values);
 
       if (result.success) {
+        form.reset();
         toast.success(result.message);
         router.push("/setup-aplikasi/menu");
       } else {

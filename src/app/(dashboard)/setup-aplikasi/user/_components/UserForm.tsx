@@ -56,6 +56,7 @@ const UserForm = ({ data, roles }: iAppProps) => {
         : await userStore(values);
 
       if (result.success) {
+        form.reset();
         toast.success(result.message);
         router.push("/setup-aplikasi/user");
       } else {

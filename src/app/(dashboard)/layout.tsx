@@ -7,17 +7,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { navigation } from "@/data/navigation";
-import { cookies } from "next/headers";
+import { getCookieData } from "@/lib/cookieData";
 import { redirect } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const cookieStore = await cookies();
-  const user = cookieStore.get("user")?.value;
+async function AppSideMenu() {
+  const user = (await getCookieData("user")) as string;
 
   if (!user) {
     redirect("/login");
@@ -25,9 +20,15 @@ export default async function DashboardLayout({
 
   const { data } = await navigation();
 
+  return <AppSidebar user={JSON.parse(user)} navigation={data} />;
+}
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
-      <AppSidebar user={JSON.parse(user)} navigation={data} />
+      <Suspense>
+        <AppSideMenu />
+      </Suspense>
       <SidebarInset>
         <header className="flex items-center h-16 gap-2 shrink-0">
           <div className="flex items-center w-full gap-2 px-4">

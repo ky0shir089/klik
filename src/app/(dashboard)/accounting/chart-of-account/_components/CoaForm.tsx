@@ -55,6 +55,7 @@ const CoaForm = ({ data, coa }: iAppProps) => {
         : await coaStore(values);
 
       if (result.success) {
+        form.reset();
         toast.success(result.message);
         router.push("/accounting/chart-of-account");
       } else {
