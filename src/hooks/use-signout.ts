@@ -8,10 +8,8 @@ export async function useSignOut() {
     const cookieStore = await cookies();
     cookieStore.delete("user");
     cookieStore.delete("access_token");
+    redirect("/login");
   } catch (error) {
     console.error("Sign out failed:", error);
-    throw error;
-  } finally {
-    redirect("/login");
   }
 }
