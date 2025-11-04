@@ -23,9 +23,8 @@ export const columns: ColumnDef<bankShowType>[] = [
       <Image
         alt="logo"
         src={getImage(row.original.logo)}
-        width={0}
-        height={0}
-        sizes="100vw"
+        width={64}
+        height={64}
         className="w-16 h-auto object-contain"
       />
     ),

@@ -20,8 +20,10 @@ const EditTrxDtlPage = async ({ params }: { params: Params }) => {
   }
   const { data } = result;
 
-  const { data: trxes } = await selectTypeTrx("IN");
-  const { data: coas } = await selectCoa();
+  const [{ data: trxes }, { data: coas }] = await Promise.all([
+    selectTypeTrx("IN"),
+    selectCoa(),
+  ]);
 
   return <TrxDtlForm data={data} trxes={trxes} coas={coas} />;
 };

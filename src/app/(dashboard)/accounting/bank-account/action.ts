@@ -21,7 +21,6 @@ export async function bankAccountStore(values: bankAccountSchemaType) {
     );
     return data;
   } catch (error) {
-    console.log(error);
     return parseAxiosError(error);
   }
 }

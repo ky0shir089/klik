@@ -1,6 +1,6 @@
 import BankForm from "../_components/BankForm";
 
-const NewBankPage = async () => {
+const NewBankPage = () => {
   return <BankForm />;
 };
 

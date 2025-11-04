@@ -20,8 +20,10 @@ const EditRvPage = async ({ params }: { params: Params }) => {
   }
   const { data } = result;
 
-  const { data: typeTrxes } = await selectTypeTrx("IN");
-  const { data: bankAccounts } = await selectBankAccount();
+  const [{ data: typeTrxes }, { data: bankAccounts }] = await Promise.all([
+    selectTypeTrx("IN"),
+    selectBankAccount(),
+  ]);
 
   return (
     <RvForm data={data} bankAccounts={bankAccounts} typeTrxes={typeTrxes} />
