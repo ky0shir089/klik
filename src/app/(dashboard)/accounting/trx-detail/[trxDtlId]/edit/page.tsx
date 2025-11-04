@@ -4,11 +4,11 @@ import Unauthorized from "@/components/unauthorized";
 import { notFound, redirect } from "next/navigation";
 import { selectCoa, selectTypeTrx } from "@/data/select";
 
-type Params = Promise<{ TrxDtlId: number }>;
+type Params = Promise<{ trxDtlId: number }>;
 
 const EditTrxDtlPage = async ({ params }: { params: Params }) => {
-  const { TrxDtlId } = await params;
-  const result = await trxDtlShow(TrxDtlId);
+  const { trxDtlId } = await params;
+  const result = await trxDtlShow(trxDtlId);
   if (result.isUnauthorized) {
     redirect("/login");
   }
