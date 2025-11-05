@@ -20,8 +20,10 @@ const EditBankAccountPage = async ({ params }: { params: Params }) => {
   }
   const { data } = result;
 
-  const { data: banks } = await selectBank();
-  const { data: coas } = await selectCoa();
+  const [{ data: banks }, { data: coas }] = await Promise.all([
+    selectBank(),
+    selectCoa(),
+  ]);
 
   return <BankAccountForm data={data} banks={banks} coas={coas} />;
 };

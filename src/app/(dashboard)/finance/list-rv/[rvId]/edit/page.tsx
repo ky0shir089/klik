@@ -1,8 +1,7 @@
 import { rvShow } from "@/data/rv";
-import RvForm from "../../_components/RvForm";
 import Unauthorized from "@/components/unauthorized";
 import { notFound, redirect } from "next/navigation";
-import { selectBankAccount, selectTypeTrx } from "@/data/select";
+import ClassificationForm from "../../_components/ClassificationForm";
 
 type Params = Promise<{ rvId: number }>;
 
@@ -20,14 +19,7 @@ const EditRvPage = async ({ params }: { params: Params }) => {
   }
   const { data } = result;
 
-  const [{ data: typeTrxes }, { data: bankAccounts }] = await Promise.all([
-    selectTypeTrx("IN"),
-    selectBankAccount(),
-  ]);
-
-  return (
-    <RvForm data={data} bankAccounts={bankAccounts} typeTrxes={typeTrxes} />
-  );
+  return <ClassificationForm data={data} />;
 };
 
 export default EditRvPage;

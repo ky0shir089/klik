@@ -39,7 +39,7 @@ export const roleSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   menus: z.array(z.number()).min(1, "Select at least one menu"),
-  permissions: z.array(z.number()).min(1, "Select at least one permission"),
+  permissions: z.array(z.number()),
 });
 export type roleSchemaType = z.infer<typeof roleSchema>;
 
@@ -99,3 +99,9 @@ export const rvSchema = z.object({
   starting_balance: z.number().positive(),
 });
 export type rvSchemaType = z.infer<typeof rvSchema>;
+
+export const rvClassificationSchema = z.object({
+  rv_id: z.number().positive().optional(),
+  customer_id: z.number().positive().optional(),
+});
+export type rvClassificationSchemaType = z.infer<typeof rvClassificationSchema>;

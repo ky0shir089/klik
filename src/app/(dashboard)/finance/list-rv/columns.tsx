@@ -37,27 +37,22 @@ export const columns: ColumnDef<rvShowType>[] = [
   {
     header: "Amount",
     accessorKey: "starting_balance",
-    cell: ({ row }) =>
-      new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        maximumFractionDigits: 0,
-      }).format(row.original.starting_balance),
+    cell: ({ row }) => row.original.starting_balance.toLocaleString("id-ID"),
   },
   {
     header: "Status",
     accessorKey: "status",
   },
-  // {
-  //   header: "Action",
-  //   cell: ({ row }) => (
-  //     <Link
-  //       className={buttonVariants({ variant: "link", size: "sm" })}
-  //       href={`/finance/rv/${row.original.id}/edit`}
-  //     >
-  //       <ClipboardEdit />
-  //       Edit
-  //     </Link>
-  //   ),
-  // },
+  {
+    header: "Action",
+    cell: ({ row }) => (
+      <Link
+        className={buttonVariants({ variant: "link", size: "sm" })}
+        href={`/finance/list-rv/${row.original.id}/edit`}
+      >
+        <ClipboardEdit />
+        Klasifikasi
+      </Link>
+    ),
+  },
 ];

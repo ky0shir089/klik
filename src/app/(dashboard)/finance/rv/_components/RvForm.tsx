@@ -18,8 +18,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { rvSchema, rvSchemaType } from "@/lib/formSchema";
-import { rvStore, rvUpdate } from "../action";
-import { rvShowType } from "@/data/rv";
+import { rvStore } from "../action";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import {
   Select,
@@ -34,38 +33,31 @@ import { coaShowType } from "@/data/coa";
 import { bankAccountShowType } from "@/data/bank-account";
 
 interface iAppProps {
-  data?: rvShowType;
   bankAccounts: bankAccountShowType[];
   typeTrxes: typeTrxShowType[];
 }
 
-const RvForm = ({ data, bankAccounts, typeTrxes }: iAppProps) => {
+const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const [coas, setCoas] = useState<coaShowType[]>(
-    data
-      ? typeTrxes.filter((coa) => coa.id === data?.type_trx_id)[0].trx_dtl
-      : []
-  );
+  const [coas, setCoas] = useState<coaShowType[]>([]);
 
   const form = useForm<rvSchemaType>({
     resolver: zodResolver(rvSchema),
     defaultValues: {
-      date: data?.date || "",
-      type_trx_id: data?.type_trx_id || "",
-      description: data?.description || "",
-      bank_account_id: data?.bank_account_id || "",
-      coa_id: data?.bank_account_id || "",
-      starting_balance: data?.starting_balance || 0,
+      date: "",
+      type_trx_id: 0,
+      description: "",
+      bank_account_id: 0,
+      coa_id: 0,
+      starting_balance: 0,
     },
   });
 
   function onSubmit(values: rvSchemaType) {
     startTransition(async () => {
-      const result = data?.id
-        ? await rvUpdate(data?.id, values)
-        : await rvStore(values);
+      const result = await rvStore(values);
 
       if (result.success) {
         form.reset();
@@ -80,9 +72,7 @@ const RvForm = ({ data, bankAccounts, typeTrxes }: iAppProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {data?.id ? "Edit" : "Create"} Receive Voucher
-        </CardTitle>
+        <CardTitle className={cn("text-2xl")}>Create Receive Voucher</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -237,9 +227,7 @@ const RvForm = ({ data, bankAccounts, typeTrxes }: iAppProps) => {
             />
 
             <Button type="submit" className="w-full" disabled={isPending}>
-              <LoadingSwap isLoading={isPending}>
-                {data?.id ? "Update" : "Create"}
-              </LoadingSwap>
+              <LoadingSwap isLoading={isPending}>Create</LoadingSwap>
             </Button>
           </form>
         </Form>

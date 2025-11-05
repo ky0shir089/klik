@@ -1,9 +1,14 @@
 import { selectBank, selectCoa } from "@/data/select";
 import BankAccountForm from "../_components/BankAccountForm";
+import { connection } from "next/server";
 
 const NewBankAccountPage = async () => {
-  const { data: banks } = await selectBank();
-  const { data: coas } = await selectCoa();
+  await connection();
+
+  const [{ data: banks }, { data: coas }] = await Promise.all([
+    selectBank(),
+    selectCoa(),
+  ]);
 
   return <BankAccountForm banks={banks} coas={coas} />;
 };
