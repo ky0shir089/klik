@@ -9,9 +9,13 @@ import {
 import { navigation } from "@/data/navigation";
 import { getCookieData } from "@/lib/cookieData";
 import { redirect } from "next/navigation";
-import { ReactNode, Suspense } from "react";
+import { ReactNode } from "react";
 
-async function AppSideMenu() {
+export default async function DashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const user = (await getCookieData("user")) as string;
 
   if (!user) {
@@ -20,15 +24,9 @@ async function AppSideMenu() {
 
   const { data } = await navigation();
 
-  return <AppSidebar user={JSON.parse(user)} navigation={data} />;
-}
-
-export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
-      <Suspense>
-        <AppSideMenu />
-      </Suspense>
+      <AppSidebar user={JSON.parse(user)} navigation={data} />
       <SidebarInset>
         <header className="flex items-center h-16 gap-2 shrink-0">
           <div className="flex items-center w-full gap-2 px-4">

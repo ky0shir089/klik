@@ -22,21 +22,3 @@ export async function rvStore(values: rvSchemaType) {
     return parseAxiosError(error);
   }
 }
-
-export async function rvUpdate(id: number, values: rvSchemaType) {
-  const validation = rvSchema.safeParse(values);
-
-  if (!validation.success) {
-    return {
-      success: false,
-      message: "invalid form data",
-    };
-  }
-
-  try {
-    const { data } = await axiosInstance.put(`/finance/v1/rv/${id}`, values);
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
-}
