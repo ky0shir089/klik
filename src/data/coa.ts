@@ -3,15 +3,9 @@
 import axiosInstance from "@/lib/axios";
 import { parseAxiosError } from "@/lib/parseAxiosError";
 
-export async function coaIndex(page: number, size: number, search?: string) {
+export async function coaIndex() {
   try {
-    const { data } = await axiosInstance.get(`/accounting/v1/coa`, {
-      params: {
-        page,
-        size,
-        search,
-      },
-    });
+    const { data } = await axiosInstance.get(`/accounting/v1/coa`);
     return data;
   } catch (error) {
     return parseAxiosError(error);

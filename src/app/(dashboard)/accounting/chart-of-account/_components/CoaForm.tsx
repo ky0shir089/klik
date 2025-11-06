@@ -12,10 +12,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { coaSchema, coaSchemaType } from "@/lib/formSchema";
 import { coaStore, coaUpdate } from "../action";
@@ -31,10 +37,10 @@ import {
 
 interface iAppProps {
   data?: coaShowType;
-  coa: coaShowType[];
+  coas: coaShowType[];
 }
 
-const CoaForm = ({ data, coa }: iAppProps) => {
+const CoaForm = ({ data, coas }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -48,6 +54,15 @@ const CoaForm = ({ data, coa }: iAppProps) => {
     },
   });
 
+  useEffect(() => {
+    form.reset({
+      code: data?.code || "",
+      description: data?.description || "",
+      type: data?.type || "",
+      parent_id: data?.parent_id || null,
+    });
+  }, [data, form]);
+
   function onSubmit(values: coaSchemaType) {
     startTransition(async () => {
       const result = data?.id
@@ -57,7 +72,6 @@ const CoaForm = ({ data, coa }: iAppProps) => {
       if (result.success) {
         form.reset();
         toast.success(result.message);
-        router.push("/accounting/chart-of-account");
       } else {
         toast.error(result.message);
       }
@@ -148,7 +162,7 @@ const CoaForm = ({ data, coa }: iAppProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {coa.map((item) => (
+                      {coas.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
                           {item.code} - {item.description}
                         </SelectItem>
@@ -168,6 +182,18 @@ const CoaForm = ({ data, coa }: iAppProps) => {
           </form>
         </Form>
       </CardContent>
+
+      {data?.id && (
+        <CardFooter>
+          <Button
+            variant="destructive"
+            onClick={() => router.push("/accounting/chart-of-account")}
+            className="w-full"
+          >
+            Reset
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };

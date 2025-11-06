@@ -1,27 +1,28 @@
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
-import { buttonVariants } from "@/components/ui/button";
-import Link from "next/link";
-import { Suspense } from "react";
-import { DataTableSkeleton } from "@/components/data-table-skeleton";
+import React, { Suspense } from "react";
 import Unauthorized from "@/components/unauthorized";
-import SearchBox from "@/components/SearchBox";
-import { coaIndex } from "@/data/coa";
+import { coaIndex, coaShow, coaShowType } from "@/data/coa";
 import { redirect } from "next/navigation";
+import {
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+} from "@/components/ui/sidebar";
+import TreeView from "./_components/TreeView";
+import CoaForm from "./_components/CoaForm";
+import { selectCoa } from "@/data/select";
+import { CoaFormSkeleton } from "./_components/CoaFormSkeleton";
 
 const ChartOfAccountPage = async (props: {
   searchParams?: Promise<{
-    q?: string;
-    page?: string;
-    size?: string;
+    id?: number;
   }>;
 }) => {
   const searchParams = await props.searchParams;
-  const query = searchParams?.q || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const size = Number(searchParams?.size) || 10;
+  const id = searchParams?.id || 0;
 
-  const result = await coaIndex(currentPage, size, query);
+  const result = await coaIndex();
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -29,32 +30,38 @@ const ChartOfAccountPage = async (props: {
     return <Unauthorized />;
   }
   const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
+
+  async function fetchCoa() {
+    const { data: coas } = await selectCoa();
+    const show = await coaShow(id);
+
+    return <CoaForm key={id} data={show.data} coas={coas} />;
+  }
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="mb-4 text-3xl font-bold">Chart of Account</h2>
-
-        <Link
-          href="/accounting/chart-of-account/new"
-          className={buttonVariants()}
-        >
-          Add New
-        </Link>
       </div>
 
-      <Suspense
-        key={query + currentPage + size}
-        fallback={<DataTableSkeleton />}
-      >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
-      </Suspense>
+      <div className="grid grid-cols-2 gap-4">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {data.map((item: coaShowType) => (
+                  <React.Fragment key={item.id}>
+                    <SidebarGroupLabel>{item.type}</SidebarGroupLabel>
+                    <TreeView item={item} />
+                  </React.Fragment>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <Suspense fallback={<CoaFormSkeleton />}>{fetchCoa()}</Suspense>
+      </div>
     </>
   );
 };
