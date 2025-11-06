@@ -70,6 +70,7 @@ const CoaForm = ({ data, coas }: iAppProps) => {
         : await coaStore(values);
 
       if (result.success) {
+        form.reset();
         toast.success(result.message);
       } else {
         toast.error(result.message);

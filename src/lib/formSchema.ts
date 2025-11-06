@@ -39,7 +39,7 @@ export const roleSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   menus: z.array(z.number()).min(1, "Select at least one menu"),
-  permissions: z.array(z.number()).min(1, "Select at least one permission"),
+  permissions: z.array(z.number()),
 });
 export type roleSchemaType = z.infer<typeof roleSchema>;
 
@@ -65,6 +65,43 @@ export const typeTrxSchema = z.object({
   name: z.string().min(1),
   in_out: z.enum(["IN", "OUT"]),
   is_active: z.boolean(),
-  coa_id: z.number().nullable().optional(),
 });
 export type typeTrxSchemaType = z.infer<typeof typeTrxSchema>;
+
+export const trxDtlSchema = z.object({
+  trx_id: z.number().positive(),
+  coa_id: z.number().positive(),
+  is_active: z.boolean(),
+});
+export type trxDtlSchemaType = z.infer<typeof trxDtlSchema>;
+
+export const bankSchema = z.object({
+  name: z.string().min(3),
+  logo: z.union([z.instanceof(File), z.null()]).optional(),
+});
+export type bankSchemaType = z.infer<typeof bankSchema>;
+
+export const bankAccountSchema = z.object({
+  account_number: z.string().min(1),
+  account_name: z.string().min(1),
+  is_active: z.boolean(),
+  bank_id: z.number().positive(),
+  coa_id: z.number().positive(),
+});
+export type bankAccountSchemaType = z.infer<typeof bankAccountSchema>;
+
+export const rvSchema = z.object({
+  date: z.iso.date(),
+  type_trx_id: z.number().positive(),
+  description: z.string().min(1),
+  bank_account_id: z.number().positive(),
+  coa_id: z.number().positive(),
+  starting_balance: z.number().positive(),
+});
+export type rvSchemaType = z.infer<typeof rvSchema>;
+
+export const rvClassificationSchema = z.object({
+  rv_id: z.number().positive().optional(),
+  customer_id: z.number().positive().optional(),
+});
+export type rvClassificationSchemaType = z.infer<typeof rvClassificationSchema>;

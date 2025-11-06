@@ -7,7 +7,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { navigation } from "@/data/navigation";
-import { cookies } from "next/headers";
+import { getCookieData } from "@/lib/cookieData";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
@@ -16,8 +16,7 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const user = cookieStore.get("user")?.value;
+  const user = (await getCookieData("user")) as string;
 
   if (!user) {
     redirect("/login");

@@ -1,10 +1,9 @@
-import { cookies } from "next/headers";
 import { LoginForm } from "./_components/LoginForm";
 import { redirect } from "next/navigation";
+import { getCookieData } from "@/lib/cookieData";
 
 export default async function Page() {
-  const cookieStore = await cookies();
-  const user = cookieStore.get("user");
+  const user = (await getCookieData("user")) as string;
 
   if (user) {
     redirect("/");

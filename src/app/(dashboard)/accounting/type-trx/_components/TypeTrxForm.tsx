@@ -28,15 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { coaShowType } from "@/data/coa";
 import { Switch } from "@/components/ui/switch";
 
 interface iAppProps {
   data?: typeTrxShowType;
-  coa: coaShowType[];
 }
 
-const TypeTrxForm = ({ data, coa }: iAppProps) => {
+const TypeTrxForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -47,7 +45,6 @@ const TypeTrxForm = ({ data, coa }: iAppProps) => {
       name: data?.name || "",
       in_out: data?.in_out || "",
       is_active: data?.is_active ?? true,
-      coa_id: data?.coa_id || null,
     },
   });
 
@@ -58,6 +55,7 @@ const TypeTrxForm = ({ data, coa }: iAppProps) => {
         : await typeTrxStore(values);
 
       if (result.success) {
+        form.reset();
         toast.success(result.message);
         router.push("/accounting/type-trx");
       } else {
@@ -148,34 +146,6 @@ const TypeTrxForm = ({ data, coa }: iAppProps) => {
                       <span>{field.value ? "ACTIVE" : "INACTIVE"}</span>
                     </div>
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="coa_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CoA</FormLabel>
-                  <Select
-                    value={field.value ? String(field.value) : ""}
-                    onValueChange={(val) => field.onChange(Number(val))}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Parent" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {coa.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.code} - {item.description}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

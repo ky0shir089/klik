@@ -1,9 +1,11 @@
 import { selectRole } from "@/data/select";
 import UserForm from "../_components/UserForm";
+import { connection } from "next/server";
 
 const NewUserPage = async () => {
-  const roles = await selectRole();
-  const { data } = roles;
+  await connection();
+
+  const { data } = await selectRole();
 
   return <UserForm roles={data} />;
 };
