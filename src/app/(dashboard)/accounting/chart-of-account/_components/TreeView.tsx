@@ -35,8 +35,8 @@ const TreeView = ({ item }: { item: coaShowType }) => {
   }
 
   return (
-    <Collapsible defaultOpen>
-      <SidebarMenuItem>
+    <SidebarMenuItem>
+      <Collapsible defaultOpen>
         <div className="flex items-center">
           <CollapsibleTrigger className="rounded-full cursor-pointer group hover:bg-sidebar-accent">
             <ChevronRight className="transition-transform group-data-[state=open]:rotate-90" />
@@ -58,8 +58,8 @@ const TreeView = ({ item }: { item: coaShowType }) => {
             ))}
           </SidebarMenuSub>
         </CollapsibleContent>
-      </SidebarMenuItem>
-    </Collapsible>
+      </Collapsible>
+    </SidebarMenuItem>
   );
 };
 
