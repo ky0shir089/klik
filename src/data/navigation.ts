@@ -1,6 +1,7 @@
 "use server";
 
 import axiosInstance from "@/lib/axios";
+import { parseAxiosError } from "@/lib/parseAxiosError";
 
 export async function navigation() {
   try {
@@ -8,7 +9,7 @@ export async function navigation() {
 
     return data;
   } catch (error) {
-    return error;
+    return parseAxiosError(error);
   }
 }
 export type navigationType = Awaited<ReturnType<typeof navigation>>;

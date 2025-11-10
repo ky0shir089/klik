@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  const user = (await getCookieData("user")) as string;
+  const user = ((await getCookieData("user")) as string);
 
   if (!user) {
     redirect("/login");

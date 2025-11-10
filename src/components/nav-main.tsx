@@ -30,7 +30,7 @@ export function NavMain({ items }: { items: navigationType[] }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => (
+        {items?.map((item) => (
           <Collapsible
             key={item.id}
             asChild
