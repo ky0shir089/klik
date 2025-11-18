@@ -6,8 +6,8 @@ const NewTrxDtlPage = async () => {
   await connection();
 
   const [{ data: trxes }, { data: coas }] = await Promise.all([
-    selectTypeTrx("IN"),
-    selectCoa(),
+    selectTypeTrx(),
+    selectCoa("CHILDREN"),
   ]);
 
   return <TrxDtlForm trxes={trxes} coas={coas} />;

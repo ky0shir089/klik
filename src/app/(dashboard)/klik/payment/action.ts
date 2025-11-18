@@ -1,11 +1,11 @@
 "use server";
 
 import axiosInstance from "@/lib/axios";
-import { rvSchema, rvSchemaType } from "@/lib/formSchema";
+import { paymentSchema, paymentSchemaType } from "@/lib/formSchema";
 import { parseAxiosError } from "@/lib/parseAxiosError";
 
-export async function rvStore(values: rvSchemaType) {
-  const validation = rvSchema.safeParse(values);
+export async function paymentStore(values: paymentSchemaType) {
+  const validation = paymentSchema.safeParse(values);
 
   if (!validation.success) {
     return {
@@ -15,7 +15,7 @@ export async function rvStore(values: rvSchemaType) {
   }
 
   try {
-    const { data } = await axiosInstance.post(`/finance/v1/rv`, values);
+    const { data } = await axiosInstance.post(`/klik/v1/payment`, values);
     return data;
   } catch (error) {
     return parseAxiosError(error);

@@ -51,7 +51,7 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
       description: "",
       bank_account_id: 0,
       coa_id: 0,
-      starting_balance: 0,
+      starting_balance: null,
     },
   });
 
@@ -62,7 +62,7 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
       if (result.success) {
         form.reset();
         toast.success(result.message);
-        router.push("/finance/rv");
+        router.push("/finance/list-rv");
       } else {
         toast.error(result.message);
       }
@@ -102,7 +102,7 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
               name="type_trx_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>CoA</FormLabel>
+                  <FormLabel>Type Trx</FormLabel>
                   <Select
                     required
                     value={field.value ? String(field.value) : ""}
@@ -165,8 +165,7 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
                     <SelectContent>
                       {bankAccounts.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
-                          {item.bank.name} - {item.account_number} -{" "}
-                          {item.account_name}
+                          {item.bank.name} - {item.account_number}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -194,7 +193,7 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
                     </FormControl>
                     <SelectContent>
                       {coas.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
+                        <SelectItem key={item.id} value={String(item.coa.id)}>
                           {item.coa.code} - {item.coa.description}
                         </SelectItem>
                       ))}

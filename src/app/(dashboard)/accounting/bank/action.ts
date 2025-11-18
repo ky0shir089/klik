@@ -28,7 +28,6 @@ export async function bankStore(values: bankSchemaType) {
     });
     return data;
   } catch (error) {
-    console.log(error);
     return parseAxiosError(error);
   }
 }

@@ -4,10 +4,10 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { rvIndex } from "@/data/rv";
 import { redirect } from "next/navigation";
+import { selectUnpaidBidder } from "@/data/select";
 
-const RvPage = async (props: {
+const auctionPage = async (props: {
   searchParams?: Promise<{
     q?: string;
     page?: string;
@@ -19,7 +19,7 @@ const RvPage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const result = await rvIndex(currentPage, size, query);
+  const result = await selectUnpaidBidder(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -32,11 +32,11 @@ const RvPage = async (props: {
     pageCount: data.last_page,
     totalCount: data.total,
   };
-  
+
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">List RV</h2>
+        <h2 className="mb-4 text-3xl font-bold">Bidder</h2>
       </div>
 
       <Suspense
@@ -50,4 +50,4 @@ const RvPage = async (props: {
   );
 };
 
-export default RvPage;
+export default auctionPage;
