@@ -11,12 +11,7 @@ export const columns: ColumnDef<rvShowType>[] = [
   {
     header: "Tanggal",
     accessorKey: "date",
-    cell: ({ row }) =>
-      new Intl.DateTimeFormat("id-ID", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }).format(new Date(row.original.date)),
+    cell: ({ row }) => new Date(row.original.date).toLocaleDateString(),
   },
   {
     header: "Type Trx",
