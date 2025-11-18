@@ -32,7 +32,7 @@ const ChartOfAccountPage = async (props: {
   const { data } = result;
 
   async function fetchCoa() {
-    const { data: coas } = await selectCoa();
+    const { data: coas } = await selectCoa("PARENT");
     const show = await coaShow(id);
 
     return <CoaForm key={id} data={show.data} coas={coas} />;

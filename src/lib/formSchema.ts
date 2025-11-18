@@ -96,12 +96,30 @@ export const rvSchema = z.object({
   description: z.string().min(1),
   bank_account_id: z.number().positive(),
   coa_id: z.number().positive(),
-  starting_balance: z.number().positive(),
+  starting_balance: z.number().positive().nullable(),
 });
 export type rvSchemaType = z.infer<typeof rvSchema>;
 
 export const rvClassificationSchema = z.object({
-  rv_id: z.number().positive().optional(),
-  customer_id: z.number().positive().optional(),
+  rv_id: z.number().positive(),
+  klik_bidder_id: z.number().positive(),
 });
 export type rvClassificationSchemaType = z.infer<typeof rvClassificationSchema>;
+
+export const paymentSchema = z.object({
+  payment_date: z.iso.date(),
+  branch_id: z.string().min(1),
+  branch_name: z.string().min(1),
+  customer_id: z.number().positive(),
+  rvs: z.array(z.number().positive()).min(1, "Select at least one RV"),
+  units: z.array(z.number().positive()).min(1, "Select at least one Unit"),
+});
+export type paymentSchemaType = z.infer<typeof paymentSchema>;
+
+export const pvSchema = z.object({
+  paid_date: z.iso.date(),
+  description: z.string().min(1),
+  bank_account_id: z.number().positive(),
+  pvs: z.array(z.number().positive()).min(1, "Select at least one PV"),
+});
+export type pvSchemaType = z.infer<typeof pvSchema>;

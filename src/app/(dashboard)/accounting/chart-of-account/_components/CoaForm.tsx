@@ -79,7 +79,7 @@ const CoaForm = ({ data, coas }: iAppProps) => {
   }
 
   return (
-    <Card>
+    <Card className={cn("h-fit")}>
       <CardHeader>
         <CardTitle className={cn("text-2xl")}>
           {data?.id ? "Edit" : "Create"} COA

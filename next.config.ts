@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   // cacheComponents: true,
+  allowedDevOrigins: ["192.168.77.232"],
   images: {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [

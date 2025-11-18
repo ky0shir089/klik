@@ -4,12 +4,14 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     API_URL: z.url(),
+    KLIK_API_TOKEN: z.string(),
   },
   client: {
     NEXT_PUBLIC_BASE_URL: z.url(),
   },
   runtimeEnv: {
     API_URL: process.env.API_URL,
+    KLIK_API_TOKEN: process.env.KLIK_API_TOKEN,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   },
 });

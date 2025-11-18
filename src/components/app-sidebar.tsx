@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Command } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { navigationType } from "@/data/navigation";
+import Image from "next/image";
 
 interface User {
   name: string;
@@ -36,14 +36,14 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground aspect-square size-8">
-                  <Command className="size-4" />
-                </div>
-
-                <div className="grid flex-1 text-sm leading-tight text-left">
-                  <span className="font-medium truncate">Klik</span>
-                  <span className="text-xs truncate">Lelang</span>
-                </div>
+                <Image
+                  src="https://kliklelang.co.id/img/logo-klik.svg"
+                  width={0}
+                  height={0}
+                  alt="logo_klik"
+                  className="object-contain h-auto mx-auto w-28"
+                  loading="eager"
+                />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

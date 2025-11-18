@@ -21,8 +21,8 @@ const EditTrxDtlPage = async ({ params }: { params: Params }) => {
   const { data } = result;
 
   const [{ data: trxes }, { data: coas }] = await Promise.all([
-    selectTypeTrx("IN"),
-    selectCoa(),
+    selectTypeTrx(),
+    selectCoa("CHILDREN"),
   ]);
 
   return <TrxDtlForm data={data} trxes={trxes} coas={coas} />;

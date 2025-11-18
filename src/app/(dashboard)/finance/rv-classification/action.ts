@@ -26,10 +26,7 @@ export async function rvUpdate(id: number, values: joinData) {
   }
 
   try {
-    const { data } = await axiosInstance.post(
-      `/accounting/v1/customer`,
-      values
-    );
+    const { data } = await axiosInstance.put(`/finance/v1/rv/${id}`, values);
     return data;
   } catch (error) {
     return parseAxiosError(error);

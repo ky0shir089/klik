@@ -1,7 +1,10 @@
 "use client";
 
+import { buttonVariants } from "@/components/ui/button";
 import { rvShowType } from "@/data/rv";
 import { ColumnDef } from "@tanstack/react-table";
+import { ClipboardEdit } from "lucide-react";
+import Link from "next/link";
 
 export const columns: ColumnDef<rvShowType>[] = [
   {
@@ -32,20 +35,19 @@ export const columns: ColumnDef<rvShowType>[] = [
     cell: ({ row }) => row.original.ending_balance.toLocaleString("id-ID"),
   },
   {
-    header: "Used Amount",
-    accessorKey: "used_rv_sum_total_amount",
-    cell: ({ row }) =>
-      row.original.used_rv_sum_total_amount?.toLocaleString("id-ID"),
-  },
-  {
-    header: "Balance",
-    cell: ({ row }) =>
-      (
-        row.original.ending_balance - row.original.used_rv_sum_total_amount
-      ).toLocaleString("id-ID"),
-  },
-  {
     header: "Status",
     accessorKey: "status",
+  },
+  {
+    header: "Action",
+    cell: ({ row }) => (
+      <Link
+        className={buttonVariants({ variant: "link", size: "sm" })}
+        href={`/finance/rv-classification/${row.original.id}/edit`}
+      >
+        <ClipboardEdit />
+        Klasifikasi
+      </Link>
+    ),
   },
 ];

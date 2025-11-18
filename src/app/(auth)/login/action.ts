@@ -23,11 +23,13 @@ export async function signIn(values: signInSchemaType) {
 
     const cookieStore = await cookies();
 
+    const isProd = process.env.NODE_ENV === "production" && !process.env.LOCAL_DEV;
+
     cookieStore.set("user", JSON.stringify(data.data), {
       path: "/",
       expires: endOfDay,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProd,
       sameSite: "lax",
     });
 
@@ -35,7 +37,7 @@ export async function signIn(values: signInSchemaType) {
       path: "/",
       expires: endOfDay,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProd,
       sameSite: "lax",
     });
 
