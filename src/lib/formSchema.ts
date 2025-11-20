@@ -123,3 +123,9 @@ export const pvSchema = z.object({
   pvs: z.array(z.number().positive()).min(1, "Select at least one PV"),
 });
 export type pvSchemaType = z.infer<typeof pvSchema>;
+
+export const uploadFileSchema = z.object({
+  id: z.number().positive().optional(),
+  file: z.union([z.instanceof(File), z.null()]),
+});
+export type uploadFileSchemaType = z.infer<typeof uploadFileSchema>;

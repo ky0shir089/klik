@@ -23,7 +23,7 @@ const PaymentForm = ({ data }: iAppProps) => {
       </CardHeader>
 
       <CardContent className={cn("space-y-8")}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Table>
             <TableBody>
               <TableRow>
@@ -96,6 +96,8 @@ const PaymentForm = ({ data }: iAppProps) => {
               <TableHead>Nopol</TableHead>
               <TableHead>Noka</TableHead>
               <TableHead>Nosin</TableHead>
+              <TableHead>No Kontrak</TableHead>
+              <TableHead>No Paket</TableHead>
               <TableHead className="text-right">Harga</TableHead>
             </TableRow>
           </TableHeader>
@@ -109,8 +111,10 @@ const PaymentForm = ({ data }: iAppProps) => {
                 <TableCell>{item.unit.police_number}</TableCell>
                 <TableCell>{item.unit.chassis_number}</TableCell>
                 <TableCell>{item.unit.engine_number}</TableCell>
+                <TableCell>{item.unit.contract_number}</TableCell>
+                <TableCell>{item.unit.package_number}</TableCell>
                 <TableCell className="text-right">
-                  {item.unit.amount.toLocaleString("id-ID")}
+                  {item.unit.final_price.toLocaleString("id-ID")}
                 </TableCell>
               </TableRow>
             ))}

@@ -27,7 +27,6 @@ const ListPvPage = async (props: {
     return <Unauthorized />;
   }
   const { data } = result;
-  console.log(data);
   const meta = {
     currentPage: data.current_page,
     pageCount: data.last_page,

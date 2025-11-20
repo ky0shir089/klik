@@ -164,7 +164,7 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
                     </FormControl>
                     <SelectContent>
                       {bankAccounts.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
+                        <SelectItem key={item.id} value={String(item.account_number)}>
                           {item.bank.name} - {item.account_number}
                         </SelectItem>
                       ))}

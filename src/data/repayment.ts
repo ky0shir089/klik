@@ -30,5 +30,4 @@ export async function paymentShow(id: number) {
     return parseAxiosError(error);
   }
 }
-
 export type paymentShowType = Awaited<ReturnType<typeof paymentShow>>;

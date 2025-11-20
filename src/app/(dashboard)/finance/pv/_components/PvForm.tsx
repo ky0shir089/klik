@@ -58,7 +58,6 @@ interface iAppProps {
 }
 
 const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
-  // console.log(data);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -231,8 +230,8 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                         )}
                       />
                     </TableCell>
-                    <TableCell>{item.repayment.branch_name}</TableCell>
-                    <TableCell>{item.repayment.customer.name}</TableCell>
+                    <TableCell>{item.repayment?.branch_name}</TableCell>
+                    <TableCell>{item.repayment?.customer.name}</TableCell>
                     <TableCell>{item.supplier_account.supplier.name}</TableCell>
                     <TableCell>{item.supplier_account.bank.name}</TableCell>
                     <TableCell>
