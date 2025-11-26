@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { invoiceIndex } from "@/data/invoice";
 
 const InvoicePage = async (props: {
@@ -20,13 +20,17 @@ const InvoicePage = async (props: {
   const size = Number(searchParams?.size) || 10;
 
   const result = await invoiceIndex(currentPage, size, query);
-  console.log(result);
+
   if (result.isUnauthorized) {
     redirect("/login");
   }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
+  if (result.isNotFound) {
+   return notFound();
+  }
+  
   const { data } = result;
   const meta = {
     currentPage: data.current_page,

@@ -61,20 +61,19 @@ const InvoiceForm = ({ suppliers, typeTrxes }: iAppProps) => {
   });
 
   function onSubmit(values: invoiceSchemaType) {
-    console.log(values)
+    console.log(values);
     startTransition(async () => {
       const result = await invoiceStore(values);
 
       if (result.success) {
         form.reset();
         toast.success(result.message);
-        router.push("/finance/list-rv");
+        router.push("/finance/list-invoice");
       } else {
         toast.error(result.message);
       }
     });
   }
-  
 
   return (
     <Card>
@@ -102,10 +101,8 @@ const InvoiceForm = ({ suppliers, typeTrxes }: iAppProps) => {
                 value={typeTrxId ? String(typeTrxId) : ""}
                 onValueChange={(val) => {
                   setTypeTrxId(Number(val));
-                  const trxDtl = typeTrxes.filter(
-                    (coa) => coa.id === Number(val)
-                  )[0].trx_dtl;
-                  setCoas(trxDtl);
+                  const selected = typeTrxes.find((t) => t.id === Number(val));
+                  setCoas(selected?.trx_dtl ?? []);
                 }}
               >
                 <FormControl className="w-full">
@@ -130,10 +127,10 @@ const InvoiceForm = ({ suppliers, typeTrxes }: iAppProps) => {
                 value={supplierId ? String(supplierId) : ""}
                 onValueChange={(val) => {
                   setSupplierId(Number(val));
-                  const accounts = suppliers.filter(
-                    (item) => item.id == val
-                  )[0];
-                  setSupplierAccounts(accounts.accounts);
+                  const selected = suppliers.find(
+                    (item) => item.id === Number(val)
+                  );
+                  setSupplierAccounts(selected?.accounts ?? []);
                 }}
               >
                 <FormControl className="w-full">
@@ -193,7 +190,7 @@ const InvoiceForm = ({ suppliers, typeTrxes }: iAppProps) => {
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Bank" />
+                        <SelectValue placeholder="Select Code Trx" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

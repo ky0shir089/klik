@@ -91,7 +91,7 @@ const UploadRvForm = () => {
         <CardHeader>
           <CardTitle className={cn("text-2xl")}>Upload RV</CardTitle>
           <CardDescription>
-            Contoh template upload donwload{" "}
+            Contoh template upload download{" "}
             <Link href="/template/upload_rv.xlsx" className="text-blue-500 underline">
               disini
             </Link>
