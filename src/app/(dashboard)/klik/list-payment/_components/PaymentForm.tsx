@@ -121,7 +121,7 @@ const PaymentForm = ({ data }: iAppProps) => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={7}>Total</TableCell>
+              <TableCell colSpan={9}>Total</TableCell>
               <TableCell className="text-right">
                 {data.total_amount.toLocaleString("id-ID")}
               </TableCell>

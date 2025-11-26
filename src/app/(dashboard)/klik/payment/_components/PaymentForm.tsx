@@ -30,6 +30,7 @@ import { Control, useForm, useWatch } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { paymentStore, uploadDataUnit } from "../action";
+import Link from "next/link";
 
 interface iAppProps {
   data: customerShowType;
@@ -320,6 +321,15 @@ const PaymentForm = ({ data }: iAppProps) => {
             </Table>
 
             <h3 className="font-medium">Upload No Kontrak dan No Paket</h3>
+            <div>
+              Contoh template upload download{" "}
+              <Link
+                href="/template/data_unit.xlsx"
+                className="text-blue-500 underline"
+              >
+                disini
+              </Link>
+            </div>
 
             <div
               {...getRootProps()}

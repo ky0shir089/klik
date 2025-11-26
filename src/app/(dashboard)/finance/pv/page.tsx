@@ -4,19 +4,22 @@ import { redirect } from "next/navigation";
 import Unauthorized from "@/components/unauthorized";
 import { connection } from "next/server";
 import { paymentShow } from "@/data/repayment";
+import { invoiceShow } from "@/data/invoice";
 
-type searchParams = Promise<{ paymentId: number }>;
+type searchParams = Promise<{ paymentId: number; typeTrx: number }>;
 
 const PvPage = async ({ searchParams }: { searchParams: searchParams }) => {
   await connection();
 
-  const { paymentId } = await searchParams;
+  const { paymentId, typeTrx } = await searchParams;
 
   const [result, { data: bankAccounts }, { data: payment }] = await Promise.all(
     [
       selectUnpaidPayment(),
       selectBankAccount(),
-      paymentId ? paymentShow(paymentId) : Promise.resolve({ payment: null }),
+      paymentId && typeTrx == 2
+        ? paymentShow(paymentId)
+        : invoiceShow(paymentId),
     ]
   );
   if (result.isUnauthorized) {
@@ -27,7 +30,13 @@ const PvPage = async ({ searchParams }: { searchParams: searchParams }) => {
   }
   const { data } = result;
 
-  return <PvForm bankAccounts={bankAccounts} data={data} payment={payment} />;
+  return (
+    <PvForm
+      bankAccounts={bankAccounts}
+      data={data}
+      payment={payment}
+    />
+  );
 };
 
 export default PvPage;

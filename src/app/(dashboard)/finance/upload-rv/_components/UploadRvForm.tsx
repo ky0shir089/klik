@@ -6,7 +6,13 @@ import { uploadFileSchema, uploadFileSchemaType } from "@/lib/formSchema";
 import { useState, useTransition } from "react";
 import { uploadRv } from "../action";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   Form,
@@ -20,6 +26,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { CheckCircle, CircleX } from "lucide-react";
+import Link from "next/link";
 
 const Summary = ({ results }: { results: string[] }) => {
   return (
@@ -31,13 +38,13 @@ const Summary = ({ results }: { results: string[] }) => {
       <CardContent>
         {results.length === 0 ? (
           <div className="flex items-center">
-            <CheckCircle className="text-green-500 size-6 mr-1" />
+            <CheckCircle className="mr-1 text-green-500 size-6" />
             Semua Data OK
           </div>
         ) : (
           results.map((error, index) => (
             <div key={index} className="flex items-center">
-              <CircleX className="text-red-500 size-6 mr-1" />
+              <CircleX className="mr-1 text-red-500 size-6" />
               <p>{error}</p>
             </div>
           ))
@@ -62,6 +69,8 @@ const UploadRvForm = () => {
 
   function onSubmit(values: uploadFileSchemaType) {
     startTransition(async () => {
+      setResults([]);
+
       const result = await uploadRv(values);
 
       if (result.success) {
@@ -81,6 +90,12 @@ const UploadRvForm = () => {
       <Card>
         <CardHeader>
           <CardTitle className={cn("text-2xl")}>Upload RV</CardTitle>
+          <CardDescription>
+            Contoh template upload download{" "}
+            <Link href="/template/upload_rv.xlsx" className="text-blue-500 underline">
+              disini
+            </Link>
+          </CardDescription>
         </CardHeader>
 
         <CardContent>
