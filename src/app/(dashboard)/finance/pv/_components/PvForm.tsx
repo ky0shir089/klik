@@ -50,6 +50,7 @@ import {
 import { paymentShowType } from "@/data/repayment";
 import PaymentForm from "@/app/(dashboard)/klik/list-payment/_components/PaymentForm";
 import { Eye } from "lucide-react";
+import InvoiceAction from "../../list-invoice/_components/InvoiceAction";
 
 interface iAppProps {
   data: pvShowType;
@@ -119,10 +120,12 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
     []
   );
 
-  async function createURL(paymentId: string) {
+  async function createURL(paymentId: string, typeTrx: string) {
     params.set("paymentId", paymentId);
+    params.set("typeTrx", typeTrx);
     router.replace(pathname + "?" + params);
   }
+  console.log(data);
 
   return (
     <Card>
@@ -195,7 +198,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                 <TableRow>
                   <TableHead></TableHead>
                   <TableHead>Balai Lelang</TableHead>
-                  <TableHead>Bidder</TableHead>
+                  <TableHead>Customer</TableHead>
                   <TableHead>Supplier</TableHead>
                   <TableHead>Bank</TableHead>
                   <TableHead>Nomor Rekening</TableHead>
@@ -230,8 +233,8 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                         )}
                       />
                     </TableCell>
-                    <TableCell>{item.repayment?.branch_name}</TableCell>
-                    <TableCell>{item.repayment?.customer.name}</TableCell>
+                    <TableCell>{item.processable?.branch_name}</TableCell>
+                    <TableCell>{item.processable?.customer.name}</TableCell>
                     <TableCell>{item.supplier_account.supplier.name}</TableCell>
                     <TableCell>{item.supplier_account.bank.name}</TableCell>
                     <TableCell>
@@ -244,7 +247,10 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                       <Dialog
                         onOpenChange={(open) => {
                           if (open) {
-                            createURL(String(item.processable_id));
+                            createURL(
+                              String(item.processable_id),
+                              String(item.trx_dtl_id)
+                            );
                           }
                         }}
                       >
@@ -263,7 +269,11 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                             <DialogHeader>
                               <DialogTitle></DialogTitle>
                               <DialogDescription></DialogDescription>
-                              <PaymentForm data={payment} />
+                              {item.trx_dtl_id == 2 ? (
+                                <PaymentForm data={payment} />
+                              ) : (
+                                <InvoiceAction data={payment} />
+                              )}
                             </DialogHeader>
                           </DialogContent>
                         ) : null}

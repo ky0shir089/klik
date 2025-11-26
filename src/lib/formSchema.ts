@@ -129,3 +129,25 @@ export const uploadFileSchema = z.object({
   file: z.union([z.instanceof(File), z.null()]),
 });
 export type uploadFileSchemaType = z.infer<typeof uploadFileSchema>;
+
+export const invoiceSchema = z.object({
+  supplier_account_id: z.number().positive(),
+  inv_coa_id: z.number().positive(),
+  rv_id: z.number().optional().nullable().optional(),
+  description: z.string().min(1),
+  amount: z.number().positive().nullable(),
+});
+export type invoiceSchemaType = z.infer<typeof invoiceSchema>;
+
+export const invoiceStatusSchema = z.object({
+  status: z.string(),
+});
+export type invoiceStatusSchemaType = z.infer<typeof invoiceStatusSchema>;
+
+export const supplierSchema = z.object({
+  name: z.string().min(1),
+  bank_id: z.number().positive(),
+  account_number: z.string().min(1),
+  account_name: z.string().min(1),
+});
+export type supplierSchemaType = z.infer<typeof supplierSchema>;

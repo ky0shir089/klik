@@ -79,3 +79,8 @@ export async function selectUnpaidPayment() {
   const { data } = await axiosInstance.get(`/select/v1/unpaid-payment`);
   return data;
 }
+
+export async function selectSupplier() {
+  const { data } = await axiosInstance.get(`/select/v1/supplier`);
+  return data;
+}
