@@ -47,7 +47,7 @@ export default function SearchBox() {
           inFlightRef.current = false;
         }
       });
-    }, 300);
+    }, 500);
 
     return () => {
       clearTimeout(timeout);

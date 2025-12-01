@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -125,180 +124,169 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
     params.set("typeTrx", typeTrx);
     router.replace(pathname + "?" + params);
   }
-  console.log(data);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={cn("text-2xl")}>Pembayaran</CardTitle>
-      </CardHeader>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="paid_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tanggal</FormLabel>
+              <FormControl>
+                <Input type="date" required {...field} readOnly />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="paid_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tanggal</FormLabel>
-                  <FormControl>
-                    <Input type="date" required {...field} readOnly />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Keterangan</FormLabel>
+              <FormControl>
+                <Input placeholder="Keterangan" required {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Keterangan</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Keterangan" required {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="bank_account_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bank</FormLabel>
+              <Select
+                required
+                value={field.value ? String(field.value) : ""}
+                onValueChange={(val) => field.onChange(Number(val))}
+              >
+                <FormControl className="w-full">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Bank" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {bankAccounts.map((item: bankAccountShowType) => (
+                    <SelectItem key={item.id} value={String(item.id)}>
+                      {item.bank.name} - {item.account_number}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="bank_account_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bank</FormLabel>
-                  <Select
-                    required
-                    value={field.value ? String(field.value) : ""}
-                    onValueChange={(val) => field.onChange(Number(val))}
+        <Table className={cn("border-2")}>
+          <TableHeader>
+            <TableRow>
+              <TableHead></TableHead>
+              <TableHead>Balai Lelang</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Supplier</TableHead>
+              <TableHead>Bank</TableHead>
+              <TableHead>Nomor Rekening</TableHead>
+              <TableHead className="text-right">Total Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((item: pvShowType) => (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <FormField
+                    control={form.control}
+                    name="pvs"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(item.id)}
+                            onCheckedChange={(checked) =>
+                              field.onChange(
+                                updateArray(
+                                  field.value || [],
+                                  item.id,
+                                  !!checked
+                                )
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TableCell>
+                <TableCell>{item.processable?.branch_name}</TableCell>
+                <TableCell>{item.processable?.customer.name}</TableCell>
+                <TableCell>{item.supplier_account.supplier.name}</TableCell>
+                <TableCell>{item.supplier_account.bank.name}</TableCell>
+                <TableCell>{item.supplier_account.account_number}</TableCell>
+                <TableCell className="text-right">
+                  {item.pv_amount.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell>
+                  <Dialog
+                    onOpenChange={(open) => {
+                      if (open) {
+                        createURL(
+                          String(item.processable_id),
+                          String(item.trx_dtl_id)
+                        );
+                      }
+                    }}
                   >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Bank" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {bankAccounts.map((item: bankAccountShowType) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.bank.name} - {item.account_number}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Table className={cn("border-2")}>
-              <TableHeader>
-                <TableRow>
-                  <TableHead></TableHead>
-                  <TableHead>Balai Lelang</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Bank</TableHead>
-                  <TableHead>Nomor Rekening</TableHead>
-                  <TableHead className="text-right">Total Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((item: pvShowType) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name="pvs"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(item.id)}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(
-                                    updateArray(
-                                      field.value || [],
-                                      item.id,
-                                      !!checked
-                                    )
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>{item.processable?.branch_name}</TableCell>
-                    <TableCell>{item.processable?.customer.name}</TableCell>
-                    <TableCell>{item.supplier_account.supplier.name}</TableCell>
-                    <TableCell>{item.supplier_account.bank.name}</TableCell>
-                    <TableCell>
-                      {item.supplier_account.account_number}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.pv_amount.toLocaleString("id-ID")}
-                    </TableCell>
-                    <TableCell>
-                      <Dialog
-                        onOpenChange={(open) => {
-                          if (open) {
-                            createURL(
-                              String(item.processable_id),
-                              String(item.trx_dtl_id)
-                            );
-                          }
-                        }}
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        aria-label="Submit"
+                        className="rounded-full size-4"
                       >
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            aria-label="Submit"
-                            className="rounded-full size-4"
-                          >
-                            <Eye />
-                          </Button>
-                        </DialogTrigger>
-                        {payment ? (
-                          <DialogContent className="min-w-fit">
-                            <DialogHeader>
-                              <DialogTitle></DialogTitle>
-                              <DialogDescription></DialogDescription>
-                              {item.trx_dtl_id == 2 ? (
-                                <PaymentForm data={payment} />
-                              ) : (
-                                <InvoiceAction data={payment} />
-                              )}
-                            </DialogHeader>
-                          </DialogContent>
-                        ) : null}
-                      </Dialog>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TableCell colSpan={6}>Total</TableCell>
-                  <TableCell className="text-right">
-                    {sumTotalAmount.toLocaleString("id-ID")}
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
-            </Table>
+                        <Eye />
+                      </Button>
+                    </DialogTrigger>
+                    {payment ? (
+                      <DialogContent className="min-w-fit">
+                        <DialogHeader>
+                          <DialogTitle></DialogTitle>
+                          <DialogDescription></DialogDescription>
+                          {item.trx_dtl_id == 2 ? (
+                            <PaymentForm data={payment} />
+                          ) : (
+                            <InvoiceAction data={payment} />
+                          )}
+                        </DialogHeader>
+                      </DialogContent>
+                    ) : null}
+                  </Dialog>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={6}>Total</TableCell>
+              <TableCell className="text-right">
+                {sumTotalAmount.toLocaleString("id-ID")}
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
 
-            <Button type="submit" className="w-full" disabled={isPending}>
-              <LoadingSwap isLoading={isPending}>Submit</LoadingSwap>
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
+          <LoadingSwap isLoading={isPending}>Submit</LoadingSwap>
+        </Button>
+      </form>
+    </Form>
   );
 };
 

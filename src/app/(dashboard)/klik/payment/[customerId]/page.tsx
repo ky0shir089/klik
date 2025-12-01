@@ -2,11 +2,14 @@ import { customerShow } from "@/data/customer";
 import Unauthorized from "@/components/unauthorized";
 import { notFound, redirect } from "next/navigation";
 import PaymentForm from "../_components/PaymentForm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Suspense } from "react";
+import PaymentFormSkeleton from "@/components/PaymentFormSkeleton";
 
 type Params = Promise<{ customerId: number }>;
 
-const PaymentPage = async ({ params }: { params: Params }) => {
-  const { customerId } = await params;
+const RenderForm = async ({ customerId }: { customerId: number }) => {
   const result = await customerShow(customerId);
   if (result.isUnauthorized) {
     redirect("/login");
@@ -20,6 +23,24 @@ const PaymentPage = async ({ params }: { params: Params }) => {
   const { data } = result;
 
   return <PaymentForm data={data} />;
+};
+
+const PaymentPage = async ({ params }: { params: Params }) => {
+  const { customerId } = await params;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className={cn("text-2xl")}>SPP</CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <Suspense fallback={<PaymentFormSkeleton />}>
+          <RenderForm customerId={customerId} />
+        </Suspense>
+      </CardContent>
+    </Card>
+  );
 };
 
 export default PaymentPage;

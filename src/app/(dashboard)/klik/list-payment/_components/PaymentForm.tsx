@@ -1,4 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { CardContent, CardFooter } from "@/components/ui/card";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 import {
   Table,
   TableBody,
@@ -10,18 +14,36 @@ import {
 } from "@/components/ui/table";
 import { paymentShowType } from "@/data/repayment";
 import { cn } from "@/lib/utils";
+import { useTransition } from "react";
+import { pdf } from "../action";
 
 interface iAppProps {
   data: paymentShowType;
 }
 
 const PaymentForm = ({ data }: iAppProps) => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={cn("text-2xl")}>Payment Detail</CardTitle>
-      </CardHeader>
+  const [isPending, startTransition] = useTransition();
 
+  async function donwloadPdf() {
+    startTransition(async () => {
+      try {
+        const file = await pdf(data.id);
+
+        const url = URL.createObjectURL(file);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Memo_Pelunasan_${data.customer.name}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Download error:", error);
+        alert("Error downloading file.");
+      }
+    });
+  }
+
+  return (
+    <>
       <CardContent className={cn("space-y-8")}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Table>
@@ -106,8 +128,8 @@ const PaymentForm = ({ data }: iAppProps) => {
               <TableRow key={item.id}>
                 <TableCell>{item.unit.auction.auction_date}</TableCell>
                 <TableCell>{item.unit.auction.branch_name}</TableCell>
-                <TableCell>{item.unit.auction.auction_name}</TableCell>
                 <TableCell>{item.unit.lot_number}</TableCell>
+                <TableCell>{item.unit.auction.auction_name}</TableCell>
                 <TableCell>{item.unit.police_number}</TableCell>
                 <TableCell>{item.unit.chassis_number}</TableCell>
                 <TableCell>{item.unit.engine_number}</TableCell>
@@ -129,7 +151,17 @@ const PaymentForm = ({ data }: iAppProps) => {
           </TableFooter>
         </Table>
       </CardContent>
-    </Card>
+
+      <CardFooter>
+        <Button
+          className="w-full cursor-pointer"
+          disabled={isPending}
+          onClick={donwloadPdf}
+        >
+          <LoadingSwap isLoading={isPending}>Download Memo Pelunasan</LoadingSwap>
+        </Button>
+      </CardFooter>
+    </>
   );
 };
 

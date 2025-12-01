@@ -15,8 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useCallback, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { roleSchema, roleSchemaType } from "@/lib/formSchema";
 import { roleStore, roleUpdate } from "../action";
 import {
@@ -175,83 +173,73 @@ const RoleForm = ({ data, menuPermission }: iAppProps) => {
   MenuRow.displayName = "MenuRow";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {data?.id ? "Edit" : "Create"} Role
-        </CardTitle>
-      </CardHeader>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Name" required {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name" required {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input placeholder="Description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Description" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead colSpan={2} className="text-center">
+                Menu
+              </TableHead>
+              <TableHead colSpan={5} className="text-center">
+                Permissions
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {menuPermission.map((menu) => (
+              <MenuRow key={menu.id} form={form} menu={menu} />
+            ))}
+            <TableRow>
+              <TableCell>
+                <p className="text-red-500">
+                  {form.formState.errors.menus?.message}
+                </p>
+              </TableCell>
+              <TableCell colSpan={5} className="text-center">
+                <p className="text-red-500">
+                  {form.formState.errors.permissions?.message}
+                </p>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
 
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead colSpan={2} className="text-center">
-                    Menu
-                  </TableHead>
-                  <TableHead colSpan={5} className="text-center">
-                    Permissions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {menuPermission.map((menu) => (
-                  <MenuRow key={menu.id} form={form} menu={menu} />
-                ))}
-                <TableRow>
-                  <TableCell>
-                    <p className="text-red-500">
-                      {form.formState.errors.menus?.message}
-                    </p>
-                  </TableCell>
-                  <TableCell colSpan={5} className="text-center">
-                    <p className="text-red-500">
-                      {form.formState.errors.permissions?.message}
-                    </p>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-
-            <Button type="submit" className="w-full" disabled={isPending}>
-              <LoadingSwap isLoading={isPending}>
-                {data?.id ? "Update" : "Create"}
-              </LoadingSwap>
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
+          <LoadingSwap isLoading={isPending}>
+            {data?.id ? "Update" : "Create"}
+          </LoadingSwap>
+        </Button>
+      </form>
+    </Form>
   );
 };
 

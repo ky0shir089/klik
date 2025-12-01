@@ -15,8 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { typeTrxSchema, typeTrxSchemaType } from "@/lib/formSchema";
 import { typeTrxStore, typeTrxUpdate } from "../action";
 import { typeTrxShowType } from "@/data/type-trx";
@@ -65,101 +63,95 @@ const TypeTrxForm = ({ data }: iAppProps) => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {data?.id ? "Edit" : "Create"} Type Trx
-        </CardTitle>
-      </CardHeader>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Code</FormLabel>
+              <FormControl>
+                <Input placeholder="Code" required {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Code" required {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Name" required {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name" required {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="in_out"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type</FormLabel>
+              <Select
+                required
+                value={field.value}
+                onValueChange={field.onChange}
+              >
+                <FormControl className="w-full">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="IN">IN</SelectItem>
+                  <SelectItem value="OUT">OUT</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="in_out"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select
-                    required
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="IN">IN</SelectItem>
-                      <SelectItem value="OUT">OUT</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="is_active"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    className="h-6 w-11 [&>span]:h-5 [&>span]:w-5 [&>span[data-state=checked]]:translate-x-5"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
 
-            <FormField
-              control={form.control}
-              name="is_active"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        className="h-6 w-11 [&>span]:h-5 [&>span]:w-5 [&>span[data-state=checked]]:translate-x-5"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                  <span>{field.value ? "ACTIVE" : "INACTIVE"}</span>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-                      <span>{field.value ? "ACTIVE" : "INACTIVE"}</span>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={isPending}>
-              <LoadingSwap isLoading={isPending}>
-                {data?.id ? "Update" : "Create"}
-              </LoadingSwap>
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={isPending}
+        >
+          <LoadingSwap isLoading={isPending}>
+            {data?.id ? "Update" : "Create"}
+          </LoadingSwap>
+        </Button>
+      </form>
+    </Form>
   );
 };
 

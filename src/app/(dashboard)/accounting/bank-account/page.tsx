@@ -9,18 +9,15 @@ import SearchBox from "@/components/SearchBox";
 import { bankAccountIndex } from "@/data/bank-account";
 import { redirect } from "next/navigation";
 
-const BankAccountPage = async (props: {
-  searchParams?: Promise<{
-    q?: string;
-    page?: string;
-    size?: string;
-  }>;
+const RenderTable = async ({
+  query,
+  currentPage,
+  size,
+}: {
+  query: string;
+  currentPage: number;
+  size: number;
 }) => {
-  const searchParams = await props.searchParams;
-  const query = searchParams?.q || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const size = Number(searchParams?.size) || 10;
-
   const result = await bankAccountIndex(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
@@ -35,6 +32,21 @@ const BankAccountPage = async (props: {
     totalCount: data.total,
   };
 
+  return <DataTable columns={columns} data={data.data} meta={meta} />;
+};
+
+const BankAccountPage = async (props: {
+  searchParams?: Promise<{
+    q?: string;
+    page?: string;
+    size?: string;
+  }>;
+}) => {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.q || "";
+  const currentPage = Number(searchParams?.page) || 1;
+  const size = Number(searchParams?.size) || 10;
+
   return (
     <>
       <div className="flex items-center justify-between mb-4">
@@ -45,12 +57,13 @@ const BankAccountPage = async (props: {
         </Link>
       </div>
 
+      <SearchBox />
+
       <Suspense
-        key={query + currentPage + size}
+        key={`${query}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
+        <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
     </>
   );

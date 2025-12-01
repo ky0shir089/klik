@@ -15,8 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { bankSchema, bankSchemaType } from "@/lib/formSchema";
 import { bankStore, bankUpdate } from "../action";
 import { bankShowType } from "@/data/bank";
@@ -55,57 +53,51 @@ const BankForm = ({ data }: iAppProps) => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {data?.id ? "Edit" : "Create"} bank
-        </CardTitle>
-      </CardHeader>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bank Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Bank Name" required {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bank Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Bank Name" required {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="logo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Logo</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  placeholder="Browse File"
+                  onChange={(e) => field.onChange(e.target.files?.[0])}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="logo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Logo</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      placeholder="Browse File"
-                      onChange={(e) => field.onChange(e.target.files?.[0])}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={isPending}>
-              <LoadingSwap isLoading={isPending}>
-                {data?.id ? "Update" : "Create"}
-              </LoadingSwap>
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={isPending}
+        >
+          <LoadingSwap isLoading={isPending}>
+            {data?.id ? "Update" : "Create"}
+          </LoadingSwap>
+        </Button>
+      </form>
+    </Form>
   );
 };
 
