@@ -147,7 +147,7 @@ const SupplierForm = ({ data, banks }: iAppProps) => {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
               <LoadingSwap isLoading={isPending}>
                 {data?.id ? "Update" : "Create"}
               </LoadingSwap>

@@ -68,7 +68,7 @@ const EditRvPage = async ({ params, searchParams }: PageProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle className={cn("text-2xl")}>Klasifikasi RV</CardTitle>

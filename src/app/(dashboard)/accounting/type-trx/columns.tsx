@@ -16,7 +16,7 @@ export const columns: ColumnDef<typeTrxShowType>[] = [
     accessorKey: "code",
   },
   {
-    header: "name",
+    header: "Name",
     accessorKey: "name",
   },
   {

@@ -151,3 +151,8 @@ export const supplierSchema = z.object({
   account_name: z.string().min(1),
 });
 export type supplierSchemaType = z.infer<typeof supplierSchema>;
+
+export const memoPaymentSchema = z.object({
+  id: z.array(z.number().positive()).min(1),
+});
+export type memoPaymentSchemaType = z.infer<typeof memoPaymentSchema>;

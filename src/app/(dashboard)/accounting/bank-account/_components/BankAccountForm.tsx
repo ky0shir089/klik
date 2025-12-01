@@ -15,8 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { bankAccountSchema, bankAccountSchemaType } from "@/lib/formSchema";
 import { bankAccountStore, bankAccountUpdate } from "../action";
 import { bankAccountShowType } from "@/data/bank-account";
@@ -70,133 +68,127 @@ const BankAccountForm = ({ data, banks, coas }: iAppProps) => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {data?.id ? "Edit" : "Create"} Bank Account
-        </CardTitle>
-      </CardHeader>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="account_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nomor Rekening</FormLabel>
+              <FormControl>
+                <Input placeholder="Nomor Rekening" required {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="account_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nomor Rekening</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nomor Rekening" required {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="account_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nama Rekening</FormLabel>
+              <FormControl>
+                <Input placeholder="Nama Rekening" required {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="account_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Rekening</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nama Rekening" required {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="is_active"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    className="h-6 w-11 [&>span]:h-5 [&>span]:w-5 [&>span[data-state=checked]]:translate-x-5"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
 
-            <FormField
-              control={form.control}
-              name="is_active"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        className="h-6 w-11 [&>span]:h-5 [&>span]:w-5 [&>span[data-state=checked]]:translate-x-5"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                  <span>{field.value ? "ACTIVE" : "INACTIVE"}</span>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-                      <span>{field.value ? "ACTIVE" : "INACTIVE"}</span>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="bank_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bank</FormLabel>
+              <Select
+                required
+                value={field.value ? String(field.value) : ""}
+                onValueChange={(val) => field.onChange(Number(val))}
+              >
+                <FormControl className="w-full">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Bank" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {banks.map((item) => (
+                    <SelectItem key={item.id} value={String(item.id)}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="bank_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bank</FormLabel>
-                  <Select
-                    required
-                    value={field.value ? String(field.value) : ""}
-                    onValueChange={(val) => field.onChange(Number(val))}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Bank" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {banks.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="coa_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>CoA</FormLabel>
+              <Select
+                required
+                value={field.value ? String(field.value) : ""}
+                onValueChange={(val) => field.onChange(Number(val))}
+              >
+                <FormControl className="w-full">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select CoA" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {coas.map((item) => (
+                    <SelectItem key={item.id} value={String(item.id)}>
+                      {item.description}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="coa_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CoA</FormLabel>
-                  <Select
-                    required
-                    value={field.value ? String(field.value) : ""}
-                    onValueChange={(val) => field.onChange(Number(val))}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select CoA" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {coas.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.description}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={isPending}>
-              <LoadingSwap isLoading={isPending}>
-                {data?.id ? "Update" : "Create"}
-              </LoadingSwap>
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={isPending}
+        >
+          <LoadingSwap isLoading={isPending}>
+            {data?.id ? "Update" : "Create"}
+          </LoadingSwap>
+        </Button>
+      </form>
+    </Form>
   );
 };
 

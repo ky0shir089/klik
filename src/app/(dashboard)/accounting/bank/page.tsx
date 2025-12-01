@@ -9,18 +9,15 @@ import SearchBox from "@/components/SearchBox";
 import { bankIndex } from "@/data/bank";
 import { redirect } from "next/navigation";
 
-const BankPage = async (props: {
-  searchParams?: Promise<{
-    q?: string;
-    page?: string;
-    size?: string;
-  }>;
+const RenderTable = async ({
+  query,
+  currentPage,
+  size,
+}: {
+  query: string;
+  currentPage: number;
+  size: number;
 }) => {
-  const searchParams = await props.searchParams;
-  const query = searchParams?.q || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const size = Number(searchParams?.size) || 10;
-
   const result = await bankIndex(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
@@ -35,25 +32,38 @@ const BankPage = async (props: {
     totalCount: data.total,
   };
 
+  return <DataTable columns={columns} data={data.data} meta={meta} />;
+};
+
+const BankPage = async (props: {
+  searchParams?: Promise<{
+    q?: string;
+    page?: string;
+    size?: string;
+  }>;
+}) => {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.q || "";
+  const currentPage = Number(searchParams?.page) || 1;
+  const size = Number(searchParams?.size) || 10;
+
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="mb-4 text-3xl font-bold">Bank</h2>
 
-        <Link
-          href="/accounting/bank/new"
-          className={buttonVariants()}
-        >
+        <Link href="/accounting/bank/new" className={buttonVariants()}>
           Add New
         </Link>
       </div>
 
+      <SearchBox />
+
       <Suspense
-        key={query + currentPage + size}
+        key={`${query}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
+        <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
     </>
   );

@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import Unauthorized from "@/components/unauthorized";
 import { coaIndex, coaShow, coaShowType } from "@/data/coa";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   SidebarContent,
   SidebarGroup,
@@ -13,15 +13,9 @@ import TreeView from "./_components/TreeView";
 import CoaForm from "./_components/CoaForm";
 import { selectCoa } from "@/data/select";
 import { CoaFormSkeleton } from "./_components/CoaFormSkeleton";
+import { TreeViewSkeleton } from "./_components/TreeViewSkeleton";
 
-const ChartOfAccountPage = async (props: {
-  searchParams?: Promise<{
-    id?: number;
-  }>;
-}) => {
-  const searchParams = await props.searchParams;
-  const id = searchParams?.id || 0;
-
+const RenderTree = async () => {
   const result = await coaIndex();
   if (result.isUnauthorized) {
     redirect("/login");
@@ -31,12 +25,52 @@ const ChartOfAccountPage = async (props: {
   }
   const { data } = result;
 
-  async function fetchCoa() {
-    const { data: coas } = await selectCoa("PARENT");
-    const show = await coaShow(id);
+  return (
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {data.map((item: coaShowType) => (
+              <React.Fragment key={item.id}>
+                <SidebarGroupLabel>{item.type}</SidebarGroupLabel>
+                <TreeView item={item} />
+              </React.Fragment>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
+  );
+};
 
-    return <CoaForm key={id} data={show.data} coas={coas} />;
+const RenderForm = async ({ id }: { id: number | null }) => {
+  const [result, { data: coas }] = await Promise.all([
+    id ? coaShow(id) : Promise.resolve({ data: null }),
+    selectCoa("PARENT"),
+  ]);
+
+  if (result.isUnauthorized) {
+    redirect("/login");
   }
+  if (result.isForbidden) {
+    return <Unauthorized />;
+  }
+  if (result.isNotFound) {
+    return notFound();
+  }
+
+  const { data } = result;
+
+  return <CoaForm data={data} coas={coas} />;
+};
+
+const ChartOfAccountPage = async (props: {
+  searchParams?: Promise<{
+    id?: number;
+  }>;
+}) => {
+  const searchParams = await props.searchParams;
+  const id = Number(searchParams?.id) || null;
 
   return (
     <>
@@ -45,22 +79,13 @@ const ChartOfAccountPage = async (props: {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {data.map((item: coaShowType) => (
-                  <React.Fragment key={item.id}>
-                    <SidebarGroupLabel>{item.type}</SidebarGroupLabel>
-                    <TreeView item={item} />
-                  </React.Fragment>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
+        <Suspense fallback={<TreeViewSkeleton />}>
+          <RenderTree />
+        </Suspense>
 
-        <Suspense fallback={<CoaFormSkeleton />}>{fetchCoa()}</Suspense>
+        <Suspense key={id} fallback={<CoaFormSkeleton />}>
+          <RenderForm id={id} />
+        </Suspense>
       </div>
     </>
   );

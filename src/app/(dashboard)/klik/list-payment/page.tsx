@@ -7,6 +7,37 @@ import SearchBox from "@/components/SearchBox";
 import { paymentIndex } from "@/data/repayment";
 import { redirect } from "next/navigation";
 
+const RenderTable = async ({
+  query,
+  currentPage,
+  size,
+}: {
+  query: string;
+  currentPage: number;
+  size: number;
+}) => {
+  const result = await paymentIndex(currentPage, size, query);
+  if (result.isUnauthorized) {
+    redirect("/login");
+  }
+  if (result.isForbidden) {
+    return <Unauthorized />;
+  }
+  const { data } = result;
+  const meta = {
+    currentPage: data.current_page,
+    // from: data.from,
+    pageCount: data.last_page,
+    // nextPageUrl: data.next_page_url,
+    // perPage: data.per_page,
+    // prevPageUrl: data.prev_page_url,
+    // to: data.to,
+    totalCount: data.total,
+  };
+
+  return <DataTable columns={columns} data={data.data} meta={meta} />;
+};
+
 const PaymentPage = async (props: {
   searchParams?: Promise<{
     q?: string;
@@ -19,34 +50,19 @@ const PaymentPage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const result = await paymentIndex(currentPage, size, query);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
-  if (result.isForbidden) {
-    return <Unauthorized />;
-  }
-  const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
-
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">Payment</h2>
-      </div>
+    <div className="flex flex-col gap-6">
+      <h2 className="mb-4 text-3xl font-bold">List SPP</h2>
+
+      <SearchBox />
 
       <Suspense
-        key={query + currentPage + size}
+        key={`${query}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
+        <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
-    </>
+    </div>
   );
 };
 

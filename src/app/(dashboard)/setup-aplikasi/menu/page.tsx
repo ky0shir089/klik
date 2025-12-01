@@ -9,6 +9,32 @@ import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
 
+const RenderTable = async ({
+  query,
+  currentPage,
+  size,
+}: {
+  query: string;
+  currentPage: number;
+  size: number;
+}) => {
+  const result = await menuIndex(currentPage, size, query);
+  if (result.isUnauthorized) {
+    redirect("/login");
+  }
+  if (result.isForbidden) {
+    return <Unauthorized />;
+  }
+  const { data } = result;
+  const meta = {
+    currentPage: data.current_page,
+    pageCount: data.last_page,
+    totalCount: data.total,
+  };
+
+  return <DataTable columns={columns} data={data.data} meta={meta} />;
+};
+
 const MenuPage = async (props: {
   searchParams?: Promise<{
     q?: string;
@@ -21,20 +47,6 @@ const MenuPage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const result = await menuIndex(currentPage, size, query);
-  if (result.isUnauthorized) {
-      redirect("/login");
-    }
-  if (result.isForbidden) {
-    return <Unauthorized />;
-  }
-  const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
-
   return (
     <>
       <div className="flex items-center justify-between mb-4">
@@ -45,12 +57,13 @@ const MenuPage = async (props: {
         </Link>
       </div>
 
+      <SearchBox />
+
       <Suspense
-        key={query + currentPage + size}
+        key={`${query}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
+        <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
     </>
   );

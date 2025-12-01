@@ -7,18 +7,15 @@ import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
 import { selectUnpaidBidder } from "@/data/select";
 
-const auctionPage = async (props: {
-  searchParams?: Promise<{
-    q?: string;
-    page?: string;
-    size?: string;
-  }>;
+const RenderTable = async ({
+  query,
+  currentPage,
+  size,
+}: {
+  query: string;
+  currentPage: number;
+  size: number;
 }) => {
-  const searchParams = await props.searchParams;
-  const query = searchParams?.q || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const size = Number(searchParams?.size) || 10;
-
   const result = await selectUnpaidBidder(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
@@ -33,20 +30,34 @@ const auctionPage = async (props: {
     totalCount: data.total,
   };
 
+  return <DataTable columns={columns} data={data.data} meta={meta} />;
+};
+
+const auctionPage = async (props: {
+  searchParams?: Promise<{
+    q?: string;
+    page?: string;
+    size?: string;
+  }>;
+}) => {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.q || "";
+  const currentPage = Number(searchParams?.page) || 1;
+  const size = Number(searchParams?.size) || 10;
+
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">Bidder</h2>
-      </div>
+    <div className="flex flex-col gap-6">
+      <h2 className="mb-4 text-3xl font-bold">SPP Bidder</h2>
+
+      <SearchBox />
 
       <Suspense
-        key={query + currentPage + size}
+        key={`${query}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
+        <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
-    </>
+    </div>
   );
 };
 

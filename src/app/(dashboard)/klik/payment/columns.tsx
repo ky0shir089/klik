@@ -46,7 +46,7 @@ export const columns: ColumnDef<customerShowType>[] = [
         href={`/klik/payment/${row.original.klik_bidder_id}`}
       >
         <ClipboardEdit />
-        Pelunasan
+        SPP
       </Link>
     ),
   },

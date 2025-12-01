@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -22,7 +21,6 @@ import {
 } from "@/components/ui/table";
 import { customerShowType } from "@/data/customer";
 import { paymentSchema, paymentSchemaType } from "@/lib/formSchema";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { memo, useCallback, useMemo, useTransition } from "react";
@@ -209,150 +207,147 @@ const PaymentForm = ({ data }: iAppProps) => {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={cn("text-2xl")}>Pelunasan</CardTitle>
-      </CardHeader>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableHead>Tanggal</TableHead>
+                <TableCell>{new Date().toLocaleDateString()}</TableCell>
+              </TableRow>
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableHead>Tanggal</TableHead>
-                    <TableCell>{new Date().toLocaleDateString()}</TableCell>
-                  </TableRow>
+              <TableRow>
+                <TableHead>KTP Bidder</TableHead>
+                <TableCell>{data.ktp}</TableCell>
+              </TableRow>
 
-                  <TableRow>
-                    <TableHead>KTP Bidder</TableHead>
-                    <TableCell>{data.ktp}</TableCell>
-                  </TableRow>
+              <TableRow>
+                <TableHead>Nama Bidder</TableHead>
+                <TableCell>{data.name}</TableCell>
+              </TableRow>
 
-                  <TableRow>
-                    <TableHead>Nama Bidder</TableHead>
-                    <TableCell>{data.name}</TableCell>
-                  </TableRow>
+              <TableRow>
+                <TableHead>Status</TableHead>
+                <TableCell>NEW</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
 
-                  <TableRow>
-                    <TableHead>Status</TableHead>
-                    <TableCell>NEW</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
+          <RvTable control={form.control} rvs={data.rvs || []} />
+        </div>
 
-              <RvTable control={form.control} rvs={data.rvs || []} />
-            </div>
-
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead></TableHead>
-                  <TableHead>Tgl Lelang</TableHead>
-                  <TableHead>Balai Lelang</TableHead>
-                  <TableHead>No Lot</TableHead>
-                  <TableHead>Judul</TableHead>
-                  <TableHead>Nopol</TableHead>
-                  <TableHead>Noka</TableHead>
-                  <TableHead>Nosin</TableHead>
-                  <TableHead>No Kontrak</TableHead>
-                  <TableHead>No Paket</TableHead>
-                  <TableHead className="text-right">Harga</TableHead>
-                  <TableHead className="text-right">Admin Fee</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(data.units || []).map(
-                  (item: Pick<customerShowType, "units"[0]>) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name="units"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) =>
-                                    field.onChange(
-                                      updateArray(
-                                        field.value || [],
-                                        item.id,
-                                        !!checked
-                                      )
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                      <TableCell>{item?.auction.auction_date}</TableCell>
-                      <TableCell>{item?.auction.branch_name}</TableCell>
-                      <TableCell>{item.lot_number}</TableCell>
-                      <TableCell>{item?.auction.auction_name}</TableCell>
-                      <TableCell>{item.police_number}</TableCell>
-                      <TableCell>{item.chassis_number}</TableCell>
-                      <TableCell>{item.engine_number}</TableCell>
-                      <TableCell>{item.contract_number}</TableCell>
-                      <TableCell>{item.package_number}</TableCell>
-                      <TableCell className="text-right">
-                        {item.final_price.toLocaleString("id-ID")}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.admin_fee.toLocaleString("id-ID")}
-                      </TableCell>
-                    </TableRow>
-                  )
-                )}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TableCell colSpan={10}>Total</TableCell>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead></TableHead>
+              <TableHead>Tgl Lelang</TableHead>
+              <TableHead>Balai Lelang</TableHead>
+              <TableHead>No Lot</TableHead>
+              <TableHead>Judul</TableHead>
+              <TableHead>Nopol</TableHead>
+              <TableHead>Noka</TableHead>
+              <TableHead>Nosin</TableHead>
+              <TableHead>No Kontrak</TableHead>
+              <TableHead>No Paket</TableHead>
+              <TableHead className="text-right">Harga</TableHead>
+              <TableHead className="text-right">Admin Fee</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(data.units || []).map(
+              (item: Pick<customerShowType, "units"[0]>) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <FormField
+                      control={form.control}
+                      name="units"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(item.id)}
+                              onCheckedChange={(checked) =>
+                                field.onChange(
+                                  updateArray(
+                                    field.value || [],
+                                    item.id,
+                                    !!checked
+                                  )
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TableCell>
+                  <TableCell>{item?.auction.auction_date}</TableCell>
+                  <TableCell>{item?.auction.branch_name}</TableCell>
+                  <TableCell>{item.lot_number}</TableCell>
+                  <TableCell>{item?.auction.auction_name}</TableCell>
+                  <TableCell>{item.police_number}</TableCell>
+                  <TableCell>{item.chassis_number}</TableCell>
+                  <TableCell>{item.engine_number}</TableCell>
+                  <TableCell>{item.contract_number}</TableCell>
+                  <TableCell>{item.package_number}</TableCell>
                   <TableCell className="text-right">
-                    {sumUnitAmount.toLocaleString("id-ID")}
+                    {item.final_price.toLocaleString("id-ID")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {item.admin_fee.toLocaleString("id-ID")}
                   </TableCell>
                 </TableRow>
-              </TableFooter>
-            </Table>
+              )
+            )}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={10}>Total</TableCell>
+              <TableCell className="text-right">
+                {sumUnitAmount.toLocaleString("id-ID")}
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
 
-            <h3 className="font-medium">Upload No Kontrak dan No Paket</h3>
-            <div>
-              Contoh template upload download{" "}
-              <Link
-                href="/template/data_unit.xlsx"
-                className="text-blue-500 underline"
-              >
-                disini
-              </Link>
-            </div>
-
-            <div
-              {...getRootProps()}
-              className="p-8 border-2 border-dashed border-info"
+        <div>
+          <h3 className="font-medium">Upload No Kontrak dan No Paket</h3>
+          <div className="mb-6 text-xs">
+            Contoh template upload download{" "}
+            <Link
+              href="/template/data_unit.xlsx"
+              className="text-blue-500 underline"
             >
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <p className="text-center">Drop the files here ...</p>
-              ) : (
-                <p className="text-center">
-                  Drag &apos;n&apos; drop some files here, or click to select
-                  files
-                </p>
-              )}
-            </div>
+              disini
+            </Link>
+          </div>
 
-            <Button type="submit" className="w-full" disabled={isPending}>
-              <LoadingSwap isLoading={isPending}>Submit</LoadingSwap>
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+          <div
+            {...getRootProps()}
+            className="p-8 border-4 border-red-500 border-dashed cursor-pointer"
+          >
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p className="text-center">Drop the files here ...</p>
+            ) : (
+              <p className="text-center">
+                Drag &apos;n&apos; drop file atau klik disini untuk memilih file
+              </p>
+            )}
+          </div>
+        </div>
+
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={isPending}
+        >
+          <LoadingSwap isLoading={isPending}>Submit</LoadingSwap>
+        </Button>
+      </form>
+    </Form>
   );
 };
 
