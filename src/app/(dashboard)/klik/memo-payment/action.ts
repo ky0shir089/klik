@@ -16,7 +16,7 @@ export async function paymentStore(values: memoPaymentSchemaType) {
   }
 
   try {
-    const { data } = await axiosInstance.post(`/klik/v1/payment`, values);
+    const { data } = await axiosInstance.post(`/klik/v1/payment`, validation.data);
     revalidatePath(`/klik/memo-payment`);
     return data;
   } catch (error) {
@@ -35,7 +35,7 @@ export async function pdf(values: memoPaymentSchemaType) {
   }
 
   try {
-    const response = await axiosInstance.post(`/klik/v1/memo-payment`, values, {
+    const response = await axiosInstance.post(`/klik/v1/memo-payment`, validation.data, {
       responseType: "arraybuffer",
     });
 

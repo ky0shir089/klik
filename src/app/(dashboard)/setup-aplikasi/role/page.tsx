@@ -26,13 +26,9 @@ const RenderTable = async ({
     return <Unauthorized />;
   }
   const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
+  const { data: roles, ...meta } = data;
 
-  return <DataTable columns={columns} data={data.data} meta={meta} />;
+  return <DataTable columns={columns} data={roles} meta={meta} />;
 };
 
 const RolePage = async (props: {

@@ -19,17 +19,7 @@ import { Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { paymentStore } from "./action";
-
-export interface metaProps {
-  current_page: number;
-  from: number;
-  last_page: number;
-  next_page_url: string;
-  per_page: number;
-  prev_page_url: string;
-  to: number;
-  total: number;
-}
+import { metaProps } from "@/components/ui/data-table";
 
 interface iAppProps {
   data: sppShowType[];
@@ -52,7 +42,6 @@ const Column = ({ data, meta }: iAppProps) => {
       };
 
       const result = await paymentStore(values);
-      console.log(result);
 
       if (result.success) {
         toast.success(result.message);

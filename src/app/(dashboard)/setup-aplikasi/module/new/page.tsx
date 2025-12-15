@@ -4,10 +4,6 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 
-const RenderForm = () => {
-  return <ModuleForm />;
-};
-
 const NewModulePage = () => {
   return (
     <Card>
@@ -17,7 +13,7 @@ const NewModulePage = () => {
 
       <CardContent>
         <Suspense fallback={<FormSkeleton />}>
-          <RenderForm />
+          <ModuleForm />
         </Suspense>
       </CardContent>
     </Card>

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { metaProps } from "@/components/ui/data-table";
 import {
   Select,
   SelectContent,
@@ -14,10 +15,8 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { metaProps } from "./columns";
 
 const Pagination = ({ meta }: { meta: metaProps }) => {
-  console.log(meta)
   const pathname = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();

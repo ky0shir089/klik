@@ -25,7 +25,6 @@ const RenderTable = async ({
   }
   const { data } = result;
   const { data: spp, ...meta } = data;
-  console.log(spp);
 
   return <DataTable columns={columns} data={spp} meta={meta} />;
 };

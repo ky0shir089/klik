@@ -26,14 +26,21 @@ import { DataTablePagination } from "../data-table-pagination";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
+export interface metaProps {
+  current_page: number;
+  from: number;
+  last_page: number;
+  next_page_url: string;
+  per_page: number;
+  prev_page_url: string;
+  to: number;
+  total: number;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  meta?: {
-    currentPage: number;
-    pageCount: number;
-    totalCount: number;
-  };
+  meta?: metaProps;
 }
 
 export function DataTable<TData, TValue>({
@@ -82,7 +89,7 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     manualPagination: true,
-    pageCount: meta?.pageCount,
+    pageCount: meta?.last_page,
     rowCount: data.length,
     state: {
       pagination: { pageIndex, pageSize },

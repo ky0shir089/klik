@@ -1,7 +1,6 @@
 import Unauthorized from "@/components/unauthorized";
 import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import PaymentFormSkeleton from "@/components/PaymentFormSkeleton";
 import { rvClassificationShow } from "@/data/rv-classification";
@@ -21,7 +20,6 @@ const RenderForm = async ({ customerId }: { customerId: number }) => {
     return notFound();
   }
   const { data } = result;
-  console.log(data);
 
   return <SppForm data={data} />;
 };
@@ -32,7 +30,7 @@ const PaymentPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>SPP</CardTitle>
+        <CardTitle className="text-2xl">SPP</CardTitle>
       </CardHeader>
 
       <CardContent>

@@ -1,7 +1,6 @@
 import { selectModule } from "@/data/select";
 import MenuForm from "../_components/MenuForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
@@ -18,7 +17,7 @@ const NewMenuPage = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>Create Menu</CardTitle>
+        <CardTitle className="text-2xl">Create Menu</CardTitle>
       </CardHeader>
 
       <CardContent>

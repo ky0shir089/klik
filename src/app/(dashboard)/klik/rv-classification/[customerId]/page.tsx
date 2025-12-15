@@ -21,12 +21,11 @@ const RenderForm = async ({ customerId }: { customerId: number }) => {
     return notFound();
   }
   const { data } = result;
-  console.log(data);
 
   return <RvClassificationForm data={data} />;
 };
 
-const PaymentPage = async ({ params }: { params: Params }) => {
+const RvClassificationPage = async ({ params }: { params: Params }) => {
   const { customerId } = await params;
 
   return (
@@ -44,4 +43,4 @@ const PaymentPage = async ({ params }: { params: Params }) => {
   );
 };
 
-export default PaymentPage;
+export default RvClassificationPage;

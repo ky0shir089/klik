@@ -16,7 +16,7 @@ export async function sppStore(values: sppSchemaType) {
   }
 
   try {
-    const { data } = await axiosInstance.post(`/klik/v1/spp`, values);
+    const { data } = await axiosInstance.post(`/klik/v1/spp`, validation.data);
     revalidatePath(`/klik/payment/${values.customer_id}`);
     return data;
   } catch (error) {

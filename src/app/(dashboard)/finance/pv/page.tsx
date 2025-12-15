@@ -29,7 +29,6 @@ const RenderForm = async ({
         : Promise.resolve([]),
     ]
   );
-  console.log(payment);
   if (result.isUnauthorized) {
     redirect("/login");
   }

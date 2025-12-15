@@ -16,20 +16,16 @@ interface iAppProps {
 }
 
 const MemoPaymentForm = ({ data }: iAppProps) => {
-  const sumBasePrice = data.details.reduce(
-    (acc: number, detail: { unit: { price: number } }) =>
-      acc + detail.unit.price,
-    0
-  );
-  const sumFee = data.details.reduce(
-    (acc: number, detail: { unit: { admin_fee: number } }) =>
-      acc + detail.unit.admin_fee,
-    0
-  );
-  const sumFinalPrice = data.details.reduce(
-    (acc: number, detail: { unit: { final_price: number } }) =>
-      acc + detail.unit.final_price,
-    0
+  const { sumBasePrice, sumFee, sumFinalPrice } = data.details.reduce(
+    (
+      acc: { sumBasePrice: number; sumFee: number; sumFinalPrice: number },
+      detail: Pick<sppShowType, "details"[0]>
+    ) => ({
+      sumBasePrice: acc.sumBasePrice + detail.unit.price,
+      sumFee: acc.sumFee + detail.unit.admin_fee,
+      sumFinalPrice: acc.sumFinalPrice + detail.unit.final_price,
+    }),
+    { sumBasePrice: 0, sumFee: 0, sumFinalPrice: 0 }
   );
 
   return (

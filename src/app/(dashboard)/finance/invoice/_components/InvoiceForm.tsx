@@ -60,7 +60,6 @@ const InvoiceForm = ({ suppliers, typeTrxes }: iAppProps) => {
   });
 
   function onSubmit(values: invoiceSchemaType) {
-    console.log(values);
     startTransition(async () => {
       const result = await invoiceStore(values);
 

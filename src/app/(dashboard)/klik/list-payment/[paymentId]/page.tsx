@@ -21,7 +21,6 @@ const RenderForm = async ({ paymentId }: { paymentId: number }) => {
     return notFound();
   }
   const { data } = result;
-  console.log(data);
 
   return <PaymentForm data={data} />;
 };

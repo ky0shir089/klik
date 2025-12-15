@@ -57,7 +57,7 @@ const Summary = ({ results }: { results: string[] }) => {
 const UploadSppForm = () => {
   const [isPending, startTransition] = useTransition();
   const [formKey, setFormKey] = useState(0);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<uploadFileSchemaType>({

@@ -23,7 +23,6 @@ const RenderTable = async ({
     return <Unauthorized />;
   }
   const { data } = result;
-  console.log(data)
   const { data: spp, ...meta } = data;
 
   return <Column data={spp} meta={meta} />;

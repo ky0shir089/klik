@@ -21,7 +21,6 @@ const RenderForm = async ({ sppId }: { sppId: number }) => {
     return notFound();
   }
   const { data } = result;
-  console.log(data);
 
   return <MemoPaymentForm data={data} />;
 };

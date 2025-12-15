@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { uploadFileSchema, uploadFileSchemaType } from "@/lib/formSchema";
 import { useState, useTransition } from "react";
-import { uploadRv2 } from "../action";
 import { toast } from "sonner";
 import {
   Card,
@@ -27,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { CheckCircle, CircleX } from "lucide-react";
 import Link from "next/link";
+import { uploadRv } from "../action";
 
 const Summary = ({ results }: { results: string[] }) => {
   return (
@@ -71,7 +71,7 @@ const UploadRvForm = () => {
     startTransition(async () => {
       setResults([]);
 
-      const result = await uploadRv2(values);
+      const result = await uploadRv(values);
 
       if (result.success) {
         toast.success(result.message);
