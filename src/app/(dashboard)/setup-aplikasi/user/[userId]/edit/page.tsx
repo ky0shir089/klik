@@ -38,7 +38,7 @@ const EditUserPage = async ({ params }: { params: Params }) => {
     <Card>
       <CardHeader>
         <CardTitle className={cn("text-2xl")}>
-          {userId ? "Edit" : "Create"} User
+          Edit User
         </CardTitle>
       </CardHeader>
 

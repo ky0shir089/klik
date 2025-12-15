@@ -9,6 +9,28 @@ import SearchBox from "@/components/SearchBox";
 import { supplierIndex } from "@/data/supplier";
 import { redirect } from "next/navigation";
 
+const RenderTable = async ({
+  query,
+  currentPage,
+  size,
+}: {
+  query: string;
+  currentPage: number;
+  size: number;
+}) => {
+  const result = await supplierIndex(currentPage, size, query);
+  if (result.isUnauthorized) {
+    redirect("/login");
+  }
+  if (result.isForbidden) {
+    return <Unauthorized />;
+  }
+  const { data } = result;
+  const { data: suppliers, ...meta } = data;
+
+  return <DataTable columns={columns} data={suppliers} meta={meta} />;
+};
+
 const SupplierPage = async (props: {
   searchParams?: Promise<{
     q?: string;
@@ -21,21 +43,6 @@ const SupplierPage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const result = await supplierIndex(currentPage, size, query);
-
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
-  if (result.isForbidden) {
-    return <Unauthorized />;
-  }
-  const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
-
   return (
     <>
       <div className="flex items-center justify-between mb-4">
@@ -46,12 +53,13 @@ const SupplierPage = async (props: {
         </Link>
       </div>
 
+      <SearchBox />
+
       <Suspense
-        key={query + currentPage + size}
+        key={`${query}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
+        <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
     </>
   );

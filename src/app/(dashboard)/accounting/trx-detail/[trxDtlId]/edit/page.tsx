@@ -4,7 +4,6 @@ import Unauthorized from "@/components/unauthorized";
 import { notFound, redirect } from "next/navigation";
 import { selectCoa, selectTypeTrx } from "@/data/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 
@@ -38,9 +37,7 @@ const EditTrxDtlPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {trxDtlId ? "Edit" : "Create"} Trx Detail
-        </CardTitle>
+        <CardTitle className="text-2xl">Edit Trx Detail</CardTitle>
       </CardHeader>
 
       <CardContent>

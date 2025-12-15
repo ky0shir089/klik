@@ -9,7 +9,7 @@ export async function auctionIndex(
   search?: string
 ) {
   try {
-    const { data } = await axiosInstance.get(`/klik/v1/customer`, {
+    const { data } = await axiosInstance.get(`/klik/v1/auction`, {
       params: {
         page,
         size,

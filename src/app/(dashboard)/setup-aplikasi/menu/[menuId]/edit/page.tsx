@@ -37,9 +37,7 @@ const EditMenuPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {menuId ? "Edit" : "Create"} Menu
-        </CardTitle>
+        <CardTitle className={cn("text-2xl")}>Edit Menu</CardTitle>
       </CardHeader>
 
       <CardContent>

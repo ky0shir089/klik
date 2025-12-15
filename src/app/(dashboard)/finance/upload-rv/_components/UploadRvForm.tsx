@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { uploadFileSchema, uploadFileSchemaType } from "@/lib/formSchema";
 import { useState, useTransition } from "react";
-import { uploadRv } from "../action";
 import { toast } from "sonner";
 import {
   Card,
@@ -27,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { CheckCircle, CircleX } from "lucide-react";
 import Link from "next/link";
+import { uploadRv } from "../action";
 
 const Summary = ({ results }: { results: string[] }) => {
   return (
@@ -79,6 +79,7 @@ const UploadRvForm = () => {
         toast.error(result.message);
         setResults(result.data);
       }
+
       form.reset();
       setFormKey((prev) => prev + 1);
       setIsSubmitting(true);
@@ -92,7 +93,10 @@ const UploadRvForm = () => {
           <CardTitle className={cn("text-2xl")}>Upload RV</CardTitle>
           <CardDescription>
             Contoh template upload download{" "}
-            <Link href="/template/upload_rv.xlsx" className="text-blue-500 underline">
+            <Link
+              href="/template/upload_rv.xlsx"
+              className="text-blue-500 underline"
+            >
               disini
             </Link>
           </CardDescription>
@@ -125,7 +129,11 @@ const UploadRvForm = () => {
                 )}
               />
 
-              <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
+              <Button
+                type="submit"
+                className="w-full cursor-pointer"
+                disabled={isPending}
+              >
                 <LoadingSwap isLoading={isPending}>Upload</LoadingSwap>
               </Button>
             </form>

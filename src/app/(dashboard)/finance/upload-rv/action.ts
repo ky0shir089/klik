@@ -21,7 +21,7 @@ export async function uploadRv(values: uploadFileSchemaType) {
 
   try {
     const { data } = await axiosInstance.post(
-      `/finance/v1/upload-rv`,
+      `/finance/v2/upload-rv`,
       formData,
       {
         headers: {

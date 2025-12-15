@@ -13,14 +13,6 @@ export const columns: ColumnDef<paymentShowType>[] = [
     cell: ({ row }) => new Date(row.original.payment_date).toLocaleDateString(),
   },
   {
-    header: "Balai Lelang",
-    accessorFn: (row) => `${row.branch_id} - ${row.branch_name}`,
-  },
-  {
-    header: "Bidder",
-    accessorFn: (row) => row.customer.name,
-  },
-  {
     header: "Total Unit",
     accessorKey: "total_unit",
   },

@@ -189,8 +189,6 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
           <TableHeader>
             <TableRow>
               <TableHead></TableHead>
-              <TableHead>Balai Lelang</TableHead>
-              <TableHead>Customer</TableHead>
               <TableHead>Supplier</TableHead>
               <TableHead>Bank</TableHead>
               <TableHead>Nomor Rekening</TableHead>
@@ -225,8 +223,6 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                     )}
                   />
                 </TableCell>
-                <TableCell>{item.processable?.branch_name}</TableCell>
-                <TableCell>{item.processable?.customer.name}</TableCell>
                 <TableCell>{item.supplier_account.supplier.name}</TableCell>
                 <TableCell>{item.supplier_account.bank.name}</TableCell>
                 <TableCell>{item.supplier_account.account_number}</TableCell>
@@ -241,6 +237,8 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                           String(item.processable_id),
                           String(item.trx_dtl_id)
                         );
+                      } else {
+                        createURL("", "");
                       }
                     }}
                   >
@@ -274,7 +272,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={6}>Total</TableCell>
+              <TableCell colSpan={4}>Total</TableCell>
               <TableCell className="text-right">
                 {sumTotalAmount.toLocaleString("id-ID")}
               </TableCell>
@@ -282,7 +280,11 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
           </TableFooter>
         </Table>
 
-        <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={isPending}
+        >
           <LoadingSwap isLoading={isPending}>Submit</LoadingSwap>
         </Button>
       </form>

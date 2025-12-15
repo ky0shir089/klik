@@ -21,7 +21,7 @@ const RenderForm = async ({ moduleId }: { moduleId: number }) => {
   if (result.isNotFound) {
     return notFound();
   }
-  
+
   const { data } = result;
 
   return <ModuleForm data={data} />;
@@ -33,9 +33,7 @@ const EditModulePage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {moduleId ? "Edit" : "Create"} Module
-        </CardTitle>
+        <CardTitle className={cn("text-2xl")}>Edit Module</CardTitle>
       </CardHeader>
 
       <CardContent>

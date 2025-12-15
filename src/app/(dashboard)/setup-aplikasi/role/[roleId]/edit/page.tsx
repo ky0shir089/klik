@@ -37,9 +37,7 @@ const EditRolePage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {roleId ? "Edit" : "Create"} Role
-        </CardTitle>
+        <CardTitle className={cn("text-2xl")}>Edit Role</CardTitle>
       </CardHeader>
 
       <CardContent>

@@ -5,7 +5,7 @@ import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
-import { selectUnpaidBidder } from "@/data/select";
+import { customerIndex } from "@/data/customer";
 
 const RenderTable = async ({
   query,
@@ -16,7 +16,7 @@ const RenderTable = async ({
   currentPage: number;
   size: number;
 }) => {
-  const result = await selectUnpaidBidder(currentPage, size, query);
+  const result = await customerIndex(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -24,13 +24,9 @@ const RenderTable = async ({
     return <Unauthorized />;
   }
   const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
+  const { data: rvClassifications, ...meta } = data;
 
-  return <DataTable columns={columns} data={data.data} meta={meta} />;
+  return <DataTable columns={columns} data={rvClassifications} meta={meta} />;
 };
 
 const auctionPage = async (props: {
@@ -47,7 +43,7 @@ const auctionPage = async (props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="mb-4 text-3xl font-bold">SPP Bidder</h2>
+      <h2 className="mb-4 text-3xl font-bold">Klasifikasi RV</h2>
 
       <SearchBox />
 

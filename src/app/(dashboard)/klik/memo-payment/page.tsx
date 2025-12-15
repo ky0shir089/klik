@@ -1,11 +1,10 @@
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
+import Column from "./columns";
 import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
-import { selectTitipanPelunasan } from "@/data/select";
+import { sppIndex } from "@/data/spp";
 
 const RenderTable = async ({
   query,
@@ -16,7 +15,7 @@ const RenderTable = async ({
   currentPage: number;
   size: number;
 }) => {
-  const result = await selectTitipanPelunasan(currentPage, size, query);
+  const result = await sppIndex(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -24,16 +23,12 @@ const RenderTable = async ({
     return <Unauthorized />;
   }
   const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
+  const { data: spp, ...meta } = data;
 
-  return <DataTable columns={columns} data={data.data} meta={meta} />;
+  return <Column data={spp} meta={meta} />;
 };
 
-const RvPage = async (props: {
+const MemoPaymentPage = async (props: {
   searchParams?: Promise<{
     q?: string;
     page?: string;
@@ -46,10 +41,8 @@ const RvPage = async (props: {
   const size = Number(searchParams?.size) || 10;
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">Klasifikasi RV</h2>
-      </div>
+    <div className="flex flex-col gap-6">
+      <h2 className="text-3xl font-bold">Memo SPP</h2>
 
       <SearchBox />
 
@@ -59,8 +52,8 @@ const RvPage = async (props: {
       >
         <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
-    </>
+    </div>
   );
 };
 
-export default RvPage;
+export default MemoPaymentPage;

@@ -24,18 +24,9 @@ const RenderTable = async ({
     return <Unauthorized />;
   }
   const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    // from: data.from,
-    pageCount: data.last_page,
-    // nextPageUrl: data.next_page_url,
-    // perPage: data.per_page,
-    // prevPageUrl: data.prev_page_url,
-    // to: data.to,
-    totalCount: data.total,
-  };
+  const { data: spp, ...meta } = data;
 
-  return <DataTable columns={columns} data={data.data} meta={meta} />;
+  return <DataTable columns={columns} data={spp} meta={meta} />;
 };
 
 const PaymentPage = async (props: {

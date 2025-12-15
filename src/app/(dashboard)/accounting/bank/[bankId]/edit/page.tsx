@@ -34,7 +34,7 @@ const EditBankPage = async ({ params }: { params: Params }) => {
     <Card>
       <CardHeader>
         <CardTitle className={cn("text-2xl")}>
-          {bankId ? "Edit" : "Create"} Bank
+         Edit Bank
         </CardTitle>
       </CardHeader>
 

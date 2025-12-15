@@ -1,16 +1,16 @@
-import { customerShow } from "@/data/customer";
 import Unauthorized from "@/components/unauthorized";
 import { notFound, redirect } from "next/navigation";
-import PaymentForm from "../_components/PaymentForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import PaymentFormSkeleton from "@/components/PaymentFormSkeleton";
+import { sppShow } from "@/data/spp";
+import MemoPaymentForm from "../_components/MemoPaymentForm";
 
-type Params = Promise<{ customerId: number }>;
+type Params = Promise<{ sppId: number }>;
 
-const RenderForm = async ({ customerId }: { customerId: number }) => {
-  const result = await customerShow(customerId);
+const RenderForm = async ({ sppId }: { sppId: number }) => {
+  const result = await sppShow(sppId);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -22,11 +22,11 @@ const RenderForm = async ({ customerId }: { customerId: number }) => {
   }
   const { data } = result;
 
-  return <PaymentForm data={data} />;
+  return <MemoPaymentForm data={data} />;
 };
 
 const PaymentPage = async ({ params }: { params: Params }) => {
-  const { customerId } = await params;
+  const { sppId } = await params;
 
   return (
     <Card>
@@ -36,7 +36,7 @@ const PaymentPage = async ({ params }: { params: Params }) => {
 
       <CardContent>
         <Suspense fallback={<PaymentFormSkeleton />}>
-          <RenderForm customerId={customerId} />
+          <RenderForm sppId={sppId} />
         </Suspense>
       </CardContent>
     </Card>

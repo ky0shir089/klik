@@ -4,8 +4,30 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { invoiceIndex } from "@/data/invoice";
+
+const RenderTable = async ({
+  query,
+  currentPage,
+  size,
+}: {
+  query: string;
+  currentPage: number;
+  size: number;
+}) => {
+  const result = await invoiceIndex(currentPage, size, query);
+  if (result.isUnauthorized) {
+    redirect("/login");
+  }
+  if (result.isForbidden) {
+    return <Unauthorized />;
+  }
+  const { data } = result;
+  const { data: invoices, ...meta } = data;
+
+  return <DataTable columns={columns} data={invoices} meta={meta} />;
+};
 
 const InvoicePage = async (props: {
   searchParams?: Promise<{
@@ -19,37 +41,19 @@ const InvoicePage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const result = await invoiceIndex(currentPage, size, query);
-
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
-  if (result.isForbidden) {
-    return <Unauthorized />;
-  }
-  if (result.isNotFound) {
-   return notFound();
-  }
-  
-  const { data } = result;
-  const meta = {
-    currentPage: data.current_page,
-    pageCount: data.last_page,
-    totalCount: data.total,
-  };
-
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="mb-4 text-3xl font-bold">List Invoice</h2>
       </div>
 
+      <SearchBox />
+
       <Suspense
-        key={query + currentPage + size}
+        key={`${query}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <SearchBox />
-        <DataTable columns={columns} data={data.data} meta={meta} />
+        <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
     </>
   );
