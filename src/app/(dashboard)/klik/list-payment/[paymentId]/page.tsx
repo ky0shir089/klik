@@ -21,6 +21,7 @@ const RenderForm = async ({ paymentId }: { paymentId: number }) => {
     return notFound();
   }
   const { data } = result;
+  console.log(data);
 
   return <PaymentForm data={data} />;
 };
@@ -31,7 +32,7 @@ const ListPaymentPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>SPP</CardTitle>
+        <CardTitle className={cn("text-2xl")}>Payment Detail</CardTitle>
       </CardHeader>
 
       <Suspense fallback={<PaymentFormSkeleton />}>

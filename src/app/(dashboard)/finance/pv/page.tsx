@@ -22,11 +22,14 @@ const RenderForm = async ({
     [
       selectUnpaidPayment(),
       selectBankAccount(),
-      paymentId && typeTrx == 2
-        ? paymentShow(paymentId)
-        : invoiceShow(paymentId),
+      paymentId
+        ? typeTrx == 2
+          ? paymentShow(paymentId)
+          : invoiceShow(paymentId)
+        : Promise.resolve([]),
     ]
   );
+  console.log(payment);
   if (result.isUnauthorized) {
     redirect("/login");
   }

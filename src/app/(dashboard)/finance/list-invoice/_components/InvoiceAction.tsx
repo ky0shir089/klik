@@ -99,6 +99,11 @@ const InvoiceAction = ({ data }: iAppProps) => {
               <TableHead>Amount</TableHead>
               <TableCell>{data.amount.toLocaleString("id-ID")}</TableCell>
             </TableRow>
+
+            <TableRow>
+              <TableHead>Status</TableHead>
+              <TableCell>{data.status}</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </CardContent>

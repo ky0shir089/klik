@@ -28,14 +28,8 @@ export const columns: ColumnDef<rvShowType>[] = [
   },
   {
     header: "Amount",
-    accessorKey: "ending_balance",
-    cell: ({ row }) => row.original.ending_balance.toLocaleString("id-ID"),
-  },
-  {
-    header: "Used Amount",
-    accessorKey: "used_rv_sum_total_amount",
-    cell: ({ row }) =>
-      row.original.used_rv_sum_total_amount?.toLocaleString("id-ID"),
+    accessorKey: "starting_balance",
+    cell: ({ row }) => row.original.starting_balance.toLocaleString("id-ID"),
   },
   {
     header: "Balance",

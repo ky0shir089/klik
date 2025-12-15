@@ -6,16 +6,9 @@ import {
   rvClassificationSchemaType,
 } from "@/lib/formSchema";
 import { parseAxiosError } from "@/lib/parseAxiosError";
+import { revalidatePath } from "next/cache";
 
-interface joinData extends rvClassificationSchemaType {
-  klik_bidder_id: number;
-  ktp: string;
-  name: string;
-  branch_id: number;
-  branch_name: string;
-}
-
-export async function rvUpdate(id: number, values: joinData) {
+export async function classificationStore(values: rvClassificationSchemaType) {
   const validation = rvClassificationSchema.safeParse(values);
 
   if (!validation.success) {
@@ -26,7 +19,8 @@ export async function rvUpdate(id: number, values: joinData) {
   }
 
   try {
-    const { data } = await axiosInstance.put(`/finance/v1/rv/${id}`, values);
+    const { data } = await axiosInstance.post(`/finance/v1/rv-classification`, values);
+    revalidatePath("/klik/rv-classification");
     return data;
   } catch (error) {
     return parseAxiosError(error);

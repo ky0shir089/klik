@@ -38,9 +38,7 @@ const EditTrxDtlPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {trxDtlId ? "Edit" : "Create"} Trx Detail
-        </CardTitle>
+        <CardTitle className={cn("text-2xl")}>Edit Trx Detail</CardTitle>
       </CardHeader>
 
       <CardContent>

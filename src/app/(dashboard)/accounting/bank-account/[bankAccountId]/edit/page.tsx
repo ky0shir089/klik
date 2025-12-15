@@ -38,9 +38,7 @@ const EditBankAccountPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {bankAccountId ? "Edit" : "Create"} Bank Account
-        </CardTitle>
+        <CardTitle className={cn("text-2xl")}>Edit Bank Account</CardTitle>
       </CardHeader>
 
       <CardContent>

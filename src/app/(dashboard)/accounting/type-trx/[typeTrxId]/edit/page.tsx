@@ -33,9 +33,7 @@ const EditTypeTrxPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>
-          {typeTrxId ? "Edit" : "Create"} Type Trx
-        </CardTitle>
+        <CardTitle className={cn("text-2xl")}>Edit Type Trx</CardTitle>
       </CardHeader>
 
       <CardContent>

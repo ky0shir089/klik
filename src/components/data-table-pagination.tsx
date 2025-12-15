@@ -32,7 +32,7 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex items-center justify-between px-2 mt-4">
-      <div className="text-muted-foreground flex-1 text-sm">
+      <div className="flex-1 text-sm text-muted-foreground">
         Showing {meta?.currentPage ? 1 : (meta?.currentPage ?? 0) + 1} to{" "}
         {table.getRowCount() * (meta?.currentPage ?? 0)} of {meta?.totalCount}{" "}
         results

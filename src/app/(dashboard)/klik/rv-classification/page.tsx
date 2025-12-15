@@ -5,7 +5,7 @@ import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
-import { selectTitipanPelunasan } from "@/data/select";
+import { customerIndex } from "@/data/customer";
 
 const RenderTable = async ({
   query,
@@ -16,7 +16,7 @@ const RenderTable = async ({
   currentPage: number;
   size: number;
 }) => {
-  const result = await selectTitipanPelunasan(currentPage, size, query);
+  const result = await customerIndex(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -29,11 +29,12 @@ const RenderTable = async ({
     pageCount: data.last_page,
     totalCount: data.total,
   };
+  console.log(data);
 
   return <DataTable columns={columns} data={data.data} meta={meta} />;
 };
 
-const RvPage = async (props: {
+const auctionPage = async (props: {
   searchParams?: Promise<{
     q?: string;
     page?: string;
@@ -46,10 +47,8 @@ const RvPage = async (props: {
   const size = Number(searchParams?.size) || 10;
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">Klasifikasi RV</h2>
-      </div>
+    <div className="flex flex-col gap-6">
+      <h2 className="mb-4 text-3xl font-bold">Klasifikasi RV</h2>
 
       <SearchBox />
 
@@ -59,8 +58,8 @@ const RvPage = async (props: {
       >
         <RenderTable query={query} currentPage={currentPage} size={size} />
       </Suspense>
-    </>
+    </div>
   );
 };
 
-export default RvPage;
+export default auctionPage;

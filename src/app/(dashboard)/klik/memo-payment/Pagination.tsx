@@ -14,21 +14,10 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { metaProps } from "./columns";
 
-const Pagination = ({
-  meta,
-}: {
-  meta: {
-    currentPage: number;
-    from: number;
-    lastPage: number;
-    nextPageUrl: string;
-    perPage: number;
-    prevPageUrl: string;
-    to: number;
-    totalCount: number;
-  };
-}) => {
+const Pagination = ({ meta }: { meta: metaProps }) => {
+  console.log(meta)
   const pathname = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();
@@ -50,14 +39,14 @@ const Pagination = ({
   return (
     <div className="flex items-center justify-between px-2 mt-4">
       <div className="hidden text-sm text-muted-foreground sm:flex">
-        Showing {meta?.from} to {meta?.to} of {meta?.totalCount} results
+        Showing {meta?.from} to {meta?.to} of {meta?.total} results
       </div>
 
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Per page</p>
           <Select
-            value={`${meta?.perPage}`}
+            value={`${meta?.per_page}`}
             onValueChange={(value) => {
               setPageSize(Number(value));
               createPageURL(1, Number(value));
@@ -82,7 +71,7 @@ const Pagination = ({
             size="icon"
             className="hidden size-8 lg:flex"
             onClick={() => setCurrentPage(1)}
-            disabled={meta?.prevPageUrl ? false : true}
+            disabled={meta?.prev_page_url ? false : true}
           >
             <span className="sr-only">Go to first page</span>
             <ChevronsLeft />
@@ -92,20 +81,20 @@ const Pagination = ({
             size="icon"
             className="size-8"
             onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={meta?.prevPageUrl ? false : true}
+            disabled={meta?.prev_page_url ? false : true}
           >
             <span className="sr-only">Go to previous page</span>
             <ChevronLeft />
           </Button>
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {currentPage} of {meta?.lastPage}
+            Page {currentPage} of {meta?.last_page}
           </div>
           <Button
             variant="outline"
             size="icon"
             className="size-8"
             onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={meta?.nextPageUrl ? false : true}
+            disabled={meta?.next_page_url ? false : true}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRight />
@@ -114,8 +103,8 @@ const Pagination = ({
             variant="outline"
             size="icon"
             className="hidden size-8 lg:flex"
-            onClick={() => setCurrentPage(meta?.lastPage)}
-            disabled={meta?.nextPageUrl ? false : true}
+            onClick={() => setCurrentPage(meta?.last_page)}
+            disabled={meta?.next_page_url ? false : true}
           >
             <span className="sr-only">Go to last page</span>
             <ChevronsRight />

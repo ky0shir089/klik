@@ -5,7 +5,7 @@ import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
-import { selectUnpaidBidder } from "@/data/select";
+import { rvClassificationIndex } from "@/data/rv-classification";
 
 const RenderTable = async ({
   query,
@@ -16,7 +16,7 @@ const RenderTable = async ({
   currentPage: number;
   size: number;
 }) => {
-  const result = await selectUnpaidBidder(currentPage, size, query);
+  const result = await rvClassificationIndex(currentPage, size, query);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -29,6 +29,7 @@ const RenderTable = async ({
     pageCount: data.last_page,
     totalCount: data.total,
   };
+  console.log(data);
 
   return <DataTable columns={columns} data={data.data} meta={meta} />;
 };
@@ -47,7 +48,7 @@ const auctionPage = async (props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="mb-4 text-3xl font-bold">SPP Bidder</h2>
+      <h2 className="mb-4 text-3xl font-bold">SPP</h2>
 
       <SearchBox />
 

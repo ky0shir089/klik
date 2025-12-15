@@ -101,8 +101,8 @@ export const rvSchema = z.object({
 export type rvSchemaType = z.infer<typeof rvSchema>;
 
 export const rvClassificationSchema = z.object({
-  rv_id: z.number().positive(),
-  klik_bidder_id: z.number().positive(),
+  rvs: z.array(z.number().positive()).min(1, "Select at least one RV"),
+  units: z.array(z.number().positive()).min(1, "Select at least one Unit"),
 });
 export type rvClassificationSchemaType = z.infer<typeof rvClassificationSchema>;
 
@@ -111,7 +111,6 @@ export const paymentSchema = z.object({
   branch_id: z.string().min(1),
   branch_name: z.string().min(1),
   customer_id: z.number().positive(),
-  rvs: z.array(z.number().positive()).min(1, "Select at least one RV"),
   units: z.array(z.number().positive()).min(1, "Select at least one Unit"),
 });
 export type paymentSchemaType = z.infer<typeof paymentSchema>;
@@ -153,6 +152,17 @@ export const supplierSchema = z.object({
 export type supplierSchemaType = z.infer<typeof supplierSchema>;
 
 export const memoPaymentSchema = z.object({
-  id: z.array(z.number().positive()).min(1),
+  spps: z.array(z.number().positive()).min(1),
 });
 export type memoPaymentSchemaType = z.infer<typeof memoPaymentSchema>;
+
+export const auctionSchema = z.object({
+  auction_date: z.iso.date(),
+});
+export type auctionSchemaType = z.infer<typeof auctionSchema>;
+
+export const sppSchema = z.object({
+  customer_id: z.number().positive(),
+  units: z.array(z.number().positive()).min(1, "Select at least one Unit"),
+});
+export type sppSchemaType = z.infer<typeof sppSchema>;

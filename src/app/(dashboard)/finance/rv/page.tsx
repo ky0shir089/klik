@@ -7,6 +7,8 @@ import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
 
 const RenderForm = async () => {
+  await connection();
+
   const [{ data: typeTrxes }, { data: bankAccounts }] = await Promise.all([
     selectTypeTrx("IN"),
     selectBankAccount(),
@@ -15,9 +17,7 @@ const RenderForm = async () => {
   return <RvForm bankAccounts={bankAccounts} typeTrxes={typeTrxes} />;
 };
 
-const NewRvPage = async () => {
-  await connection();
-  
+const NewRvPage = () => {
   return (
     <Card>
       <CardHeader>
