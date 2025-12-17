@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "https://api.kliklelang.co.id",
+        hostname: "api.kliklelang.co.id",
       },
     ],
   },

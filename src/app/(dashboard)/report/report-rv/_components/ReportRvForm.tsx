@@ -6,6 +6,7 @@ import { reportRv } from "../action";
 import { useTransition } from "react";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { env } from "@/lib/env";
+import { toast } from "sonner";
 
 const ReportRvForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -22,7 +23,7 @@ const ReportRvForm = () => {
         link.click();
       } catch (error) {
         console.error("Download error:", error);
-        alert("Error downloading file.");
+        toast.error("Error downloading file.");
       }
     });
   }

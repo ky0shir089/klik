@@ -8,6 +8,7 @@ import { LoadingSwap } from "@/components/ui/loading-swap";
 import { env } from "@/lib/env";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const ReportAuctionForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -31,7 +32,7 @@ const ReportAuctionForm = () => {
         link.click();
       } catch (error) {
         console.error("Download error:", error);
-        alert("Error downloading file.");
+        toast.error("Error downloading file.");
       }
 
       setFrom("");
@@ -70,7 +71,7 @@ const ReportAuctionForm = () => {
           <Button
             type="button"
             onClick={onSubmit}
-            disabled={isPending}
+            disabled={isPending || !from || !to}
             className="max-w-sm"
           >
             <LoadingSwap isLoading={isPending}>Download</LoadingSwap>
