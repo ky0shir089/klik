@@ -31,6 +31,8 @@ import { Control, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { classificationStore } from "../action";
 import { sumUnitFields } from "@/lib/helper";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import "react-photo-view/dist/react-photo-view.css";
 
 interface iAppProps {
   data: customerShowType;
@@ -141,6 +143,11 @@ const RvClassificationForm = ({ data }: iAppProps) => {
     return sumUnitFields(data.units, selectedUnitIds);
   }, [data.units, selectedUnitIds]);
 
+  const allUnitIds = useMemo(
+    () => (data.units || []).map((unit: { id: number }) => unit.id),
+    [data.units]
+  );
+
   function onSubmit(values: rvClassificationSchemaType) {
     if (sumRvAmount < sumFinalPrice) {
       toast.error("Jumlah RV kurang dari total amount");
@@ -148,7 +155,11 @@ const RvClassificationForm = ({ data }: iAppProps) => {
     }
 
     startTransition(async () => {
-      const result = await classificationStore(values);
+      const payload = {
+        rvs: [...values.rvs].sort((a, b) => a - b),
+        units: [...values.units].sort((a, b) => a - b),
+      };
+      const result = await classificationStore(payload);
 
       if (result.success) {
         form.reset();
@@ -197,69 +208,111 @@ const RvClassificationForm = ({ data }: iAppProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead></TableHead>
+                <TableHead>
+                  <FormField
+                    control={form.control}
+                    name="units"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Checkbox
+                            checked={
+                              allUnitIds.length > 0 &&
+                              field.value?.length === allUnitIds.length
+                            }
+                            onCheckedChange={(checked) =>
+                              field.onChange(checked ? allUnitIds : [])
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </TableHead>
                 <TableHead>Tgl Lelang</TableHead>
                 <TableHead>Balai Lelang</TableHead>
                 <TableHead>Nopol</TableHead>
                 <TableHead>Noka</TableHead>
                 <TableHead>Nosin</TableHead>
+                <TableHead>Bukti Transfer</TableHead>
                 <TableHead className="text-right">Harga Lelang</TableHead>
                 <TableHead className="text-right">Fee</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(data.units || []).map(
-                (item: Pick<customerShowType, "units"[0]>) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      {item.payment_status === "UNPAID" && (
-                        <FormField
-                          control={form.control}
-                          name="units"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) =>
-                                    field.onChange(
-                                      updateArray(
-                                        field.value || [],
-                                        item.id,
-                                        !!checked
+              <PhotoProvider>
+                {(data.units || []).map(
+                  (item: Pick<customerShowType, "units"[0]>) => (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        {item.payment_status === "UNPAID" && (
+                          <FormField
+                            control={form.control}
+                            name="units"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(item.id)}
+                                    onCheckedChange={(checked) =>
+                                      field.onChange(
+                                        updateArray(
+                                          field.value || [],
+                                          item.id,
+                                          !!checked
+                                        )
                                       )
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>{item?.auction.auction_date}</TableCell>
+                      <TableCell>{item?.auction.branch_name}</TableCell>
+                      <TableCell>{item.police_number}</TableCell>
+                      <TableCell>{item.chassis_number}</TableCell>
+                      <TableCell>{item.engine_number}</TableCell>
+                      <TableCell>
+                        <ul>
+                          {item?.transactions.map(
+                            (sub: { id: number; receipt_link: string }) => (
+                              <li key={sub.id}>
+                                <PhotoView src={sub.receipt_link}>
+                                  <Button
+                                    type="button"
+                                    variant="link"
+                                    className="p-0"
+                                  >
+                                    Lihat Bukti
+                                  </Button>
+                                </PhotoView>
+                              </li>
+                            )
                           )}
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell>{item?.auction.auction_date}</TableCell>
-                    <TableCell>{item?.auction.branch_name}</TableCell>
-                    <TableCell>{item.police_number}</TableCell>
-                    <TableCell>{item.chassis_number}</TableCell>
-                    <TableCell>{item.engine_number}</TableCell>
-                    <TableCell className="text-right">
-                      {item.price.toLocaleString("id-ID")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.admin_fee.toLocaleString("id-ID")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.final_price.toLocaleString("id-ID")}
-                    </TableCell>
-                  </TableRow>
-                )
-              )}
+                        </ul>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.price.toLocaleString("id-ID")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.admin_fee.toLocaleString("id-ID")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.final_price.toLocaleString("id-ID")}
+                      </TableCell>
+                    </TableRow>
+                  )
+                )}
+              </PhotoProvider>
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell colSpan={6}>Total</TableCell>
+                <TableCell colSpan={7}>Total</TableCell>
                 <TableCell className="text-right">
                   {sumBasePrice.toLocaleString("id-ID")}
                 </TableCell>

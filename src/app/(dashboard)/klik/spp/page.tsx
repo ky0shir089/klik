@@ -6,17 +6,20 @@ import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
 import { rvClassificationIndex } from "@/data/rv-classification";
+import FilterSpp from "./_components/FilterSpp";
 
 const RenderTable = async ({
   query,
   currentPage,
   size,
+  diff,
 }: {
   query: string;
   currentPage: number;
   size: number;
+  diff: string;
 }) => {
-  const result = await rvClassificationIndex(currentPage, size, query);
+  const result = await rvClassificationIndex(currentPage, size, diff, query);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -32,12 +35,14 @@ const RenderTable = async ({
 const auctionPage = async (props: {
   searchParams?: Promise<{
     q?: string;
+    diff: string;
     page?: string;
     size?: string;
   }>;
 }) => {
   const searchParams = await props.searchParams;
   const query = searchParams?.q || "";
+  const diff = searchParams?.diff || "0";
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
@@ -45,13 +50,21 @@ const auctionPage = async (props: {
     <div className="flex flex-col gap-6">
       <h2 className="mb-4 text-3xl font-bold">SPP</h2>
 
-      <SearchBox />
+      <div className="flex items-center gap-2">
+        <SearchBox />
+        <FilterSpp />
+      </div>
 
       <Suspense
-        key={`${query}-${currentPage}-${size}`}
+        key={`${query}-${currentPage}-${size}-${diff}`}
         fallback={<DataTableSkeleton />}
       >
-        <RenderTable query={query} currentPage={currentPage} size={size} />
+        <RenderTable
+          query={query}
+          currentPage={currentPage}
+          size={size}
+          diff={diff}
+        />
       </Suspense>
     </div>
   );

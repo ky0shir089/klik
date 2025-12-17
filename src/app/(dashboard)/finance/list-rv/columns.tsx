@@ -1,7 +1,10 @@
 "use client";
 
+import { buttonVariants } from "@/components/ui/button";
 import { rvShowType } from "@/data/rv";
 import { ColumnDef } from "@tanstack/react-table";
+import { Eye } from "lucide-react";
+import Link from "next/link";
 
 export const columns: ColumnDef<rvShowType>[] = [
   {
@@ -41,5 +44,19 @@ export const columns: ColumnDef<rvShowType>[] = [
   {
     header: "Status",
     accessorKey: "status",
+  },
+  {
+    header: "Action",
+    cell: ({ row }) =>
+      row.original.status === "NEW" &&
+      row.original.customer_id !== null && (
+        <Link
+          className={buttonVariants({ variant: "link", size: "sm" })}
+          href={`/finance/list-rv/${row.original.id}/edit`}
+        >
+          <Eye />
+          View
+        </Link>
+      ),
   },
 ];

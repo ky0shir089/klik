@@ -6,6 +6,7 @@ import { parseAxiosError } from "@/lib/parseAxiosError";
 export async function customerIndex(
   page: number,
   size: number,
+  tab: string,
   search?: string
 ) {
   try {
@@ -13,6 +14,7 @@ export async function customerIndex(
       params: {
         page,
         size,
+        tab,
         search,
       },
     });

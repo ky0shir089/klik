@@ -36,50 +36,6 @@ interface iAppProps {
 const updateArray = (arr: number[], id: number, add: boolean) =>
   add ? [...arr, id] : arr.filter((item) => item !== id);
 
-// const RvTable = memo(function RvTable({
-//   rvs,
-// }: {
-//   rvs: Pick<customerShowType, "rvs"[0]>[];
-// }) {
-//   const sumRvAmount = rvs.reduce((acc, rv) => acc + rv.starting_balance, 0);
-
-//   return (
-//     <div>
-//       <h3 className="text-xl">Data RV</h3>
-//       <Table>
-//         <TableHeader>
-//           <TableRow>
-//             <TableHead>RV No</TableHead>
-//             <TableHead>Tanggal</TableHead>
-//             <TableHead>Description</TableHead>
-//             <TableHead className="text-right">Amount</TableHead>
-//           </TableRow>
-//         </TableHeader>
-//         <TableBody>
-//           {rvs.map((rv) => (
-//             <TableRow key={rv.id}>
-//               <TableCell>{rv.rv_no}</TableCell>
-//               <TableCell>{rv.date}</TableCell>
-//               <TableCell>{rv.description}</TableCell>
-//               <TableCell className="text-right">
-//                 {rv.starting_balance.toLocaleString("id-ID")}
-//               </TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//         <TableFooter>
-//           <TableRow>
-//             <TableCell colSpan={3}>Total</TableCell>
-//             <TableCell className="text-right">
-//               {sumRvAmount.toLocaleString("id-ID")}
-//             </TableCell>
-//           </TableRow>
-//         </TableFooter>
-//       </Table>
-//     </div>
-//   );
-// });
-
 const SppForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -101,6 +57,11 @@ const SppForm = ({ data }: iAppProps) => {
   } = useMemo(() => {
     return sumUnitFields(data.units, selectedUnitIds);
   }, [data.units, selectedUnitIds]);
+
+  const allUnitIds = useMemo(
+    () => (data.units || []).map((unit: { id: number }) => unit.id),
+    [data.units]
+  );
 
   function onSubmit(values: sppSchemaType) {
     const checkSppStatus = data.units.filter(
@@ -169,14 +130,32 @@ const SppForm = ({ data }: iAppProps) => {
           </Table>
         </div>
 
-        {/* <RvTable rvs={data.rvs || []} /> */}
-
         <div>
           <h3 className="text-xl">Data Unit</h3>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead></TableHead>
+                <TableHead>
+                  <FormField
+                    control={form.control}
+                    name="units"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Checkbox
+                            checked={
+                              allUnitIds.length > 0 &&
+                              field.value?.length === allUnitIds.length
+                            }
+                            onCheckedChange={(checked) =>
+                              field.onChange(checked ? allUnitIds : [])
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </TableHead>
                 <TableHead>Tgl Lelang</TableHead>
                 <TableHead>Balai Lelang</TableHead>
                 <TableHead>Nopol</TableHead>
@@ -187,6 +166,8 @@ const SppForm = ({ data }: iAppProps) => {
                 <TableHead className="text-right">Harga Lelang</TableHead>
                 <TableHead className="text-right">Fee</TableHead>
                 <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-right">Harga Distribusi</TableHead>
+                <TableHead className="text-right">Selisih</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -233,6 +214,12 @@ const SppForm = ({ data }: iAppProps) => {
                     </TableCell>
                     <TableCell className="text-right">
                       {item.final_price.toLocaleString("id-ID")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.distributed_price.toLocaleString("id-ID")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.diff_price.toLocaleString("id-ID")}
                     </TableCell>
                   </TableRow>
                 )

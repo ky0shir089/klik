@@ -70,6 +70,8 @@ const MemoPaymentForm = ({ data }: iAppProps) => {
               <TableHead className="text-right">Harga Lelang</TableHead>
               <TableHead className="text-right">Fee</TableHead>
               <TableHead className="text-right">Total</TableHead>
+              <TableHead className="text-right">Harga Distribusi</TableHead>
+              <TableHead className="text-right">Selisih</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -91,6 +93,12 @@ const MemoPaymentForm = ({ data }: iAppProps) => {
                   </TableCell>
                   <TableCell className="text-right">
                     {item.unit.final_price.toLocaleString("id-ID")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {item.unit.distributed_price.toLocaleString("id-ID")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {item.unit.diff_price.toLocaleString("id-ID")}
                   </TableCell>
                 </TableRow>
               )

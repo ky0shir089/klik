@@ -4,13 +4,17 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   // cacheComponents: true,
-  allowedDevOrigins: ["192.168.77.232"],
+  allowedDevOrigins: ["192.168.77.233"],
   images: {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "192.168.77.232",
+        hostname: "192.168.77.233",
+      },
+      {
+        protocol: "https",
+        hostname: "api.kliklelang.co.id",
       },
     ],
   },
