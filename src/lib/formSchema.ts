@@ -166,3 +166,8 @@ export const sppSchema = z.object({
   units: z.array(z.number().positive()).min(1, "Select at least one Unit"),
 });
 export type sppSchemaType = z.infer<typeof sppSchema>;
+
+export const removeRvSchema = z.object({
+  status: z.string().min(1),
+});
+export type removeRvSchemaType = z.infer<typeof removeRvSchema>;

@@ -30,7 +30,7 @@ const PaymentPage = async ({ params }: { params: Params }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">SPP</CardTitle>
+        <CardTitle className="text-2xl">Memo SPP</CardTitle>
       </CardHeader>
 
       <CardContent>

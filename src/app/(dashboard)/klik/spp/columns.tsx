@@ -23,7 +23,7 @@ export const columns: ColumnDef<customerShowType>[] = [
     ),
   },
   {
-    header: () => <div className="text-center">Harga Dasar</div>,
+    header: () => <div className="text-center">Harga Terbentuk</div>,
     accessorKey: "units_sum_price",
     cell: ({ row }) => (
       <div className="text-right">
@@ -41,11 +41,20 @@ export const columns: ColumnDef<customerShowType>[] = [
     ),
   },
   {
-    header: "Harga Terbentuk",
+    header: "Harga Total",
     accessorKey: "units_sum_final_price",
     cell: ({ row }) => (
       <div className="text-right">
         {Number(row.original.units_sum_final_price).toLocaleString("id-ID")}
+      </div>
+    ),
+  },
+   {
+    header: "Selisih",
+    accessorKey: "units_sum_diff_price",
+    cell: ({ row }) => (
+      <div className="text-right">
+        {Number(row.original.units_sum_diff_price).toLocaleString("id-ID")}
       </div>
     ),
   },

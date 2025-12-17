@@ -16,14 +16,14 @@ export const columns: ColumnDef<customerShowType>[] = [
     accessorKey: "va_number",
   },
   {
-    header: "Unit",
+    header: () => <div className="text-center">Unit</div>,
     accessorKey: "auctions_count",
     cell: ({ row }) => (
       <div className="text-center">{row.original.auctions_count}</div>
     ),
   },
   {
-    header: "Harga Dasar",
+    header: () => <div className="text-right">Harga Terbentuk</div>,
     accessorKey: "units_sum_price",
     cell: ({ row }) => (
       <div className="text-right">
@@ -32,7 +32,7 @@ export const columns: ColumnDef<customerShowType>[] = [
     ),
   },
   {
-    header: "Biaya Admin",
+    header: () => <div className="text-right">Biaya Admin</div>,
     accessorKey: "units_sum_admin_fee",
     cell: ({ row }) => (
       <div className="text-right">
@@ -41,7 +41,7 @@ export const columns: ColumnDef<customerShowType>[] = [
     ),
   },
   {
-    header: "Harga Terbentuk",
+    header: () => <div className="text-right">Harga Total</div>,
     accessorKey: "units_sum_final_price",
     cell: ({ row }) => (
       <div className="text-right">
@@ -50,8 +50,7 @@ export const columns: ColumnDef<customerShowType>[] = [
     ),
   },
   {
-    id: "action",
-    header: () => <div className="text-center">Action</div>,
+    header: "Action",
     cell: ({ row }) => (
       <Link
         className={buttonVariants({ variant: "link", size: "sm" })}

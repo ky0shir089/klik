@@ -6,6 +6,7 @@ import { parseAxiosError } from "@/lib/parseAxiosError";
 export async function rvClassificationIndex(
   page: number,
   size: number,
+  diff: string,
   search?: string
 ) {
   try {
@@ -13,6 +14,7 @@ export async function rvClassificationIndex(
       params: {
         page,
         size,
+        diff,
         search,
       },
     });
