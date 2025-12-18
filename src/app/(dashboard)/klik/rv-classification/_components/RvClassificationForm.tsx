@@ -155,11 +155,7 @@ const RvClassificationForm = ({ data }: iAppProps) => {
     }
 
     startTransition(async () => {
-      const payload = {
-        rvs: [...values.rvs].sort((a, b) => a - b),
-        units: [...values.units].sort((a, b) => a - b),
-      };
-      const result = await classificationStore(payload);
+      const result = await classificationStore(values);
 
       if (result.success) {
         form.reset();

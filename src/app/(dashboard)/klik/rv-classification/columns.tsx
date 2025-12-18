@@ -17,9 +17,9 @@ export const columns: ColumnDef<customerShowType>[] = [
   },
   {
     header: () => <div className="text-center">Unit</div>,
-    accessorKey: "auctions_count",
+    accessorKey: "units_count",
     cell: ({ row }) => (
-      <div className="text-center">{row.original.auctions_count}</div>
+      <div className="text-center">{row.original.units_count}</div>
     ),
   },
   {
