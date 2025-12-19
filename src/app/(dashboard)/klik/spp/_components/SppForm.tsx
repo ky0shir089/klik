@@ -54,6 +54,8 @@ const SppForm = ({ data }: iAppProps) => {
     base: sumBasePrice,
     fee: sumFee,
     final: sumFinalPrice,
+    distributed: sumDistributed,
+    diff: sumDiff,
   } = useMemo(() => {
     return sumUnitFields(data.units, selectedUnitIds);
   }, [data.units, selectedUnitIds]);
@@ -97,7 +99,7 @@ const SppForm = ({ data }: iAppProps) => {
       if (result.success) {
         form.reset();
         toast.success(result.message);
-        router.push(`/klik/memo-payment`);
+        router.push(`/klik/spp`);
       } else {
         toast.error(result.message);
       }
@@ -236,6 +238,12 @@ const SppForm = ({ data }: iAppProps) => {
                 </TableCell>
                 <TableCell className="text-right">
                   {sumFinalPrice.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {sumDistributed.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {sumDiff.toLocaleString("id-ID")}
                 </TableCell>
               </TableRow>
             </TableFooter>

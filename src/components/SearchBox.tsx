@@ -56,7 +56,7 @@ export default function SearchBox() {
   }, [value, pathname, replace, searchParams, currentQ, currentPage]);
 
   return (
-    <>
+    <div className="flex flex-col w-full">
       <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -64,7 +64,9 @@ export default function SearchBox() {
         aria-label="Search"
         autoFocus
       />
-      {isPending && <span className="text-xs text-muted-foreground">Loading...</span>}
-    </>
+      {isPending && (
+        <span className="text-xs text-muted-foreground">Loading...</span>
+      )}
+    </div>
   );
 }
