@@ -36,10 +36,7 @@ export const columns: ColumnDef<rvShowType>[] = [
   },
   {
     header: "Balance",
-    cell: ({ row }) =>
-      (
-        row.original.ending_balance - row.original.used_rv_sum_total_amount
-      ).toLocaleString("id-ID"),
+    cell: ({ row }) => row.original.ending_balance.toLocaleString("id-ID"),
   },
   {
     header: "Status",

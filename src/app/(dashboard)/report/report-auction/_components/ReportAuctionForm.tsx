@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reportAuction } from "../action";
 import { useState, useTransition } from "react";
 import { LoadingSwap } from "@/components/ui/loading-swap";
-import { env } from "@/lib/env";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -24,12 +23,12 @@ const ReportAuctionForm = () => {
     startTransition(async () => {
       try {
         const file = await reportAuction(values);
-
-        const link = document.createElement("a");
-        link.href = `${env.NEXT_PUBLIC_BASE_URL}/storage/${file}`;
-        link.setAttribute("download", "");
-        document.body.appendChild(link);
-        link.click();
+        const url = window.URL.createObjectURL(file);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `report-lelang.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
       } catch (error) {
         console.error("Download error:", error);
         toast.error("Error downloading file.");
