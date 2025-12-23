@@ -138,6 +138,7 @@ const RvClassificationForm = ({ data }: iAppProps) => {
 
   const {
     base: sumBasePrice,
+    ticket: sumTicketPrice,
     fee: sumFee,
     final: sumFinalPrice,
   } = useMemo(() => {
@@ -316,6 +317,9 @@ const RvClassificationForm = ({ data }: iAppProps) => {
                 <TableCell colSpan={7}>Total</TableCell>
                 <TableCell className="text-right">
                   {sumBasePrice.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {sumTicketPrice.toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell className="text-right">
                   {sumFee.toLocaleString("id-ID")}
