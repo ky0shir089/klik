@@ -52,6 +52,7 @@ const SppForm = ({ data }: iAppProps) => {
 
   const {
     base: sumBasePrice,
+    ticket: sumTicketPrice,
     fee: sumFee,
     final: sumFinalPrice,
     distributed: sumDistributed,
@@ -166,6 +167,7 @@ const SppForm = ({ data }: iAppProps) => {
                 <TableHead>No Kontrak</TableHead>
                 <TableHead>No Paket</TableHead>
                 <TableHead className="text-right">Harga Lelang</TableHead>
+                <TableHead className="text-right">Potongan Tiket</TableHead>
                 <TableHead className="text-right">Fee</TableHead>
                 <TableHead className="text-right">Total</TableHead>
                 <TableHead className="text-right">Harga Distribusi</TableHead>
@@ -212,6 +214,9 @@ const SppForm = ({ data }: iAppProps) => {
                       {item.price.toLocaleString("id-ID")}
                     </TableCell>
                     <TableCell className="text-right">
+                      {item.ticket_price.toLocaleString("id-ID")}
+                    </TableCell>
+                    <TableCell className="text-right">
                       {item.admin_fee.toLocaleString("id-ID")}
                     </TableCell>
                     <TableCell className="text-right">
@@ -232,6 +237,9 @@ const SppForm = ({ data }: iAppProps) => {
                 <TableCell colSpan={8}>Total</TableCell>
                 <TableCell className="text-right">
                   {sumBasePrice.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {sumTicketPrice.toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell className="text-right">
                   {sumFee.toLocaleString("id-ID")}

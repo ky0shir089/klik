@@ -110,6 +110,7 @@ const RvTable = memo(function RvTable({
 });
 
 const RvClassificationForm = ({ data }: iAppProps) => {
+  console.log(data);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -232,6 +233,7 @@ const RvClassificationForm = ({ data }: iAppProps) => {
                 <TableHead>Nosin</TableHead>
                 <TableHead>Bukti Transfer</TableHead>
                 <TableHead className="text-right">Harga Lelang</TableHead>
+                <TableHead className="text-right">Potongan Tiket</TableHead>
                 <TableHead className="text-right">Fee</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
@@ -294,6 +296,9 @@ const RvClassificationForm = ({ data }: iAppProps) => {
                       </TableCell>
                       <TableCell className="text-right">
                         {item.price.toLocaleString("id-ID")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.ticket_price.toLocaleString("id-ID")}
                       </TableCell>
                       <TableCell className="text-right">
                         {item.admin_fee.toLocaleString("id-ID")}

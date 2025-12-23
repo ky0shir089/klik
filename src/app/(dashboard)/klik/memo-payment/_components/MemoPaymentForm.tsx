@@ -16,16 +16,40 @@ interface iAppProps {
 }
 
 const MemoPaymentForm = ({ data }: iAppProps) => {
-  const { sumBasePrice, sumFee, sumFinalPrice } = data.details.reduce(
+  const {
+    sumBasePrice,
+    sumTicketPrice,
+    sumFee,
+    sumFinalPrice,
+    sumDistributed,
+    sumDiff,
+  } = data.details.reduce(
     (
-      acc: { sumBasePrice: number; sumFee: number; sumFinalPrice: number },
+      acc: {
+        sumBasePrice: number;
+        sumTicketPrice: number;
+        sumFee: number;
+        sumFinalPrice: number;
+        sumDistributed: number;
+        sumDiff: number;
+      },
       detail: Pick<sppShowType, "details"[0]>
     ) => ({
       sumBasePrice: acc.sumBasePrice + detail.unit.price,
+      sumTicketPrice: acc.sumTicketPrice + detail.unit.ticket_price,
       sumFee: acc.sumFee + detail.unit.admin_fee,
       sumFinalPrice: acc.sumFinalPrice + detail.unit.final_price,
+      sumDistributed: acc.sumDistributed + detail.unit.distributed_price,
+      sumDiff: acc.sumDiff + detail.unit.diff_price,
     }),
-    { sumBasePrice: 0, sumFee: 0, sumFinalPrice: 0 }
+    {
+      sumBasePrice: 0,
+      sumTicketPrice: 0,
+      sumFee: 0,
+      sumFinalPrice: 0,
+      sumDistributed: 0,
+      sumDiff: 0,
+    }
   );
 
   return (
@@ -68,6 +92,7 @@ const MemoPaymentForm = ({ data }: iAppProps) => {
               <TableHead>No Kontrak</TableHead>
               <TableHead>No Paket</TableHead>
               <TableHead className="text-right">Harga Lelang</TableHead>
+              <TableHead className="text-right">Potongan Tiket</TableHead>
               <TableHead className="text-right">Fee</TableHead>
               <TableHead className="text-right">Total</TableHead>
               <TableHead className="text-right">Harga Distribusi</TableHead>
@@ -87,6 +112,9 @@ const MemoPaymentForm = ({ data }: iAppProps) => {
                   <TableCell>{item.unit.package_number}</TableCell>
                   <TableCell className="text-right">
                     {item.unit.price.toLocaleString("id-ID")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {item.unit.ticket_price.toLocaleString("id-ID")}
                   </TableCell>
                   <TableCell className="text-right">
                     {item.unit.admin_fee.toLocaleString("id-ID")}
@@ -111,10 +139,19 @@ const MemoPaymentForm = ({ data }: iAppProps) => {
                 {sumBasePrice.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
+                {sumTicketPrice.toLocaleString("id-ID")}
+              </TableCell>
+              <TableCell className="text-right">
                 {sumFee.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
                 {sumFinalPrice.toLocaleString("id-ID")}
+              </TableCell>
+              <TableCell className="text-right">
+                {sumDistributed.toLocaleString("id-ID")}
+              </TableCell>
+              <TableCell className="text-right">
+                {sumDiff.toLocaleString("id-ID")}
               </TableCell>
             </TableRow>
           </TableFooter>
