@@ -6,11 +6,12 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Pagination from "./Pagination";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { sppShowType } from "@/data/spp";
@@ -34,6 +35,38 @@ const Column = ({ data, meta }: iAppProps) => {
 
   const updateArray = (arr: number[], id: number, add: boolean) =>
     add ? [...arr, id] : arr.filter((item) => item !== id);
+
+  const pageIds = useMemo(() => data.map((item) => item.id), [data]);
+
+  const isAllSelected = useMemo(
+    () =>
+      pageIds.length > 0 && pageIds.every((id) => rowSelection.includes(id)),
+    [pageIds, rowSelection]
+  );
+
+  const handleSelectAll = (checked: boolean) => {
+    setRowSelection((prev) =>
+      checked
+        ? [...prev, ...pageIds.filter((id) => !prev.includes(id))]
+        : prev.filter((id) => !pageIds.includes(id))
+    );
+  };
+
+  const itemsToSum = useMemo(() => {
+    if (rowSelection.length > 0) {
+      return data.filter((item) => rowSelection.includes(item.id));
+    }
+    return data;
+  }, [data, rowSelection]);
+
+  const sumTotalUnit = useMemo(
+    () => itemsToSum.reduce((acc, item) => acc + Number(item.total_unit), 0),
+    [itemsToSum]
+  );
+  const sumTotalAmount = useMemo(
+    () => itemsToSum.reduce((acc, item) => acc + Number(item.total_amount), 0),
+    [itemsToSum]
+  );
 
   async function donwloadPdf() {
     startTransition(async () => {
@@ -59,7 +92,12 @@ const Column = ({ data, meta }: iAppProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead></TableHead>
+            <TableHead>
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={(checked) => handleSelectAll(!!checked)}
+              />
+            </TableHead>
             <TableHead>Bidder</TableHead>
             <TableHead>Balai Lelang</TableHead>
             <TableHead>Total Unit</TableHead>
@@ -101,6 +139,15 @@ const Column = ({ data, meta }: iAppProps) => {
             );
           })}
         </TableBody>
+
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={3}>Total</TableCell>
+            <TableCell>{sumTotalUnit}</TableCell>
+            <TableCell>{sumTotalAmount.toLocaleString("id-ID")}</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableFooter>
       </Table>
 
       {rowSelection.length > 0 ? (

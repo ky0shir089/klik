@@ -16,14 +16,14 @@ export const columns: ColumnDef<customerShowType>[] = [
     accessorKey: "va_number",
   },
   {
-    header: "Unit",
+    header: () => <div className="text-center">Unit</div>,
     accessorKey: "units_count",
     cell: ({ row }) => (
       <div className="text-center">{row.original.units_count}</div>
     ),
   },
   {
-    header: () => <div className="text-center">Harga Terbentuk</div>,
+    header: () => <div className="text-right">Harga Terbentuk</div>,
     accessorKey: "units_sum_price",
     cell: ({ row }) => (
       <div className="text-right">
@@ -32,7 +32,7 @@ export const columns: ColumnDef<customerShowType>[] = [
     ),
   },
   {
-    header: "Biaya Admin",
+    header: () => <div className="text-right">Biaya Admin</div>,
     accessorKey: "units_sum_admin_fee",
     cell: ({ row }) => (
       <div className="text-right">
@@ -41,7 +41,7 @@ export const columns: ColumnDef<customerShowType>[] = [
     ),
   },
   {
-    header: "Harga Total",
+    header: () => <div className="text-right">Harga Total</div>,
     accessorKey: "units_sum_final_price",
     cell: ({ row }) => (
       <div className="text-right">
@@ -49,8 +49,8 @@ export const columns: ColumnDef<customerShowType>[] = [
       </div>
     ),
   },
-   {
-    header: "Selisih",
+  {
+    header: () => <div className="text-right">Selisih</div>,
     accessorKey: "units_sum_diff_price",
     cell: ({ row }) => (
       <div className="text-right">
