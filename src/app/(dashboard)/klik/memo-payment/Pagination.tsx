@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { metaProps } from "@/components/ui/data-table";
 import {
@@ -55,7 +57,7 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[10, 30, 50, 100, 200].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>
@@ -69,7 +71,10 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
             variant="outline"
             size="icon"
             className="hidden size-8 lg:flex"
-            onClick={() => setCurrentPage(1)}
+            onClick={() => {
+              setCurrentPage(1);
+              createPageURL(1, pageSize);
+            }}
             disabled={meta?.prev_page_url ? false : true}
           >
             <span className="sr-only">Go to first page</span>
@@ -79,7 +84,10 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
             variant="outline"
             size="icon"
             className="size-8"
-            onClick={() => setCurrentPage(currentPage - 1)}
+            onClick={() => {
+              setCurrentPage(currentPage - 1);
+              createPageURL(currentPage - 1, pageSize);
+            }}
             disabled={meta?.prev_page_url ? false : true}
           >
             <span className="sr-only">Go to previous page</span>
@@ -92,7 +100,10 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
             variant="outline"
             size="icon"
             className="size-8"
-            onClick={() => setCurrentPage(currentPage + 1)}
+            onClick={() => {
+              setCurrentPage(currentPage + 1);
+              createPageURL(currentPage + 1, pageSize);
+            }}
             disabled={meta?.next_page_url ? false : true}
           >
             <span className="sr-only">Go to next page</span>
@@ -102,7 +113,10 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
             variant="outline"
             size="icon"
             className="hidden size-8 lg:flex"
-            onClick={() => setCurrentPage(meta?.last_page)}
+            onClick={() => {
+              setCurrentPage(meta?.last_page);
+              createPageURL(meta?.last_page, pageSize);
+            }}
             disabled={meta?.next_page_url ? false : true}
           >
             <span className="sr-only">Go to last page</span>

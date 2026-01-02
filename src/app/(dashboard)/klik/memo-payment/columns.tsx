@@ -56,7 +56,7 @@ const Column = ({ data, meta }: iAppProps) => {
     if (rowSelection.length > 0) {
       return data.filter((item) => rowSelection.includes(item.id));
     }
-    return data;
+    return [];
   }, [data, rowSelection]);
 
   const sumTotalUnit = useMemo(

@@ -80,6 +80,9 @@ const PaymentForm = ({ data }: iAppProps) => {
                         <TableHead className="text-right">
                           Harga Lelang
                         </TableHead>
+                        <TableHead className="text-right">
+                          Potongan Tiket
+                        </TableHead>
                         <TableHead className="text-right">Fee</TableHead>
                         <TableHead className="text-right">Total</TableHead>
                       </TableRow>
@@ -103,6 +106,9 @@ const PaymentForm = ({ data }: iAppProps) => {
                             <TableCell>{sub.unit.package_number}</TableCell>
                             <TableCell className="text-right">
                               {sub.unit.price.toLocaleString("id-ID")}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {sub.unit.ticket_price.toLocaleString("id-ID")}
                             </TableCell>
                             <TableCell className="text-right">
                               {sub.unit.admin_fee.toLocaleString("id-ID")}
