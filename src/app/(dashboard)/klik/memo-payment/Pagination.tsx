@@ -57,7 +57,7 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 30, 50, 100, 200].map((pageSize) => (
+              {[10, 30, 50, 100, 200, -1].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>

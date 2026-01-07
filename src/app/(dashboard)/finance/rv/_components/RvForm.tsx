@@ -47,11 +47,15 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
       date: "",
       type_trx_id: 0,
       description: "",
-      bank_account_id: 0,
+      pay_method: "",
+      bank_account_id: null,
       coa_id: 0,
       starting_balance: null,
     },
   });
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const payMethod = form.watch("pay_method");
 
   function onSubmit(values: rvSchemaType) {
     startTransition(async () => {
@@ -138,35 +142,63 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
 
         <FormField
           control={form.control}
-          name="bank_account_id"
+          name="pay_method"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Bank</FormLabel>
+              <FormLabel>Terima Ke</FormLabel>
               <Select
                 required
-                value={field.value ? String(field.value) : ""}
-                onValueChange={(val) => field.onChange(Number(val))}
+                value={field.value}
+                onValueChange={(val) => field.onChange(val)}
               >
                 <FormControl className="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Bank" />
+                    <SelectValue placeholder="Terima Ke" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {bankAccounts.map((item) => (
-                    <SelectItem
-                      key={item.id}
-                      value={String(item.account_number)}
-                    >
-                      {item.bank.name} - {item.account_number}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="BANK">BANK</SelectItem>
+                  <SelectItem value="KAS">KAS</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {payMethod === "BANK" ? (
+          <FormField
+            control={form.control}
+            name="bank_account_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bank</FormLabel>
+                <Select
+                  required
+                  value={field.value ? String(field.value) : ""}
+                  onValueChange={(val) => field.onChange(Number(val))}
+                >
+                  <FormControl className="w-full">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Bank" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {bankAccounts.map((item) => (
+                      <SelectItem
+                        key={item.id}
+                        value={String(item.account_number)}
+                      >
+                        {item.bank.name} - {item.account_number}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : null}
 
         <FormField
           control={form.control}
@@ -181,7 +213,7 @@ const RvForm = ({ bankAccounts, typeTrxes }: iAppProps) => {
               >
                 <FormControl className="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Bank" />
+                    <SelectValue placeholder="Select CoA" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>

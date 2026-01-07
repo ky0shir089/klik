@@ -11,7 +11,7 @@ import {
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { invoiceStatusSchemaType } from "@/lib/formSchema";
 import { cn } from "@/lib/utils";
-import { useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { invoiceUpdate } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -26,14 +26,23 @@ interface iAppProps {
 
 const InvoiceAction = ({ data }: iAppProps) => {
   const router = useRouter();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const $svg = useRef<any>(null);
 
   const form = useForm<invoiceStatusSchemaType>();
   const [isPending, startTransition] = useTransition();
+  const [isApprove, setIsApprove] = useState<boolean>(false);
+  const [points, setPoints] = useState<number[][]>([]);
 
-  const points = {
-    "path-1": JSON.parse(data.signature) ?? [],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const $svg = useRef<any>(null);
+  const handle = () => {
+    $svg.current?.clear();
+    setPoints([]);
+  };
+
+  const handlePoints = (data: number[][]) => {
+    if (data.length > 0) {
+      setPoints([...points, ...data]);
+    }
   };
 
   function onSubmit(values: invoiceStatusSchemaType) {
@@ -43,12 +52,13 @@ const InvoiceAction = ({ data }: iAppProps) => {
       if (result.success) {
         form.reset();
         toast.success(result.message);
-        router.push("/finance/list-invoice");
+        router.push("/finance/approval-invoice");
       } else {
         toast.error(result.message);
       }
     });
   }
+  console.log(points);
 
   return (
     <>
@@ -61,22 +71,49 @@ const InvoiceAction = ({ data }: iAppProps) => {
           <InvoiceData data={data} />
         </CardContent>
 
-        {data.status !== "REQUEST" ? (
+        {data.status === "REQUEST" && !isApprove ? (
           <CardFooter className={cn("flex gap-2")}>
             <Button
               type="submit"
               variant="destructive"
-              className="w-full"
-              onClick={() => onSubmit({ status: "CANCEL", signature: null })}
+              className="w-1/2"
+              onClick={() => onSubmit({ status: "REJECT", signature: null })}
             >
-              <LoadingSwap isLoading={isPending}>Cancel</LoadingSwap>
+              <LoadingSwap isLoading={isPending}>Reject</LoadingSwap>
+            </Button>
+
+            <Button
+              type="submit"
+              className="w-1/2 bg-green-400"
+              onClick={() => setIsApprove(true)}
+            >
+              <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
             </Button>
           </CardFooter>
         ) : null}
       </Card>
 
-      {points["path-1"].length > 0 ? (
-        <Signature ref={$svg} defaultPoints={points} readonly />
+      {isApprove ? (
+        <div className="mx-2 mb-10 border-2 border-yellow-500">
+          <Signature ref={$svg} onPointer={handlePoints} />
+
+          <div className="flex mt-2 gap-2">
+            <Button
+              type="button"
+              className="w-1/2 bg-blue-500"
+              onClick={handle}
+            >
+              Clear
+            </Button>
+            <Button
+              type="submit"
+              className="w-1/2 bg-green-400"
+              onClick={() => onSubmit({ status: "APPROVE", signature: points })}
+            >
+              <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
+            </Button>
+          </div>
+        </div>
       ) : null}
     </>
   );

@@ -22,6 +22,25 @@ export async function invoiceIndex(
   }
 }
 
+export async function invoiceInbox(
+  page: number,
+  size: number,
+  search?: string
+) {
+  try {
+    const { data } = await axiosInstance.get(`/finance/v1/invoice-inbox`, {
+      params: {
+        page,
+        size,
+        search,
+      },
+    });
+    return data;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
+}
+
 export async function invoiceShow(id: number) {
   try {
     const { data } = await axiosInstance.get(`/finance/v1/invoice/${id}`);

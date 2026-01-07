@@ -25,9 +25,20 @@ export const columns: ColumnDef<rvShowType>[] = [
     accessorKey: "description",
   },
   {
+    header: "Metode Pembayaran",
+    accessorKey: "pay_method",
+  },
+  {
+    header: "Journal Number",
+    accessorKey: "journal_number",
+    cell: ({ row }) => row.original?.journal_number,
+  },
+  {
     header: "Bank",
     accessorFn: (row) =>
-      `${row.account.bank.name} - ${row.account?.account_number}`,
+      row.account
+        ? `${row.account?.bank.name} - ${row.account?.account_number}`
+        : null,
   },
   {
     header: "Amount",

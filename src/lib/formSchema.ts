@@ -94,7 +94,8 @@ export const rvSchema = z.object({
   date: z.iso.date(),
   type_trx_id: z.number().positive(),
   description: z.string().min(1),
-  bank_account_id: z.number().positive(),
+  pay_method: z.string().min(1),
+  bank_account_id: z.number().positive().nullable(),
   coa_id: z.number().positive(),
   starting_balance: z.number().positive().nullable(),
 });
@@ -118,7 +119,8 @@ export type paymentSchemaType = z.infer<typeof paymentSchema>;
 export const pvSchema = z.object({
   paid_date: z.iso.date(),
   description: z.string().min(1),
-  bank_account_id: z.number().positive(),
+  payment_method: z.string().min(1),
+  bank_account_id: z.number().positive().nullable(),
   pvs: z.array(z.number().positive()).min(1, "Select at least one PV"),
 });
 export type pvSchemaType = z.infer<typeof pvSchema>;
@@ -129,17 +131,35 @@ export const uploadFileSchema = z.object({
 });
 export type uploadFileSchemaType = z.infer<typeof uploadFileSchema>;
 
-export const invoiceSchema = z.object({
-  supplier_account_id: z.number().positive(),
+export const invoiceDetailSchema = z.object({
   inv_coa_id: z.number().positive(),
-  rv_id: z.number().optional().nullable(),
   description: z.string().min(1),
-  amount: z.number().positive().nullable(),
+  item_amount: z.number().positive(),
+  pph_id: z.number().positive().nullable(),
+  pph_amount: z.number().positive().nullable(),
+  ppn_rate: z.number().positive().nullable(),
+  ppn_amount: z.number().positive().nullable(),
+  rv_id: z.number().optional().nullable(),
+  total_amount: z.number().positive(),
+});
+export type invoiceDetailSchemaType = z.infer<typeof invoiceDetailSchema>;
+
+export const invoiceSchema = z.object({
+  date: z.iso.date(),
+  trx_id: z.number().positive(),
+  supplier_id: z.number().positive(),
+  payment_method: z.string().min(1),
+  supplier_account_id: z.number().positive().nullable(),
+  description: z.string().min(1),
+  total_amount: z.number().positive(),
+  attachment: z.union([z.instanceof(File), z.null()]),
+  details: z.array(invoiceDetailSchema).min(1, "Select at least one item"),
 });
 export type invoiceSchemaType = z.infer<typeof invoiceSchema>;
 
 export const invoiceStatusSchema = z.object({
   status: z.string(),
+  signature: z.array(z.array(z.number())).min(1).nullable(),
 });
 export type invoiceStatusSchemaType = z.infer<typeof invoiceStatusSchema>;
 
@@ -171,3 +191,10 @@ export const removeRvSchema = z.object({
   status: z.string().min(1),
 });
 export type removeRvSchemaType = z.infer<typeof removeRvSchema>;
+
+export const pphSchema = z.object({
+  name: z.string().min(1),
+  rate: z.number().positive().nullable(),
+  coa_id: z.number().positive(),
+});
+export type pphSchemaType = z.infer<typeof pphSchema>;

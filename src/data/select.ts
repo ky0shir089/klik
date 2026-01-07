@@ -84,3 +84,8 @@ export async function selectSupplier() {
   const { data } = await axiosInstance.get(`/select/v1/supplier`);
   return data;
 }
+
+export async function selectPph() {
+  const { data } = await axiosInstance.get(`/select/v1/pph`);
+  return data;
+}

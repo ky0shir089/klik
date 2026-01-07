@@ -1,6 +1,7 @@
-import { selectPph, selectSupplier, selectTypeTrx } from "@/data/select";
-import InvoiceForm from "./_components/InvoiceForm";
+import { selectCoa } from "@/data/select";
+import PphForm from "../_components/PphForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
@@ -8,17 +9,16 @@ import { connection } from "next/server";
 const RenderForm = async () => {
   await connection();
 
-  const [{ data: typeTrxes }, { data: suppliers }, { data: pphs }] =
-    await Promise.all([selectTypeTrx("OUT"), selectSupplier(), selectPph()]);
+  const { data } = await selectCoa("CHILDREN");
 
-  return <InvoiceForm suppliers={suppliers} typeTrxes={typeTrxes} pphs={pphs} />;
+  return <PphForm coas={data} />;
 };
 
-const NewInvoicePage = () => {
+const NewPphPage = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Create Invoice</CardTitle>
+        <CardTitle className={cn("text-2xl")}>Create PPH</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -30,4 +30,4 @@ const NewInvoicePage = () => {
   );
 };
 
-export default NewInvoicePage;
+export default NewPphPage;

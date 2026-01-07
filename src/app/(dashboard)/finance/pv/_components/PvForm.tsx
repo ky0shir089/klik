@@ -76,11 +76,13 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
     defaultValues: {
       paid_date: new Date().toISOString().substring(0, 10),
       description: "",
-      bank_account_id: 0,
+      payment_method: "BANK",
+      bank_account_id: null,
       pvs: [],
     },
   });
 
+  const paymentMethod = form.watch("payment_method");
   const watchedSubtotal = form.watch("pvs");
   const sumTotalAmount = watchedSubtotal
     ? data
@@ -158,32 +160,60 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
 
         <FormField
           control={form.control}
-          name="bank_account_id"
+          name="payment_method"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Bank</FormLabel>
+              <FormLabel>Cara Bayar</FormLabel>
               <Select
                 required
-                value={field.value ? String(field.value) : ""}
-                onValueChange={(val) => field.onChange(Number(val))}
+                value={field.value}
+                onValueChange={(val) => field.onChange(val)}
               >
                 <FormControl className="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Bank" />
+                    <SelectValue placeholder="Cara Bayar" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {bankAccounts.map((item: bankAccountShowType) => (
-                    <SelectItem key={item.id} value={String(item.id)}>
-                      {item.bank.name} - {item.account_number}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="BANK">BANK</SelectItem>
+                  <SelectItem value="KAS">KAS</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {paymentMethod === "BANK" ? (
+          <FormField
+            control={form.control}
+            name="bank_account_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bank</FormLabel>
+                <Select
+                  required
+                  value={field.value ? String(field.value) : ""}
+                  onValueChange={(val) => field.onChange(Number(val))}
+                >
+                  <FormControl className="w-full">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Bank" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {bankAccounts.map((item: bankAccountShowType) => (
+                      <SelectItem key={item.id} value={String(item.id)}>
+                        {item.bank.name} - {item.account_number}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : null}
 
         <Table className={cn("border-2")}>
           <TableHeader>
