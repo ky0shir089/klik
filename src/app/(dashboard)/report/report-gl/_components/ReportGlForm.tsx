@@ -14,6 +14,12 @@ const ReportGlForm = () => {
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
 
+  /**
+   * Handle form submission by requesting a GL report for the selected date range and triggering its download.
+   *
+   * Starts a UI transition to call `reportGl` with the current `from` and `to` values, download the returned file as
+   * "report-gl.xlsx", show an error toast if the download fails, and reset the input fields.
+   */
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 

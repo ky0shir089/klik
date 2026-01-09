@@ -45,6 +45,11 @@ const InvoiceAction = ({ data }: iAppProps) => {
     }
   };
 
+  /**
+   * Submit invoice status and handle the result by giving user feedback and navigating on success.
+   *
+   * @param values - The invoice status payload to submit (e.g., new status and optional signature data)
+   */
   function onSubmit(values: invoiceStatusSchemaType) {
     startTransition(async () => {
       const result = await invoiceUpdate(data.id, values);
