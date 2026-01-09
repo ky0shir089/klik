@@ -58,15 +58,23 @@ const InvoiceAction = ({ data }: iAppProps) => {
         </CardHeader>
 
         <CardContent>
-          <InvoiceData data={data} />
+          <InvoiceData data={data} points={points} />
+
+          {points["path-1"].length > 0 ? (
+            <div className="flex items-center justify-center w-full">
+              <div className="w-full h-auto border-2 border-yellow-500 sm:max-w-sm">
+                <Signature ref={$svg} defaultPoints={points} readonly />
+              </div>
+            </div>
+          ) : null}
         </CardContent>
 
-        {data.status !== "REQUEST" ? (
+        {data.status !== "APPROVE" ? (
           <CardFooter className={cn("flex gap-2")}>
             <Button
               type="submit"
               variant="destructive"
-              className="w-full"
+              className="w-full cursor-pointer"
               onClick={() => onSubmit({ status: "CANCEL", signature: null })}
             >
               <LoadingSwap isLoading={isPending}>Cancel</LoadingSwap>
@@ -74,10 +82,6 @@ const InvoiceAction = ({ data }: iAppProps) => {
           </CardFooter>
         ) : null}
       </Card>
-
-      {points["path-1"].length > 0 ? (
-        <Signature ref={$svg} defaultPoints={points} readonly />
-      ) : null}
     </>
   );
 };

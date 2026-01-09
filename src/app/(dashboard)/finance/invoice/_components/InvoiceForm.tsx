@@ -29,21 +29,21 @@ import { typeTrxShowType } from "@/data/type-trx";
 import { coaShowType } from "@/data/coa";
 import { supplierShowType } from "@/data/supplier";
 import { bankAccountShowType } from "@/data/bank-account";
-import InvoiceDetail from "./InvoiceDetail";
+import InvoiceDetail, { defaultDetailItem } from "./InvoiceDetail";
 import { pphShowType } from "@/data/pph";
+import { rvShowType } from "@/data/rv";
 
 interface iAppProps {
   suppliers: supplierShowType[];
   typeTrxes: typeTrxShowType[];
   pphs: pphShowType[];
+  rvs: rvShowType[];
 }
 
-const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
+const InvoiceForm = ({ suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const [typeTrxId, setTypeTrxId] = useState<number>(0);
-  const [supplierId, setSupplierId] = useState<number>(0);
   const [supplierAccounts, setSupplierAccounts] = useState<
     bankAccountShowType[]
   >([]);
@@ -52,9 +52,14 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
   const form = useForm<invoiceSchemaType>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
+      date: new Date().toISOString().slice(0, 10),
+      trx_id: null,
+      supplier_id: null,
       payment_method: "BANK",
       supplier_account_id: null,
+      description: "",
       attachment: null,
+      details: [defaultDetailItem],
     },
   });
 
@@ -64,6 +69,7 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
   function onSubmit(values: invoiceSchemaType) {
     startTransition(async () => {
       const result = await invoiceStore(values);
+      console.log(result);
 
       if (result.success) {
         form.reset();
@@ -78,71 +84,89 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div className="space-y-6">
-            <FormItem>
-              <FormLabel>Date</FormLabel>
-              <Input
-                type="date"
-                required
-                value={new Date().toISOString().slice(0, 10)}
-                readOnly
-              />
-            </FormItem>
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tanggal</FormLabel>
+                  <FormControl>
+                    <Input type="date" required {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <FormItem>
-              <FormLabel>Type Trx</FormLabel>
-              <Select
-                required
-                value={typeTrxId ? String(typeTrxId) : ""}
-                onValueChange={(val) => {
-                  setTypeTrxId(Number(val));
-                  const selected = typeTrxes.find((t) => t.id === Number(val));
-                  setCoas(selected?.trx_dtl ?? []);
-                }}
-              >
-                <FormControl className="w-full">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Type Trx" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {typeTrxes.map((item) => (
-                    <SelectItem key={item.id} value={String(item.id)}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
+            <FormField
+              control={form.control}
+              name="trx_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type Trx</FormLabel>
+                  <Select
+                    required
+                    value={field.value ? String(field.value) : ""}
+                    onValueChange={(val) => {
+                      field.onChange(Number(val));
+                      const selected = typeTrxes.find(
+                        (t) => t.id === Number(val)
+                      );
+                      setCoas(selected?.trx_dtl ?? []);
+                    }}
+                  >
+                    <FormControl className="w-full">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Type Trx" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {typeTrxes.map((item) => (
+                        <SelectItem key={item.id} value={String(item.id)}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
 
-            <FormItem>
-              <FormLabel>Supplier</FormLabel>
-              <Select
-                required
-                value={supplierId ? String(supplierId) : ""}
-                onValueChange={(val) => {
-                  setSupplierId(Number(val));
-                  const selected = suppliers.find(
-                    (item) => item.id === Number(val)
-                  );
-                  setSupplierAccounts([selected?.account]);
-                }}
-              >
-                <FormControl className="w-full">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Supplier" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {suppliers.map((item) => (
-                    <SelectItem key={item.id} value={String(item.id)}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
+            <FormField
+              control={form.control}
+              name="supplier_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Supplier</FormLabel>
+                  <Select
+                    required
+                    value={field.value ? String(field.value) : ""}
+                    onValueChange={(val) => {
+                      field.onChange(Number(val));
+                      const selected = suppliers.find(
+                        (item) => item.id === Number(val)
+                      );
+                      setSupplierAccounts([selected?.account]);
+                    }}
+                  >
+                    <FormControl className="w-full">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Supplier" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {suppliers.map((item) => (
+                        <SelectItem key={item.id} value={String(item.id)}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -178,7 +202,6 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
                   <FormItem>
                     <FormLabel>Nomor Rekening</FormLabel>
                     <Select
-                      required
                       value={field.value ? String(field.value) : ""}
                       onValueChange={(val) => field.onChange(Number(val))}
                     >
@@ -203,6 +226,20 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
 
             <FormField
               control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Keterangan</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Keterangan" required {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="attachment"
               render={({ field }) => (
                 <FormItem>
@@ -211,6 +248,7 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
                     <Input
                       type="file"
                       placeholder="Browse File"
+                      accept=".pdf"
                       onChange={(e) => field.onChange(e.target.files?.[0])}
                     />
                   </FormControl>
@@ -221,7 +259,7 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs }: iAppProps) => {
           </div>
         </div>
 
-        <InvoiceDetail form={form} coas={coas} pphs={pphs} />
+        <InvoiceDetail coas={coas} pphs={pphs} rvs={rvs} />
 
         <Button
           type="submit"

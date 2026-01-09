@@ -27,12 +27,12 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   {
     header: "Bank",
     accessorFn: (row) =>
-      `${row.supplier_account.bank.name} - ${row.supplier_account?.account_number}`,
+      `${row.supplier_account?.bank.name} - ${row.supplier_account?.account_number}`,
   },
   {
     header: "Amount",
     accessorKey: "amount",
-    cell: ({ row }) => row.original.amount.toLocaleString("id-ID"),
+    cell: ({ row }) => row.original.total_amount.toLocaleString("id-ID"),
   },
   {
     header: "Status",

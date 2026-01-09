@@ -3,14 +3,9 @@
 import axiosInstance from "@/lib/axios";
 import { parseAxiosError } from "@/lib/parseAxiosError";
 
-export async function reportBank(values: {
-  from: string;
-  to: string;
-  bank: number;
-  permission: string;
-}) {
+export async function reportGl(values: { from: string; to: string }) {
   try {
-    const res = await axiosInstance.post(`/report/v1/report-bank`, values, {
+    const res = await axiosInstance.post(`/report/v1/report-gl`, values, {
       responseType: "arraybuffer",
     });
 

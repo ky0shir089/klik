@@ -18,7 +18,7 @@ import { auctionSchema, auctionSchemaType } from "@/lib/formSchema";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { auctionStore } from "../action";
 
-const AuctionForm = ({ userId }: { userId: number }) => {
+const AuctionForm = () => {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<auctionSchemaType>({
@@ -54,7 +54,7 @@ const AuctionForm = ({ userId }: { userId: number }) => {
             <FormItem>
               <FormLabel>Tanggal Lelang</FormLabel>
               <FormControl>
-                <Input type="date" {...field} readOnly={userId !== 1} />
+                <Input type="date" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

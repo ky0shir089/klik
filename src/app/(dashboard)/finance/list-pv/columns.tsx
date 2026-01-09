@@ -18,9 +18,16 @@ export const columns: ColumnDef<pvShowType>[] = [
     accessorKey: "description",
   },
   {
+    header: "Cara Bayar",
+    accessorKey: "payment_method",
+  },
+  {
     header: "Bank",
-    accessorFn: (row) =>
-      `${row.bank_account.bank.name} - ${row.bank_account.account_number}`,
+    accessorKey: "bank_account",
+    cell: ({ row }) =>
+      row.original.bank_account
+        ? `${row.original.bank_account?.bank.name} - ${row.original.bank_account?.account_number}`
+        : null,
   },
   {
     header: "Paid To",
@@ -28,8 +35,11 @@ export const columns: ColumnDef<pvShowType>[] = [
   },
   {
     header: "Rekening",
-    accessorFn: (row) =>
-      `${row.supplier_account.bank.name} - ${row.supplier_account.account_number}`,
+    accessorKey: "supplier_account",
+    cell: ({ row }) =>
+      row.original.supplier_account
+        ? `${row.original.supplier_account?.bank.name} - ${row.original.supplier_account?.account_number}`
+        : null,
   },
   {
     header: "Amount",

@@ -3,13 +3,9 @@ import { cn } from "@/lib/utils";
 import AuctionForm from "./_components/AuctionForm";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
-import { getCookieData } from "@/lib/cookieData";
 
 const RenderForm = async () => {
-  const userData = (await getCookieData("user")) as string;
-  const user = JSON.parse(userData);
-
-  return <AuctionForm userId={user.id} />;
+  return <AuctionForm />;
 };
 
 const AuctionDataPage = () => {
