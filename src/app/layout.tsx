@@ -27,6 +27,14 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+/**
+ * App root layout that provides global HTML structure, fonts, theme provider, and toast UI.
+ *
+ * Renders an html/body wrapper applying global font variables and antialiasing, wraps children with ThemeProvider (system-default theme, system sync disabled transitions), and mounts a top-center Toaster.
+ *
+ * @param children - The page content to render inside this layout
+ * @returns The root React element tree for the application layout
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
