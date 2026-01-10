@@ -93,8 +93,16 @@ const InvoiceAction = ({ data }: iAppProps) => {
 
       {isApprove ? (
         <div className="flex flex-col items-center justify-center w-full p-2 mx-2 mb-10 border-2 border-yellow-500">
+          <p className="mb-2 text-sm font-medium">
+            Please provide your signature to approve this invoice
+          </p>
+
           <div className="w-full sm:max-w-sm">
-            <Signature ref={$svg} onPointer={handlePoints} />
+            <Signature
+              ref={$svg}
+              onPointer={handlePoints}
+              aria-label="Signature canvas"
+            />
           </div>
 
           <div className="grid w-full grid-cols-3 gap-2 mt-2">

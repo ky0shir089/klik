@@ -45,8 +45,8 @@ const InvoiceData = ({ data }: invoiceShowType) => {
               <TableRow>
                 <TableHead>Nomor Rekening</TableHead>
                 <TableCell>
-                  {data?.supplier_account.bank.name} -{" "}
-                  {data?.supplier_account.account_number}
+                  {data.supplier_account.bank.name} -{" "}
+                  {data.supplier_account.account_number}
                 </TableCell>
               </TableRow>
             ) : null}

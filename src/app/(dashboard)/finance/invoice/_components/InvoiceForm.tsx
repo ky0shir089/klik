@@ -69,7 +69,6 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
   function onSubmit(values: invoiceSchemaType) {
     startTransition(async () => {
       const result = await invoiceStore(values);
-      console.log(result);
 
       if (result.success) {
         form.reset();
