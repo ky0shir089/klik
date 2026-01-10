@@ -148,7 +148,9 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
                       const selected = suppliers.find(
                         (item) => item.id === Number(val)
                       );
-                      setSupplierAccounts([selected?.account]);
+                      setSupplierAccounts(
+                        selected?.account ? [selected.account] : []
+                      );
                     }}
                   >
                     <FormControl className="w-full">

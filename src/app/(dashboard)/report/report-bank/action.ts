@@ -14,7 +14,8 @@ export async function reportBank(values: {
       responseType: "arraybuffer",
     });
 
-    const file = new File([res.data], "export.xlsx", {
+    const fileName = `bank-report-${values.from}-to-${values.to}.xlsx`;
+    const file = new File([res.data], fileName, {
       type: res.headers["content-type"] || "application/octet-stream",
     });
 

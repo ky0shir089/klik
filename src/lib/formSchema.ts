@@ -135,12 +135,12 @@ export const invoiceDetailSchema = z.object({
   inv_coa_id: z.number().positive(),
   description: z.string().min(1),
   item_amount: z.number().positive().nullable(),
-  pph_id: z.number().nullable(),
-  pph_rate: z.number(),
-  pph_amount: z.number(),
-  ppn_rate: z.number(),
-  ppn_amount: z.number(),
-  rv_id: z.number().nullable(),
+  pph_id: z.number().positive().nullable(),
+  pph_rate: z.number().min(0).max(100),
+  pph_amount: z.number().min(0),
+  ppn_rate: z.number().min(0).max(100),
+  ppn_amount: z.number().min(0),
+  rv_id: z.number().positive().nullable(),
   total_amount: z.number().positive(),
 });
 export type invoiceDetailSchemaType = z.infer<typeof invoiceDetailSchema>;

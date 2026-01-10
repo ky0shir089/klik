@@ -14,7 +14,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   {
     header: "Tanggal",
     accessorKey: "date",
-    cell: ({ row }) => new Date(row.original.created_at).toLocaleDateString(),
+    cell: ({ row }) => new Date(row.original.date).toLocaleDateString(),
   },
   {
     header: "Description",

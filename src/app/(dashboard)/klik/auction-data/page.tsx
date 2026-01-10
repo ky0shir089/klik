@@ -4,10 +4,6 @@ import AuctionForm from "./_components/AuctionForm";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 
-const RenderForm = async () => {
-  return <AuctionForm />;
-};
-
 const AuctionDataPage = () => {
   return (
     <Card>
@@ -17,7 +13,7 @@ const AuctionDataPage = () => {
 
       <CardContent>
         <Suspense fallback={<FormSkeleton />}>
-          <RenderForm />
+          <AuctionForm />
         </Suspense>
       </CardContent>
     </Card>

@@ -41,7 +41,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
 
   const handlePoints = (data: number[][]) => {
     if (data.length > 0) {
-      setPoints([...points, ...data]);
+      setPoints((prev) => [...prev, ...data]);
     }
   };
 
@@ -81,7 +81,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
             </Button>
 
             <Button
-              type="submit"
+              type="button"
               className="bg-green-400 "
               onClick={() => setIsApprove(true)}
             >
@@ -111,7 +111,13 @@ const InvoiceAction = ({ data }: iAppProps) => {
             <Button
               type="submit"
               className="bg-green-400"
-              onClick={() => onSubmit({ status: "APPROVE", signature: points })}
+              onClick={() => {
+                if (points.length === 0) {
+                  toast.error("Signature is required");
+                  return;
+                }
+                onSubmit({ status: "APPROVE", signature: points });
+              }}
             >
               <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
             </Button>

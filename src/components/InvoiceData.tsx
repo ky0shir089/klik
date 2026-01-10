@@ -68,6 +68,7 @@ const InvoiceData = ({ data }: invoiceShowType) => {
                   <Link
                     href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path}`}
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {data.attachment.filename}
                   </Link>
@@ -103,7 +104,7 @@ const InvoiceData = ({ data }: invoiceShowType) => {
 
         <TableBody>
           {data.details.map(
-            (item: Pick<invoiceShowType, "details"[0]>, index: number) => (
+            (item: invoiceShowType["details"][0], index: number) => (
               <TableRow key={item.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{item.coa.code}</TableCell>

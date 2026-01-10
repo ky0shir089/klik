@@ -220,7 +220,6 @@ const InvoiceDetailRow = memo(
                     customInput={Input}
                     thousandSeparator
                     readOnly
-                    disabled
                     className="bg-muted"
                   />
                 </FormControl>

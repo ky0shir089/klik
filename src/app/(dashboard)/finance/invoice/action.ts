@@ -45,7 +45,7 @@ export async function invoiceStore(values: invoiceSchemaType) {
     if (item.pph_id !== null) {
       formData.append(`details[${i}][pph_id]`, item.pph_id.toString());
     }
-    formData.append(`details[${i}][ppn_rate]`, item.ppn_rate.toString());
+    formData.append(`details[${i}][pph_rate]`, item.pph_rate.toString());
     formData.append(`details[${i}][pph_amount]`, item.pph_amount.toString());
     formData.append(`details[${i}][ppn_rate]`, item.ppn_rate.toString());
     formData.append(`details[${i}][ppn_amount]`, item.ppn_amount.toString());
