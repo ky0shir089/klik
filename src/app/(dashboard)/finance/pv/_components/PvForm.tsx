@@ -253,9 +253,9 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                     )}
                   />
                 </TableCell>
-                <TableCell>{item.supplier_account.supplier.name}</TableCell>
-                <TableCell>{item.supplier_account.bank.name}</TableCell>
-                <TableCell>{item.supplier_account.account_number}</TableCell>
+                <TableCell>{item.supplier.name}</TableCell>
+                <TableCell>{item.supplier_account?.bank.name ?? "KAS"}</TableCell>
+                <TableCell>{item.supplier_account?.account_number}</TableCell>
                 <TableCell className="text-right">
                   {item.pv_amount.toLocaleString("id-ID")}
                 </TableCell>

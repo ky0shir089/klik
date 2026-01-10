@@ -31,7 +31,6 @@ export const columns: ColumnDef<rvShowType>[] = [
   {
     header: "Journal Number",
     accessorKey: "journal_number",
-    cell: ({ row }) => row.original?.journal_number,
   },
   {
     header: "Bank",

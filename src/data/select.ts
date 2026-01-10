@@ -89,3 +89,8 @@ export async function selectPph() {
   const { data } = await axiosInstance.get(`/select/v1/pph`);
   return data;
 }
+
+export async function selectRv() {
+  const { data } = await axiosInstance.get(`/select/v1/rv`);
+  return data;
+}

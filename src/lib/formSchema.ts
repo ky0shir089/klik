@@ -134,24 +134,24 @@ export type uploadFileSchemaType = z.infer<typeof uploadFileSchema>;
 export const invoiceDetailSchema = z.object({
   inv_coa_id: z.number().positive(),
   description: z.string().min(1),
-  item_amount: z.number().positive(),
+  item_amount: z.number().positive().nullable(),
   pph_id: z.number().positive().nullable(),
-  pph_amount: z.number().positive().nullable(),
-  ppn_rate: z.number().positive().nullable(),
-  ppn_amount: z.number().positive().nullable(),
-  rv_id: z.number().optional().nullable(),
+  pph_rate: z.number().min(0).max(100),
+  pph_amount: z.number().min(0),
+  ppn_rate: z.number().min(0).max(100),
+  ppn_amount: z.number().min(0),
+  rv_id: z.number().positive().nullable(),
   total_amount: z.number().positive(),
 });
 export type invoiceDetailSchemaType = z.infer<typeof invoiceDetailSchema>;
 
 export const invoiceSchema = z.object({
   date: z.iso.date(),
-  trx_id: z.number().positive(),
-  supplier_id: z.number().positive(),
+  trx_id: z.number().positive().nullable(),
+  supplier_id: z.number().positive().nullable(),
   payment_method: z.string().min(1),
   supplier_account_id: z.number().positive().nullable(),
   description: z.string().min(1),
-  total_amount: z.number().positive(),
   attachment: z.union([z.instanceof(File), z.null()]),
   details: z.array(invoiceDetailSchema).min(1, "Select at least one item"),
 });

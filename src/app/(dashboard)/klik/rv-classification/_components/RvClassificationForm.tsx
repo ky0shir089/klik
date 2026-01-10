@@ -110,7 +110,6 @@ const RvTable = memo(function RvTable({
 });
 
 const RvClassificationForm = ({ data }: iAppProps) => {
-  console.log(data);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
