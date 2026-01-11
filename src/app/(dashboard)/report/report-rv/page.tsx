@@ -1,7 +1,7 @@
 import ReportRvForm from "./_components/ReportRvForm";
 
-const UploadSPPPage = () => {
+const ReportRv = () => {
   return <ReportRvForm />;
 };
 
-export default UploadSPPPage;
+export default ReportRv;

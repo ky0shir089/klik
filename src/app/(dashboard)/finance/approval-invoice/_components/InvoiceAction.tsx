@@ -41,7 +41,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
 
   const handlePoints = (data: number[][]) => {
     if (data.length > 0) {
-      setPoints([...points, ...data]);
+      setPoints((prev) => [...prev, ...data]);
     }
   };
 
@@ -58,7 +58,6 @@ const InvoiceAction = ({ data }: iAppProps) => {
       }
     });
   }
-  console.log(points);
 
   return (
     <>
@@ -72,19 +71,18 @@ const InvoiceAction = ({ data }: iAppProps) => {
         </CardContent>
 
         {data.status === "REQUEST" && !isApprove ? (
-          <CardFooter className={cn("flex gap-2")}>
+          <CardFooter className={cn("grid grid-cols-2 gap-2")}>
             <Button
               type="submit"
               variant="destructive"
-              className="w-1/2"
               onClick={() => onSubmit({ status: "REJECT", signature: null })}
             >
               <LoadingSwap isLoading={isPending}>Reject</LoadingSwap>
             </Button>
 
             <Button
-              type="submit"
-              className="w-1/2 bg-green-400"
+              type="button"
+              className="bg-green-400 "
               onClick={() => setIsApprove(true)}
             >
               <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
@@ -94,21 +92,40 @@ const InvoiceAction = ({ data }: iAppProps) => {
       </Card>
 
       {isApprove ? (
-        <div className="mx-2 mb-10 border-2 border-yellow-500">
-          <Signature ref={$svg} onPointer={handlePoints} />
+        <div className="flex flex-col items-center justify-center w-full p-2 mx-2 mb-10 border-2 border-yellow-500">
+          <p className="mb-2 text-sm font-medium">
+            Please provide your signature to approve this invoice
+          </p>
 
-          <div className="flex mt-2 gap-2">
+          <div className="w-full sm:max-w-sm">
+            <Signature
+              ref={$svg}
+              onPointer={handlePoints}
+              aria-label="Signature canvas"
+            />
+          </div>
+
+          <div className="grid w-full grid-cols-3 gap-2 mt-2">
             <Button
               type="button"
-              className="w-1/2 bg-blue-500"
-              onClick={handle}
+              className="bg-orange-500"
+              onClick={() => setIsApprove(false)}
             >
+              Back
+            </Button>
+            <Button type="button" className="bg-blue-500" onClick={handle}>
               Clear
             </Button>
             <Button
               type="submit"
-              className="w-1/2 bg-green-400"
-              onClick={() => onSubmit({ status: "APPROVE", signature: points })}
+              className="bg-green-400"
+              onClick={() => {
+                if (points.length === 0) {
+                  toast.error("Signature is required");
+                  return;
+                }
+                onSubmit({ status: "APPROVE", signature: points });
+              }}
             >
               <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
             </Button>

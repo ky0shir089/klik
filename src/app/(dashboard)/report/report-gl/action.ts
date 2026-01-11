@@ -3,19 +3,13 @@
 import axiosInstance from "@/lib/axios";
 import { parseAxiosError } from "@/lib/parseAxiosError";
 
-export async function reportBank(values: {
-  from: string;
-  to: string;
-  bank: number;
-  permission: string;
-}) {
+export async function reportGl(values: { from: string; to: string }) {
   try {
-    const res = await axiosInstance.post(`/report/v1/report-bank`, values, {
+    const res = await axiosInstance.post(`/report/v1/report-gl`, values, {
       responseType: "arraybuffer",
     });
 
-    const fileName = `bank-report-${values.from}-to-${values.to}.xlsx`;
-    const file = new File([res.data], fileName, {
+    const file = new File([res.data], "export.xlsx", {
       type: res.headers["content-type"] || "application/octet-stream",
     });
 
