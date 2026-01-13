@@ -85,11 +85,21 @@ export async function selectSupplier() {
   return data;
 }
 
+/**
+ * Fetches withholding tax (PPH) selection options from the server.
+ *
+ * @returns The data returned by the `/select/v1/pph` endpoint.
+ */
 export async function selectPph() {
   const { data } = await axiosInstance.get(`/select/v1/pph`);
   return data;
 }
 
+/**
+ * Retrieves RV selection data from the API.
+ *
+ * @returns The `data` payload returned by the `/select/v1/rv` endpoint.
+ */
 export async function selectRv() {
   const { data } = await axiosInstance.get(`/select/v1/rv`);
   return data;

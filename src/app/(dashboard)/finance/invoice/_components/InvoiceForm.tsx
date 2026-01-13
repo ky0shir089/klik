@@ -66,6 +66,11 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
   // eslint-disable-next-line react-hooks/incompatible-library
   const paymentMethod = form.watch("payment_method");
 
+  /**
+   * Submits validated invoice data, displays success or error feedback, resets the form and navigates to the invoice list on success.
+   *
+   * @param values - Validated invoice data to persist
+   */
   function onSubmit(values: invoiceSchemaType) {
     startTransition(async () => {
       const result = await invoiceStore(values);

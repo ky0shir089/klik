@@ -4,6 +4,15 @@ import axiosInstance from "@/lib/axios";
 import { invoiceSchema, invoiceSchemaType } from "@/lib/formSchema";
 import { parseAxiosError } from "@/lib/parseAxiosError";
 
+/**
+ * Submit an invoice by validating the input, serializing it to multipart/form-data, and posting it to the invoice API.
+ *
+ * Validates `values` against the invoice schema, builds FormData (including nested `details` fields and optional attachment/IDs),
+ * and sends a POST to `/finance/v1/invoice`.
+ *
+ * @param values - Invoice data conforming to `invoiceSchemaType`
+ * @returns The server response data on success; if validation fails, an object `{ success: false, message: "invalid form data" }`; if the request fails, a parsed Axios error object
+ */
 export async function invoiceStore(values: invoiceSchemaType) {
   const validation = invoiceSchema.safeParse(values);
 

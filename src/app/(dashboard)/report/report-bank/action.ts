@@ -3,6 +3,16 @@
 import axiosInstance from "@/lib/axios";
 import { parseAxiosError } from "@/lib/parseAxiosError";
 
+/**
+ * Requests a bank report for the given range and returns it as an Excel File.
+ *
+ * @param values - Request parameters for the report
+ * @param values.from - Start date or identifier for the report range
+ * @param values.to - End date or identifier for the report range
+ * @param values.bank - Bank identifier
+ * @param values.permission - Permission context used for the report
+ * @returns A File named "export.xlsx" containing the report on success, or the parsed Axios error object on failure
+ */
 export async function reportBank(values: {
   from: string;
   to: string;
