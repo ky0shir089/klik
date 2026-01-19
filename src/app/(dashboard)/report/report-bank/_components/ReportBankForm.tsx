@@ -24,7 +24,9 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
   const [bank, setBank] = useState<number>(0);
   const [permission, setPermission] = useState<string>("");
 
-  function onSubmit() {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
     const values = {
       from,
       to,
@@ -43,7 +45,7 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
         window.URL.revokeObjectURL(url);
       } catch (error) {
         console.error("Download error:", error);
-        toast.error("Error downloading file.");
+        toast.error("Unathorized to download file.");
       }
 
       setFrom("");
@@ -60,61 +62,64 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
       </CardHeader>
 
       <CardContent>
-        <div className="flex flex-col gap-6">
-          <div className="grid w-full max-w-sm items-center gap-3">
-            <Label htmlFor="from">Dari</Label>
-            <Input
-              id="from"
-              type="date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-            />
-          </div>
+        <form className="flex flex-col gap-6" onSubmit={onSubmit}>
+          <div className="flex flex-col gap-6">
+            <div className="grid w-full max-w-sm items-center gap-3">
+              <Label htmlFor="from">Dari</Label>
+              <Input
+                id="from"
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
+            </div>
 
-          <div className="grid w-full max-w-sm items-center gap-3">
-            <Label htmlFor="to">Sampai</Label>
-            <Input
-              id="to"
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-            />
-          </div>
+            <div className="grid w-full max-w-sm items-center gap-3">
+              <Label htmlFor="to">Sampai</Label>
+              <Input
+                id="to"
+                type="date"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+              />
+            </div>
 
-          <div className="grid w-full max-w-sm items-center gap-3">
-            <Label htmlFor="to">Bank</Label>
-            <Select
-              value={bank ? String(bank) : ""}
-              onValueChange={(val) => {
-                setBank(parseInt(val));
-                const selectedBank = banks.find(
-                  (item) => item.id === Number(val)
-                );
-                setPermission(selectedBank?.description.replace("Bank ", ""));
-              }}
+            <div className="grid w-full max-w-sm items-center gap-3">
+              <Label htmlFor="to">Bank</Label>
+              <Select
+                value={bank ? String(bank) : ""}
+                onValueChange={(val) => {
+                  setBank(parseInt(val));
+                  const selectedBank = banks.find(
+                    (item) => item.id === Number(val)
+                  );
+                  const removeBank = selectedBank?.description.replace("Bank ", "");
+                  const slug = removeBank?.toLowerCase().replace(" - ", ":");
+                  setPermission(slug);
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a Bank" />
+                </SelectTrigger>
+                <SelectContent>
+                  {banks.map((item) => (
+                    <SelectItem key={item.id} value={String(item.id)}>
+                      {item.description}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isPending || !from || !to || !bank || !permission}
+              className="max-w-sm"
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a Bank" />
-              </SelectTrigger>
-              <SelectContent>
-                {banks.map((item) => (
-                  <SelectItem key={item.id} value={String(item.id)}>
-                    {item.description}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <LoadingSwap isLoading={isPending}>Download</LoadingSwap>
+            </Button>
           </div>
-
-          <Button
-            type="button"
-            onClick={onSubmit}
-            disabled={isPending || !from || !to || !bank || !permission}
-            className="max-w-sm"
-          >
-            <LoadingSwap isLoading={isPending}>Download</LoadingSwap>
-          </Button>
-        </div>
+        </form>
       </CardContent>
     </Card>
   );

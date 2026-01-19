@@ -17,12 +17,21 @@ export const columns: ColumnDef<invoiceShowType>[] = [
     cell: ({ row }) => new Date(row.original.date).toLocaleDateString(),
   },
   {
+    header: "Type Trx",
+    accessorKey: "trx_id",
+    cell: ({ row }) => row.original.trx_dtl.trx.name,
+  },
+  {
     header: "Description",
     accessorKey: "description",
   },
   {
     header: "Supplier",
     accessorFn: (row) => row.supplier_account.supplier.name,
+  },
+  {
+    header: "Payment Method",
+    accessorKey: "payment_method",
   },
   {
     header: "Bank",

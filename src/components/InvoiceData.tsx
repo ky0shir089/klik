@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { invoiceShowType } from "@/data/invoice";
 import { env } from "@/lib/env";
+import { Paperclip } from "lucide-react";
 import Link from "next/link";
 
 const InvoiceData = ({ data }: invoiceShowType) => {
@@ -65,13 +66,17 @@ const InvoiceData = ({ data }: invoiceShowType) => {
               <TableRow>
                 <TableHead>Attachment</TableHead>
                 <TableCell>
-                  <Link
-                    href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {data.attachment.filename}
-                  </Link>
+                  <div className="flex items-center gap-1">
+                    <Paperclip className="size-4" />
+                    <Link
+                      href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600"
+                    >
+                      {data.attachment.filename}
+                    </Link>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : null}

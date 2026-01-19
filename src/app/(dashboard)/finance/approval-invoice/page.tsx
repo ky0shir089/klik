@@ -44,7 +44,7 @@ const InvoicePage = async (props: {
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">List Invoice</h2>
+        <h2 className="mb-4 text-3xl font-bold">Approval Invoice</h2>
       </div>
 
       <SearchBox />

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { trxDtlSchema, trxDtlSchemaType } from "@/lib/formSchema";
@@ -25,9 +25,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { typeTrxShowType } from "@/data/type-trx";
 import { coaShowType } from "@/data/coa";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface iAppProps {
   data?: trxDtlShowType;
@@ -38,6 +53,8 @@ interface iAppProps {
 const TrxDtlForm = ({ data, trxes, coas }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  const [open, setOpen] = useState(false);
 
   const form = useForm<trxDtlSchemaType>({
     resolver: zodResolver(trxDtlSchema),
@@ -102,24 +119,65 @@ const TrxDtlForm = ({ data, trxes, coas }: iAppProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>CoA</FormLabel>
-              <Select
-                required
-                value={field.value ? String(field.value) : ""}
-                onValueChange={(val) => field.onChange(Number(val))}
-              >
-                <FormControl className="w-full">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select CoA" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {coas.map((item) => (
-                    <SelectItem key={item.id} value={String(item.id)}>
-                      {item.code} - {item.description}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="justify-between w-full"
+                  >
+                    {field.value
+                      ? (() => {
+                          const selected = coas.find(
+                            (coa) => coa.id === field.value
+                          );
+                          return selected
+                            ? `${selected.code} - ${selected.description}`
+                            : "Select CoA";
+                        })()
+                      : "Select CoA"}
+                    <ChevronsUpDown className="opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="p-0"
+                  style={{ width: "var(--radix-popover-trigger-width)" }}
+                >
+                  <Command>
+                    <CommandInput
+                      placeholder="Search CoA..."
+                      className="h-9"
+                    />
+                    <CommandList>
+                      <CommandEmpty>No CoA found.</CommandEmpty>
+                      <CommandGroup>
+                        {coas.map((coa) => (
+                          <CommandItem
+                            key={coa.id}
+                            value={`${coa.id}|${coa.code}|${coa.description}`}
+                            onSelect={(currentValue) => {
+                              const id = currentValue.split("|")[0];
+                              field.onChange(Number(id));
+                              setOpen(false);
+                            }}
+                          >
+                            {coa.code} - {coa.description}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                field.value === coa.id
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}

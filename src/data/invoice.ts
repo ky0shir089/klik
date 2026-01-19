@@ -6,7 +6,9 @@ import { parseAxiosError } from "@/lib/parseAxiosError";
 export async function invoiceIndex(
   page: number,
   size: number,
-  search?: string
+  search?: string,
+  typeTrx?: string,
+  method?: string,
 ) {
   try {
     const { data } = await axiosInstance.get(`/finance/v1/invoice`, {
@@ -14,6 +16,8 @@ export async function invoiceIndex(
         page,
         size,
         search,
+        type_trx_id: typeTrx,
+        method,
       },
     });
     return data;
