@@ -6,17 +6,23 @@ import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { redirect } from "next/navigation";
 import { invoiceIndex } from "@/data/invoice";
+import FilterListInvoice from "./_components/FilterListInvoice";
+import { selectTypeTrx } from "@/data/select";
 
 const RenderTable = async ({
   query,
+  typeTrx,
+  method,
   currentPage,
   size,
 }: {
   query: string;
+  typeTrx: string;
+  method: string;
   currentPage: number;
   size: number;
 }) => {
-  const result = await invoiceIndex(currentPage, size, query);
+  const result = await invoiceIndex(currentPage, size, query, typeTrx, method);
   if (result.isUnauthorized) {
     redirect("/login");
   }
@@ -32,14 +38,20 @@ const RenderTable = async ({
 const InvoicePage = async (props: {
   searchParams?: Promise<{
     q?: string;
+    type_trx_id?: string;
+    method?: string;
     page?: string;
     size?: string;
   }>;
 }) => {
   const searchParams = await props.searchParams;
   const query = searchParams?.q || "";
+  const typeTrx = searchParams?.type_trx_id || "";
+  const method = searchParams?.method || "";
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
+
+  const { data: typeTrxes } = await selectTypeTrx("OUT");
 
   return (
     <>
@@ -47,13 +59,22 @@ const InvoicePage = async (props: {
         <h2 className="mb-4 text-3xl font-bold">List Invoice</h2>
       </div>
 
-      <SearchBox />
+      <div className="flex flex-col sm:flex-row items-center gap-2">
+        <SearchBox />
+        <FilterListInvoice typeTrxes={typeTrxes} />
+      </div>
 
       <Suspense
-        key={`${query}-${currentPage}-${size}`}
+        key={`${query}-${typeTrx}-${method}-${currentPage}-${size}`}
         fallback={<DataTableSkeleton />}
       >
-        <RenderTable query={query} currentPage={currentPage} size={size} />
+        <RenderTable
+          query={query}
+          typeTrx={typeTrx}
+          method={method}
+          currentPage={currentPage}
+          size={size}
+        />
       </Suspense>
     </>
   );

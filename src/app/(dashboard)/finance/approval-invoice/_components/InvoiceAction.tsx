@@ -11,13 +11,13 @@ import {
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { invoiceStatusSchemaType } from "@/lib/formSchema";
 import { cn } from "@/lib/utils";
-import { useRef, useState, useTransition } from "react";
+import { useTransition } from "react";
 import { invoiceUpdate } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { invoiceShowType } from "@/data/invoice";
-import Signature from "@uiw/react-signature";
+// import Signature from "@uiw/react-signature";
 import InvoiceData from "@/components/InvoiceData";
 
 interface iAppProps {
@@ -29,21 +29,20 @@ const InvoiceAction = ({ data }: iAppProps) => {
 
   const form = useForm<invoiceStatusSchemaType>();
   const [isPending, startTransition] = useTransition();
-  const [isApprove, setIsApprove] = useState<boolean>(false);
-  const [points, setPoints] = useState<number[][]>([]);
+  // const [isApprove, setIsApprove] = useState<boolean>(false);
+  // const [points, setPoints] = useState<number[][]>([]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const $svg = useRef<any>(null);
-  const handle = () => {
-    $svg.current?.clear();
-    setPoints([]);
-  };
+  // const $svg = useRef<any>(null);
+  // const handle = () => {
+  //   $svg.current?.clear();
+  //   setPoints([]);
+  // };
 
-  const handlePoints = (data: number[][]) => {
-    if (data.length > 0) {
-      setPoints((prev) => [...prev, ...data]);
-    }
-  };
+  // const handlePoints = (data: number[][]) => {
+  //   if (data.length > 0) {
+  //     setPoints((prev) => [...prev, ...data]);
+  //   }
+  // };
 
   function onSubmit(values: invoiceStatusSchemaType) {
     startTransition(async () => {
@@ -70,7 +69,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
           <InvoiceData data={data} />
         </CardContent>
 
-        {data.status === "REQUEST" && !isApprove ? (
+        {data.status === "REQUEST" ? (
           <CardFooter className={cn("grid grid-cols-2 gap-2")}>
             <Button
               type="submit"
@@ -81,9 +80,9 @@ const InvoiceAction = ({ data }: iAppProps) => {
             </Button>
 
             <Button
-              type="button"
+              type="submit"
               className="bg-green-400 "
-              onClick={() => setIsApprove(true)}
+              onClick={() => onSubmit({ status: "APPROVE", signature: null })}
             >
               <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
             </Button>
@@ -91,7 +90,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
         ) : null}
       </Card>
 
-      {isApprove ? (
+      {/* {isApprove ? (
         <div className="flex flex-col items-center justify-center w-full p-2 mx-2 mb-10 border-2 border-yellow-500">
           <p className="mb-2 text-sm font-medium">
             Please provide your signature to approve this invoice
@@ -131,7 +130,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
             </Button>
           </div>
         </div>
-      ) : null}
+      ) : null} */}
     </>
   );
 };
