@@ -125,7 +125,7 @@ const TrxDtlForm = ({ data, trxes, coas }: iAppProps) => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className="justify-between w-full"
                   >
                     {field.value
                       ? (() => {
@@ -146,7 +146,7 @@ const TrxDtlForm = ({ data, trxes, coas }: iAppProps) => {
                 >
                   <Command>
                     <CommandInput
-                      placeholder="Search framework..."
+                      placeholder="Search CoA..."
                       className="h-9"
                     />
                     <CommandList>

@@ -67,6 +67,7 @@ const FilterListInvoice = ({ typeTrxes }: iAppProps) => {
           <SelectValue placeholder="Method" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="">All</SelectItem>
           <SelectItem value="BANK">BANK</SelectItem>
           <SelectItem value="KAS">KAS</SelectItem>
         </SelectContent>

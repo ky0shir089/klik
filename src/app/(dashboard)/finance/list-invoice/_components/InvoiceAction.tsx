@@ -36,7 +36,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
     "path-1": JSON.parse(data.signature) ?? [],
   };
 
-  async function donwloadMemo() {
+  async function downloadMemo() {
     startTransition(async () => {
       try {
         const file = await memo(data.id);
@@ -87,7 +87,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
         <Button
           className="w-full mt-6 cursor-pointer"
           disabled={isPending}
-          onClick={donwloadMemo}
+          onClick={downloadMemo}
         >
           <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
         </Button>

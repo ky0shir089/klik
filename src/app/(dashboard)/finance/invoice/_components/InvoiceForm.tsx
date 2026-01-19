@@ -188,7 +188,7 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between"
+                        className="justify-between w-full"
                       >
                         {field.value
                           ? (() => {
@@ -209,7 +209,7 @@ const InvoiceForm = ({ suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
                     >
                       <Command>
                         <CommandInput
-                          placeholder="Search framework..."
+                          placeholder="Search Supplier..."
                           className="h-9"
                         />
                         <CommandList>
