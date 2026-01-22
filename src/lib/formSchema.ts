@@ -153,6 +153,7 @@ export const invoiceSchema = z.object({
   supplier_account_id: z.number().positive().nullable(),
   description: z.string().min(1),
   attachment: z.union([z.instanceof(File), z.null()]),
+  status: z.string().min(1),
   details: z.array(invoiceDetailSchema).min(1, "Select at least one item"),
 });
 export type invoiceSchemaType = z.infer<typeof invoiceSchema>;
@@ -198,3 +199,18 @@ export const pphSchema = z.object({
   coa_id: z.number().positive(),
 });
 export type pphSchemaType = z.infer<typeof pphSchema>;
+
+export const jurnalDetailSchema = z.object({
+  coa_id: z.number().positive(),
+  debit: z.number().min(0),
+  credit: z.number().min(0),
+});
+export type jurnalDetailSchemaType = z.infer<typeof jurnalDetailSchema>;
+
+export const journalInputSchema = z.object({
+  gl_no: z.string().optional(),
+  date: z.iso.date(),
+  description: z.string().min(1),
+  details: z.array(jurnalDetailSchema).min(2),
+});
+export type journalInputSchemaType = z.infer<typeof journalInputSchema>;

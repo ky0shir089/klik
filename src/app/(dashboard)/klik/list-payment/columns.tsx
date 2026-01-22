@@ -10,7 +10,7 @@ export const columns: ColumnDef<paymentShowType>[] = [
   {
     header: "Payment Date",
     accessorKey: "payment_date",
-    cell: ({ row }) => new Date(row.original.payment_date).toLocaleDateString(),
+    cell: ({ row }) => row.original.payment_date,
   },
   {
     header: "Total Unit",

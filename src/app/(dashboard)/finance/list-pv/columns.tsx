@@ -11,7 +11,7 @@ export const columns: ColumnDef<pvShowType>[] = [
   {
     header: "Tanggal",
     accessorKey: "date",
-    cell: ({ row }) => new Date(row.original.paid_date).toLocaleDateString(),
+    cell: ({ row }) => row.original.paid_date,
   },
   {
     header: "Keterangan",

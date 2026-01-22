@@ -11,13 +11,13 @@ import {
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { invoiceStatusSchemaType } from "@/lib/formSchema";
 import { cn } from "@/lib/utils";
-import { useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { invoiceUpdate } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { invoiceShowType } from "@/data/invoice";
-// import Signature from "@uiw/react-signature";
+import Signature, { SignatureRef } from "@uiw/react-signature";
 import InvoiceData from "@/components/InvoiceData";
 
 interface iAppProps {
@@ -29,22 +29,28 @@ const InvoiceAction = ({ data }: iAppProps) => {
 
   const form = useForm<invoiceStatusSchemaType>();
   const [isPending, startTransition] = useTransition();
-  // const [isApprove, setIsApprove] = useState<boolean>(false);
-  // const [points, setPoints] = useState<number[][]>([]);
+  const [isApprove, setIsApprove] = useState<boolean>(false);
+  const [points, setPoints] = useState<number[][]>([]);
 
-  // const $svg = useRef<any>(null);
-  // const handle = () => {
-  //   $svg.current?.clear();
-  //   setPoints([]);
-  // };
+  const $svg = useRef<SignatureRef>(null);
+  const handle = () => {
+    $svg.current?.clear();
+    setPoints([]);
+  };
 
-  // const handlePoints = (data: number[][]) => {
-  //   if (data.length > 0) {
-  //     setPoints((prev) => [...prev, ...data]);
-  //   }
-  // };
+  const handlePoints = (data: number[][]) => {
+    if (data.length > 0) {
+      setPoints((prev) => [...prev, ...data]);
+    }
+  };
 
-  function onSubmit(values: invoiceStatusSchemaType) {
+  function onSubmit(status: string) {
+    const values = {
+      ...data,
+      status,
+      signature: null,
+    };
+
     startTransition(async () => {
       const result = await invoiceUpdate(data.id, values);
 
@@ -74,7 +80,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
             <Button
               type="submit"
               variant="destructive"
-              onClick={() => onSubmit({ status: "REJECT", signature: null })}
+              onClick={() => onSubmit("REJECT")}
             >
               <LoadingSwap isLoading={isPending}>Reject</LoadingSwap>
             </Button>
@@ -82,7 +88,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
             <Button
               type="submit"
               className="bg-green-400 "
-              onClick={() => onSubmit({ status: "APPROVE", signature: null })}
+              onClick={() => onSubmit("APPROVE")}
             >
               <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
             </Button>
@@ -90,7 +96,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
         ) : null}
       </Card>
 
-      {/* {isApprove ? (
+      {isApprove ? (
         <div className="flex flex-col items-center justify-center w-full p-2 mx-2 mb-10 border-2 border-yellow-500">
           <p className="mb-2 text-sm font-medium">
             Please provide your signature to approve this invoice
@@ -123,14 +129,14 @@ const InvoiceAction = ({ data }: iAppProps) => {
                   toast.error("Signature is required");
                   return;
                 }
-                onSubmit({ status: "APPROVE", signature: points });
+                onSubmit("APPROVE");
               }}
             >
               <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
             </Button>
           </div>
         </div>
-      ) : null} */}
+      ) : null}
     </>
   );
 };
