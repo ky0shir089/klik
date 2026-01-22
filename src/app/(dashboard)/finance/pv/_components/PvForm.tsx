@@ -68,7 +68,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
   const updateArray = useCallback(
     (arr: number[], id: number, add: boolean) =>
       add ? [...arr, id] : arr.filter((item) => item !== id),
-    []
+    [],
   );
 
   const form = useForm<pvSchemaType>({
@@ -82,16 +82,17 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const paymentMethod = form.watch("payment_method");
   const watchedSubtotal = form.watch("pvs");
   const sumTotalAmount = watchedSubtotal
     ? data
         .filter((item: { id: number }) =>
-          form.getValues("pvs").includes(item.id)
+          form.getValues("pvs").includes(item.id),
         )
         .reduce(
           (acc: number, item: { pv_amount: number }) => acc + item.pv_amount,
-          0
+          0,
         )
     : 0;
 
@@ -117,8 +118,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
         }
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [data, router, form],
   );
 
   async function createURL(paymentId: string, typeTrx: string) {
@@ -137,7 +137,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
             <FormItem>
               <FormLabel>Tanggal</FormLabel>
               <FormControl>
-                <Input type="date" required {...field} readOnly />
+                <Input type="date" required {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -242,8 +242,8 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                                 updateArray(
                                   field.value || [],
                                   item.id,
-                                  !!checked
-                                )
+                                  !!checked,
+                                ),
                               )
                             }
                           />
@@ -254,7 +254,9 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                   />
                 </TableCell>
                 <TableCell>{item.supplier.name}</TableCell>
-                <TableCell>{item.supplier_account?.bank.name ?? "KAS"}</TableCell>
+                <TableCell>
+                  {item.supplier_account?.bank.name ?? "KAS"}
+                </TableCell>
                 <TableCell>{item.supplier_account?.account_number}</TableCell>
                 <TableCell className="text-right">
                   {item.pv_amount.toLocaleString("id-ID")}
@@ -265,7 +267,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                       if (open) {
                         createURL(
                           String(item.processable_id),
-                          String(item.trx_dtl_id)
+                          String(item.trx_dtl_id),
                         );
                       } else {
                         createURL("", "");
@@ -277,7 +279,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                         variant="outline"
                         size="icon"
                         aria-label="Submit"
-                        className="rounded-full size-4"
+                        className="rounded-full cursor-pointer size-4"
                       >
                         <Eye />
                       </Button>

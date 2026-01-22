@@ -59,7 +59,7 @@ const InvoiceDetailRow = memo(
         const currentItemAmount =
           type === "item_amount"
             ? value
-            : getValues(`details.${index}.item_amount`) ?? 0;
+            : (getValues(`details.${index}.item_amount`) ?? 0);
 
         const currentPphId =
           type === "pph_id" ? value : getValues(`details.${index}.pph_id`);
@@ -67,7 +67,7 @@ const InvoiceDetailRow = memo(
         const currentPpnRate =
           type === "ppn_rate"
             ? value
-            : getValues(`details.${index}.ppn_rate`) ?? 0;
+            : (getValues(`details.${index}.ppn_rate`) ?? 0);
 
         const pph = pphs.find((p) => p.id === Number(currentPphId));
         const pphRate = pph?.rate ?? 0;
@@ -83,7 +83,7 @@ const InvoiceDetailRow = memo(
         setValue(`details.${index}.ppn_amount`, ppnAmount);
         setValue(`details.${index}.total_amount`, totalAmount);
       },
-      [getValues, index, pphs, setValue]
+      [getValues, index, pphs, setValue],
     );
 
     return (
@@ -334,7 +334,7 @@ const InvoiceDetailRow = memo(
         </TableCell>
       </TableRow>
     );
-  }
+  },
 );
 
 InvoiceDetailRow.displayName = "InvoiceDetailRow";
@@ -395,7 +395,7 @@ const InvoiceDetail = ({ coas, pphs, rvs }: iAppProps) => {
           <TableCell colSpan={12}>
             <Button
               type="button"
-              className="w-full"
+              className="w-full text-white bg-indigo-500 hover:bg-indigo-600"
               onClick={() => append(defaultDetailItem)}
             >
               <Plus className="mr-2 size-4" /> Add Item
