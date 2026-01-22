@@ -82,6 +82,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const paymentMethod = form.watch("payment_method");
   const watchedSubtotal = form.watch("pvs");
   const sumTotalAmount = watchedSubtotal
@@ -117,8 +118,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
         }
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [data, router, form],
   );
 
   async function createURL(paymentId: string, typeTrx: string) {

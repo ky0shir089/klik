@@ -85,7 +85,7 @@ const ReportBankForm = ({ banks }: { banks: coaShowType[] }) => {
             </div>
 
             <div className="grid w-full max-w-sm items-center gap-3">
-              <Label htmlFor="to">Bank</Label>
+              <Label htmlFor="bank">Bank</Label>
               <Select
                 value={bank ? String(bank) : ""}
                 onValueChange={(val) => {
@@ -101,7 +101,7 @@ const ReportBankForm = ({ banks }: { banks: coaShowType[] }) => {
                   setPermission(slug);
                 }}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="bank" className="w-full">
                   <SelectValue placeholder="Select a Bank" />
                 </SelectTrigger>
                 <SelectContent>

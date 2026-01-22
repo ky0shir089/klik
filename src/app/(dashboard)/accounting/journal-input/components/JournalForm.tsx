@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { coaShowType } from "@/data/coa";
-import { invoiceShowType } from "@/data/invoice";
 import { journalInputSchema, journalInputSchemaType } from "@/lib/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -22,9 +21,10 @@ import { toast } from "sonner";
 import { journalInputStore } from "../action";
 import { Label } from "@/components/ui/label";
 import JournalDetail, { defaultDetailItem } from "./JournalDetail";
+import { journalShowType } from "@/data/journal-input";
 
 interface JournalFormProps {
-  data?: invoiceShowType;
+  data?: journalShowType;
   coas: coaShowType[];
 }
 

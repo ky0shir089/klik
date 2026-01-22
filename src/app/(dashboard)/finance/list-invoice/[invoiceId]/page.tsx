@@ -11,7 +11,6 @@ import {
   selectSupplier,
   selectTypeTrx,
 } from "@/data/select";
-import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageProps {
@@ -64,7 +63,7 @@ const EditInvoicePage = async ({ params }: PageProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={cn("text-2xl")}>Edit Invoice</CardTitle>
+        <CardTitle className="text-2xl">Edit Invoice</CardTitle>
       </CardHeader>
 
       <CardContent>

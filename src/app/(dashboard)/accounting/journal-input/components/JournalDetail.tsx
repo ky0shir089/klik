@@ -283,7 +283,7 @@ const JournalDetail = ({ data, coas, totalDebit, totalCredit }: iAppProps) => {
               <Button
                 type="button"
                 className="w-full text-white bg-indigo-500 hover:bg-indigo-600"
-                onClick={() => append(defaultDetailItem)}
+                onClick={() => append({ ...defaultDetailItem })}
               >
                 <Plus className="mr-2 size-4" /> Add Item
               </Button>
