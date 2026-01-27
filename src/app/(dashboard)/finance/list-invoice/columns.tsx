@@ -39,9 +39,13 @@ export const columns: ColumnDef<invoiceShowType>[] = [
       `${row.supplier_account.bank.name} - ${row.supplier_account?.account_number}`,
   },
   {
-    header: "Amount",
+    header: () => <div className="text-right">Amount</div>,
     accessorKey: "amount",
-    cell: ({ row }) => row.original.total_amount.toLocaleString("id-ID"),
+    cell: ({ row }) => (
+      <div className="text-right">
+        {row.original.total_amount.toLocaleString("id-ID")}
+      </div>
+    ),
   },
   {
     header: "Status",

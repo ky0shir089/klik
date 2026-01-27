@@ -25,19 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { typeTrxShowType } from "@/data/type-trx";
 import { coaShowType } from "@/data/coa";
 import { supplierShowType } from "@/data/supplier";
@@ -45,12 +32,12 @@ import { bankAccountShowType } from "@/data/bank-account";
 import InvoiceDetail, { defaultDetailItem } from "./InvoiceDetail";
 import { pphShowType } from "@/data/pph";
 import { rvShowType } from "@/data/rv";
-import { Check, ChevronsUpDown, Paperclip } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Paperclip } from "lucide-react";
 import { invoiceShowType } from "@/data/invoice";
 import { invoiceUpdate, memo } from "../../list-invoice/_components/action";
 import Link from "next/link";
 import { env } from "@/lib/env";
+import { SupplierSelector } from "./SupplierSelector";
 
 interface iAppProps {
   data?: invoiceShowType;
@@ -76,8 +63,6 @@ const InvoiceForm = ({ data, suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
     bankAccountShowType[]
   >(selectedSupplier ? [selectedSupplier] : []);
 
-  const [open, setOpen] = useState(false);
-
   const details = data?.details.map((item: invoiceShowType["details"][0]) => ({
     ...item,
     pph_rate: item.pph?.rate ?? 0,
@@ -92,7 +77,7 @@ const InvoiceForm = ({ data, suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
       payment_method: data?.payment_method || "BANK",
       supplier_account_id: data?.supplier_account_id || null,
       description: data?.description || "",
-      attachment: data?.attachment || null,
+      attachment: null,
       status: data?.status || "REQUEST",
       details: details || [defaultDetailItem],
     },
@@ -194,73 +179,15 @@ const InvoiceForm = ({ data, suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Supplier</FormLabel>
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={open}
-                          className="justify-between w-full"
-                        >
-                          {field.value
-                            ? (() => {
-                                const selected = suppliers.find(
-                                  (item) => item.id === field.value,
-                                );
-                                return selected
-                                  ? `${selected.name}`
-                                  : "Select Supplier";
-                              })()
-                            : "Select Supplier"}
-                          <ChevronsUpDown className="opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0"
-                        style={{ width: "var(--radix-popover-trigger-width)" }}
-                      >
-                        <Command>
-                          <CommandInput
-                            placeholder="Search Supplier..."
-                            className="h-9"
-                          />
-                          <CommandList>
-                            <CommandEmpty>No Supplier found.</CommandEmpty>
-                            <CommandGroup>
-                              {suppliers.map((item) => (
-                                <CommandItem
-                                  key={item.id}
-                                  value={`${item.id}|${item.name}`}
-                                  onSelect={(currentValue) => {
-                                    const id = currentValue.split("|")[0];
-                                    field.onChange(Number(id));
-                                    const selected = suppliers.find(
-                                      (item) => item.id === Number(id),
-                                    );
-                                    setSupplierAccounts(
-                                      selected?.account
-                                        ? [selected.account]
-                                        : [],
-                                    );
-                                    setOpen(false);
-                                  }}
-                                >
-                                  {item.name}
-                                  <Check
-                                    className={cn(
-                                      "ml-auto",
-                                      field.value === item.id
-                                        ? "opacity-100"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <SupplierSelector
+                      suppliers={suppliers}
+                      value={field.value}
+                      onSelect={(item) => {
+                        field.onChange(item.id);
+                        setSupplierAccounts(item.account ? [item.account] : []);
+                      }}
+                    />
+                    <FormMessage />
                   </FormItem>
                 )}
               />

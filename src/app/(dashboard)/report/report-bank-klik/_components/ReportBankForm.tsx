@@ -45,7 +45,7 @@ const ReportBankForm = ({ banks }: { banks: coaShowType[] }) => {
         window.URL.revokeObjectURL(url);
       } catch (error) {
         console.error("Download error:", error);
-        toast.error("Unathorized to download file.");
+        toast.error("Unauthorized to download file.");
       }
 
       setFrom("");

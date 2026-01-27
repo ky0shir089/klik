@@ -8,10 +8,10 @@ import InvoiceForm from "../../invoice/_components/InvoiceForm";
 import {
   selectPph,
   selectRv,
-  selectSupplier,
   selectTypeTrx,
 } from "@/data/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supplierIndex } from "@/data/supplier";
 
 interface PageProps {
   params: Promise<{ invoiceId: number }>;
@@ -27,9 +27,9 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   ] = await Promise.all([
     invoiceShow(invoiceId),
     selectTypeTrx("OUT"),
-    selectSupplier(),
+    supplierIndex(1, 10),
     selectPph(),
-    selectRv(),
+    selectRv(1, 10),
   ]);
 
   if (result.isUnauthorized) {
@@ -47,10 +47,10 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   return data.status === "REQUEST" ? (
     <InvoiceForm
       data={data}
-      suppliers={suppliers}
+      suppliers={suppliers.data}
       typeTrxes={typeTrxes}
       pphs={pphs}
-      rvs={rvs}
+      rvs={rvs.data}
     />
   ) : (
     <InvoiceAction data={data} />
