@@ -9,7 +9,7 @@ import SearchBox from "@/components/SearchBox";
 import { supplierIndex } from "@/data/supplier";
 import { redirect } from "next/navigation";
 
-const RenderTable = async ({
+export const RenderTable = async ({
   query,
   currentPage,
   size,

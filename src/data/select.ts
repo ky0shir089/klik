@@ -48,7 +48,7 @@ export async function selectBankAccount() {
 export async function selectTitipanPelunasan(
   page: number,
   size: number,
-  search?: string
+  search?: string,
 ) {
   const { data } = await axiosInstance.get(`/select/v1/titipan-pelunasan`, {
     params: {
@@ -63,7 +63,7 @@ export async function selectTitipanPelunasan(
 export async function selectUnpaidBidder(
   page: number,
   size: number,
-  search?: string
+  search?: string,
 ) {
   const { data } = await axiosInstance.get(`/select/v1/unpaid-bidder`, {
     params: {
@@ -90,7 +90,13 @@ export async function selectPph() {
   return data;
 }
 
-export async function selectRv() {
-  const { data } = await axiosInstance.get(`/select/v1/rv`);
+export async function selectRv(page: number, size: number, search?: string) {
+  const { data } = await axiosInstance.get(`/select/v1/rv`, {
+    params: {
+      page,
+      size,
+      search,
+    },
+  });
   return data;
 }

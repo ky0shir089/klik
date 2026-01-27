@@ -27,9 +27,10 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { invoiceSchemaType } from "@/lib/formSchema";
 import { pphShowType } from "@/data/pph";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash } from "lucide-react";
+import { Plus, Trash, X } from "lucide-react";
 import { memo, useCallback } from "react";
 import { rvShowType } from "@/data/rv";
+import { RvSelector } from "./RvSelector";
 
 interface iAppProps {
   coas: coaShowType[];
@@ -88,7 +89,6 @@ const InvoiceDetailRow = memo(
 
     return (
       <TableRow>
-        <TableCell>{index + 1}</TableCell>
         <TableCell>
           <FormField
             control={control}
@@ -161,7 +161,7 @@ const InvoiceDetailRow = memo(
             control={control}
             name={`details.${index}.pph_id`}
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex items-center gap-1">
                 <Select
                   value={field.value ? String(field.value) : ""}
                   onValueChange={(val) => {
@@ -172,7 +172,7 @@ const InvoiceDetailRow = memo(
                 >
                   <FormControl className="w-full">
                     <SelectTrigger>
-                      <SelectValue placeholder="Select PPH" />
+                      <SelectValue placeholder="Select PPh" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -183,6 +183,20 @@ const InvoiceDetailRow = memo(
                     ))}
                   </SelectContent>
                 </Select>
+                {field.value && (
+                  <Button
+                    size="icon-xs"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      field.onChange(undefined);
+                      calculateValues("pph_id", 0);
+                    }}
+                    className="mr-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X size={4} />
+                  </Button>
+                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -199,6 +213,7 @@ const InvoiceDetailRow = memo(
                     value={field.value}
                     customInput={Input}
                     thousandSeparator
+                    decimalScale={0}
                     readOnly
                     className="bg-muted"
                   />
@@ -272,30 +287,31 @@ const InvoiceDetailRow = memo(
             )}
           />
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[150px]">
           <FormField
             control={control}
             name={`details.${index}.rv_id`}
             render={({ field }) => (
-              <FormItem>
-                <Select
-                  value={field.value ? String(field.value) : ""}
-                  onValueChange={(val) => field.onChange(Number(val))}
-                >
-                  <FormControl className="w-full">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select No RV" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {rvs.map((item) => (
-                      <SelectItem key={item.id} value={String(item.id)}>
-                        {item.rv_no} -{" "}
-                        {item.ending_balance.toLocaleString("id-ID")}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <FormItem className="flex items-center gap-1">
+                <RvSelector
+                  rv={rvs}
+                  value={field.value}
+                  onSelect={(item) => field.onChange(item.id)}
+                />
+                {field.value && (
+                  <Button
+                    size="icon-xs"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      field.onChange(undefined);
+                      calculateValues("pph_id", 0);
+                    }}
+                    className="mr-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X size={4} />
+                  </Button>
+                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -360,50 +376,52 @@ const InvoiceDetail = ({ coas, pphs, rvs }: iAppProps) => {
   });
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>No</TableHead>
-          <TableHead>Code Trx</TableHead>
-          <TableHead>Keterangan</TableHead>
-          <TableHead>Amount Item</TableHead>
-          <TableHead>PPH</TableHead>
-          <TableHead>% Rate</TableHead>
-          <TableHead>Amount PPH</TableHead>
-          <TableHead>% PPN</TableHead>
-          <TableHead>Amount PPN</TableHead>
-          <TableHead>No Reff</TableHead>
-          <TableHead>Total Amount</TableHead>
-          <TableHead></TableHead>
-        </TableRow>
-      </TableHeader>
+    <div className="overflow-x-auto">
+      <Table className="min-w-[1080px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Code Trx</TableHead>
+            <TableHead>Keterangan</TableHead>
+            <TableHead>Amount Item</TableHead>
+            <TableHead>PPH</TableHead>
+            <TableHead>% Rate</TableHead>
+            <TableHead>Amount PPH</TableHead>
+            <TableHead>% PPN</TableHead>
+            <TableHead>Amount PPN</TableHead>
+            <TableHead>No Reff</TableHead>
+            <TableHead>Total Amount</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
 
-      <TableBody>
-        {fields.map((field, index) => (
-          <InvoiceDetailRow
-            key={field.id}
-            index={index}
-            remove={remove}
-            coas={coas}
-            pphs={pphs}
-            rvs={rvs}
-          />
-        ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={12}>
-            <Button
-              type="button"
-              className="w-full text-white bg-indigo-500 hover:bg-indigo-600"
-              onClick={() => append(defaultDetailItem)}
-            >
-              <Plus className="mr-2 size-4" /> Add Item
-            </Button>
-          </TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
+        <TableBody>
+          {fields.map((field, index) => (
+            <InvoiceDetailRow
+              key={field.id}
+              index={index}
+              remove={remove}
+              coas={coas}
+              pphs={pphs}
+              rvs={rvs}
+            />
+          ))}
+        </TableBody>
+
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={12}>
+              <Button
+                type="button"
+                className="w-full text-white bg-indigo-500 hover:bg-indigo-600"
+                onClick={() => append(defaultDetailItem)}
+              >
+                <Plus className="mr-2 size-4" /> Add Item
+              </Button>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </div>
   );
 };
 

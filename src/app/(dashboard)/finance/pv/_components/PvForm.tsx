@@ -219,6 +219,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
           <TableHeader>
             <TableRow>
               <TableHead></TableHead>
+              <TableHead>Created At</TableHead>
               <TableHead>Supplier</TableHead>
               <TableHead>Bank</TableHead>
               <TableHead>Nomor Rekening</TableHead>
@@ -253,6 +254,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                     )}
                   />
                 </TableCell>
+                <TableCell>{item.created_at.split("T")[0]}</TableCell>
                 <TableCell>{item.supplier.name}</TableCell>
                 <TableCell>
                   {item.supplier_account?.bank.name ?? "KAS"}
@@ -289,12 +291,14 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                         <DialogHeader>
                           <DialogTitle></DialogTitle>
                           <DialogDescription></DialogDescription>
+                        </DialogHeader>
+                        <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
                           {item.trx_dtl_id == 2 ? (
                             <PaymentForm data={payment} />
                           ) : (
                             <InvoiceAction data={payment} />
                           )}
-                        </DialogHeader>
+                        </div>
                       </DialogContent>
                     ) : null}
                   </Dialog>
@@ -304,7 +308,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={4}>Total</TableCell>
+              <TableCell colSpan={5}>Total</TableCell>
               <TableCell className="text-right">
                 {sumTotalAmount.toLocaleString("id-ID")}
               </TableCell>
