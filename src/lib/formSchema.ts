@@ -53,7 +53,7 @@ export const userSchema = z.object({
 export type userSchemaType = z.infer<typeof userSchema>;
 
 export const coaSchema = z.object({
-  code: z.string().min(7),
+  code: z.string().min(3),
   description: z.string().min(1),
   type: z.enum(["ASSET", "EQUITY", "EXPENSE", "LIABILITIES", "REVENUE"]),
   parent_id: z.number().nullable().optional(),

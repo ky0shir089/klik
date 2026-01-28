@@ -68,7 +68,7 @@ export const RvSelector = ({ rv: rvs, value, onSelect }: RvSelectorProps) => {
 
   return (
     <div className="flex items-center gap-2">
-      <FormControl className="w-full">
+      <FormControl className="w-32">
         <InputGroup>
           <InputGroupInput
             placeholder="Select RV"
@@ -95,7 +95,7 @@ export const RvSelector = ({ rv: rvs, value, onSelect }: RvSelectorProps) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
 
-                  <div className="rounded-md border">
+                  <div className="border rounded-md">
                     <Table>
                       <TableHeader>
                         <TableRow>

@@ -17,7 +17,7 @@ export async function selectRole() {
   return data;
 }
 
-export async function selectCoa(type: string) {
+export async function selectCoa(type?: string) {
   const { data } = await axiosInstance.get(`/select/v1/coa`, {
     params: {
       type,

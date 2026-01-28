@@ -2,7 +2,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -41,12 +40,14 @@ interface iAppProps {
 const InvoiceDetailRow = memo(
   ({
     index,
+    section,
     remove,
     coas,
     pphs,
     rvs,
   }: {
     index: number;
+    section: string;
     remove: (index: number) => void;
     coas: coaShowType[];
     pphs: pphShowType[];
@@ -89,265 +90,279 @@ const InvoiceDetailRow = memo(
 
     return (
       <TableRow>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.inv_coa_id`}
-            render={({ field }) => (
-              <FormItem>
-                <Select
-                  required
-                  value={field.value ? String(field.value) : ""}
-                  onValueChange={(val) => field.onChange(Number(val))}
-                >
-                  <FormControl className="w-full">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Code Trx" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {coas.map((item) => (
-                      <SelectItem key={item.id} value={String(item.coa.id)}>
-                        {item.coa.code} - {item.coa.description}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.description`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Keterangan" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.item_amount`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <NumericFormat
-                    required
-                    value={field.value}
-                    customInput={Input}
-                    thousandSeparator
-                    onValueChange={(values) => {
-                      const val = values.floatValue ?? 0;
-                      field.onChange(val);
-                      calculateValues("item_amount", val);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.pph_id`}
-            render={({ field }) => (
-              <FormItem className="flex items-center gap-1">
-                <Select
-                  value={field.value ? String(field.value) : ""}
-                  onValueChange={(val) => {
-                    const valNum = Number(val);
-                    field.onChange(valNum);
-                    calculateValues("pph_id", valNum);
-                  }}
-                >
-                  <FormControl className="w-full">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select PPh" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {pphs.map((item) => (
-                      <SelectItem key={item.id} value={String(item.id)}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {field.value && (
-                  <Button
-                    size="icon-xs"
-                    variant="outline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      field.onChange(undefined);
-                      calculateValues("pph_id", 0);
-                    }}
-                    className="mr-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <X size={4} />
-                  </Button>
+        {section === "LEFT" && (
+          <>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.inv_coa_id`}
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      required
+                      value={field.value ? String(field.value) : ""}
+                      onValueChange={(val) => field.onChange(Number(val))}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Code Trx" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {coas.map((item) => (
+                          <SelectItem key={item.id} value={String(item.coa.id)}>
+                            {item.coa.code} - {item.coa.description}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.pph_rate`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <NumericFormat
-                    value={field.value}
-                    customInput={Input}
-                    thousandSeparator
-                    decimalScale={0}
-                    readOnly
-                    className="bg-muted"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.pph_amount`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <NumericFormat
-                    value={field.value}
-                    customInput={Input}
-                    thousandSeparator
-                    readOnly
-                    className="bg-muted"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.ppn_rate`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <NumericFormat
-                    value={field.value}
-                    customInput={Input}
-                    thousandSeparator
-                    onValueChange={(values) => {
-                      const val = values.floatValue ?? 0;
-                      field.onChange(val);
-                      calculateValues("ppn_rate", val);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.ppn_amount`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <NumericFormat
-                    required
-                    value={field.value}
-                    customInput={Input}
-                    thousandSeparator
-                    readOnly
-                    className="bg-muted"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell className="w-[150px]">
-          <FormField
-            control={control}
-            name={`details.${index}.rv_id`}
-            render={({ field }) => (
-              <FormItem className="flex items-center gap-1">
-                <RvSelector
-                  rv={rvs}
-                  value={field.value}
-                  onSelect={(item) => field.onChange(item.id)}
-                />
-                {field.value && (
-                  <Button
-                    size="icon-xs"
-                    variant="outline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      field.onChange(undefined);
-                      calculateValues("pph_id", 0);
-                    }}
-                    className="mr-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <X size={4} />
-                  </Button>
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.description`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Keterangan" required {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <FormField
-            control={control}
-            name={`details.${index}.total_amount`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <NumericFormat
-                    required
-                    value={field.value}
-                    customInput={Input}
-                    thousandSeparator
-                    readOnly
-                    className="bg-muted"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
-          <Button
-            type="button"
-            size="sm"
-            variant="destructive"
-            onClick={() => remove(index)}
-          >
-            <Trash className="size-4" />
-          </Button>
-        </TableCell>
+              />
+            </TableCell>
+            <TableCell className="w-32">
+              <FormField
+                control={control}
+                name={`details.${index}.item_amount`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <NumericFormat
+                        required
+                        value={field.value}
+                        customInput={Input}
+                        thousandSeparator
+                        onValueChange={(values) => {
+                          const val = values.floatValue ?? 0;
+                          field.onChange(val);
+                          calculateValues("item_amount", val);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+          </>
+        )}
+
+        {section === "MIDDLE" && (
+          <>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.pph_id`}
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-1">
+                    <Select
+                      value={field.value ? String(field.value) : ""}
+                      onValueChange={(val) => {
+                        const valNum = Number(val);
+                        field.onChange(valNum);
+                        calculateValues("pph_id", valNum);
+                      }}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select PPh" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {pphs.map((item) => (
+                          <SelectItem key={item.id} value={String(item.id)}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {field.value && (
+                      <Button
+                        size="icon-xs"
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          field.onChange(undefined);
+                          calculateValues("pph_id", 0);
+                        }}
+                        className="mr-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X size={4} />
+                      </Button>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.pph_rate`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <NumericFormat
+                        value={field.value}
+                        customInput={Input}
+                        thousandSeparator
+                        decimalScale={0}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.pph_amount`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <NumericFormat
+                        value={field.value}
+                        customInput={Input}
+                        thousandSeparator
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.ppn_rate`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <NumericFormat
+                        value={field.value}
+                        customInput={Input}
+                        thousandSeparator
+                        onValueChange={(values) => {
+                          const val = values.floatValue ?? 0;
+                          field.onChange(val);
+                          calculateValues("ppn_rate", val);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.ppn_amount`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <NumericFormat
+                        required
+                        value={field.value}
+                        customInput={Input}
+                        thousandSeparator
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={control}
+                name={`details.${index}.rv_id`}
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-1">
+                    <RvSelector
+                      rv={rvs}
+                      value={field.value}
+                      onSelect={(item) => field.onChange(item.id)}
+                    />
+                    {field.value && (
+                      <Button
+                        size="icon-xs"
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          field.onChange(undefined);
+                          calculateValues("pph_id", 0);
+                        }}
+                        className="mr-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X size={4} />
+                      </Button>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+          </>
+        )}
+
+        {section === "RIGHT" && (
+          <>
+            <TableCell className="w-32">
+              <FormField
+                control={control}
+                name={`details.${index}.total_amount`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <NumericFormat
+                        required
+                        value={field.value}
+                        customInput={Input}
+                        thousandSeparator
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <Button
+                type="button"
+                size="sm"
+                variant="destructive"
+                onClick={() => remove(index)}
+              >
+                <Trash className="size-4" />
+              </Button>
+            </TableCell>
+          </>
+        )}
       </TableRow>
     );
   },
@@ -376,52 +391,97 @@ const InvoiceDetail = ({ coas, pphs, rvs }: iAppProps) => {
   });
 
   return (
-    <div className="overflow-x-auto">
-      <Table className="min-w-[1080px]">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Code Trx</TableHead>
-            <TableHead>Keterangan</TableHead>
-            <TableHead>Amount Item</TableHead>
-            <TableHead>PPH</TableHead>
-            <TableHead>% Rate</TableHead>
-            <TableHead>Amount PPH</TableHead>
-            <TableHead>% PPN</TableHead>
-            <TableHead>Amount PPN</TableHead>
-            <TableHead>No Reff</TableHead>
-            <TableHead>Total Amount</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
+    <>
+      <div className="flex items-start w-full">
+        <div className="shrink-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code Trx</TableHead>
+                <TableHead>Keterangan</TableHead>
+                <TableHead>Amount Item</TableHead>
+              </TableRow>
+            </TableHeader>
 
-        <TableBody>
-          {fields.map((field, index) => (
-            <InvoiceDetailRow
-              key={field.id}
-              index={index}
-              remove={remove}
-              coas={coas}
-              pphs={pphs}
-              rvs={rvs}
-            />
-          ))}
-        </TableBody>
+            <TableBody>
+              {fields.map((field, index) => (
+                <InvoiceDetailRow
+                  key={field.id}
+                  section="LEFT"
+                  index={index}
+                  remove={remove}
+                  coas={coas}
+                  pphs={pphs}
+                  rvs={rvs}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
 
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={12}>
-              <Button
-                type="button"
-                className="w-full text-white bg-indigo-500 hover:bg-indigo-600"
-                onClick={() => append(defaultDetailItem)}
-              >
-                <Plus className="mr-2 size-4" /> Add Item
-              </Button>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </div>
+        <div className="flex-1 overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>PPH</TableHead>
+                <TableHead>% Rate</TableHead>
+                <TableHead>Amount PPH</TableHead>
+                <TableHead>% PPN</TableHead>
+                <TableHead>Amount PPN</TableHead>
+                <TableHead>No Reff</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {fields.map((field, index) => (
+                <InvoiceDetailRow
+                  key={field.id}
+                  section="MIDDLE"
+                  index={index}
+                  remove={remove}
+                  coas={coas}
+                  pphs={pphs}
+                  rvs={rvs}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="shrink-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Total Amount</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {fields.map((field, index) => (
+                <InvoiceDetailRow
+                  key={field.id}
+                  section="RIGHT"
+                  index={index}
+                  remove={remove}
+                  coas={coas}
+                  pphs={pphs}
+                  rvs={rvs}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        className="w-full text-white bg-indigo-500 hover:bg-indigo-600"
+        onClick={() => append(defaultDetailItem)}
+      >
+        <Plus className="mr-2 size-4" /> Add Item
+      </Button>
+    </>
   );
 };
 

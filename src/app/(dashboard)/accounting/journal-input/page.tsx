@@ -8,7 +8,7 @@ import JournalForm from "./components/JournalForm";
 const RenderForm = async () => {
   await connection();
 
-  const { data: coas } = await selectCoa("CHILDREN");
+  const { data: coas } = await selectCoa();
 
   return <JournalForm coas={coas} />;
 };
