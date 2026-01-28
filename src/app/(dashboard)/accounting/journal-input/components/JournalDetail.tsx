@@ -157,7 +157,7 @@ const JournalDetailRow = memo(
     return (
       <TableRow>
         <TableCell>{index + 1}</TableCell>
-        <TableCell>
+        <TableCell className="w-96">
           <FormField
             control={control}
             name={`details.${index}.coa_id`}
