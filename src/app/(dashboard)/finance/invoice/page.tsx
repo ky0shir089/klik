@@ -1,6 +1,5 @@
 import { selectPph, selectRv, selectTypeTrx } from "@/data/select";
 import InvoiceForm from "./_components/InvoiceForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
@@ -33,17 +32,9 @@ const RenderForm = async () => {
 
 const NewInvoicePage = () => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Create Invoice</CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <Suspense fallback={<FormSkeleton />}>
-          <RenderForm />
-        </Suspense>
-      </CardContent>
-    </Card>
+    <Suspense fallback={<FormSkeleton />}>
+      <RenderForm />
+    </Suspense>
   );
 };
 

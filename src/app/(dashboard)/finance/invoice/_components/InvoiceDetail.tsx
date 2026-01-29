@@ -286,6 +286,7 @@ const InvoiceDetailRow = memo(
                         value={field.value}
                         customInput={Input}
                         thousandSeparator
+                        decimalScale={0}
                         readOnly
                         className="bg-muted"
                       />
@@ -342,6 +343,7 @@ const InvoiceDetailRow = memo(
                         value={field.value}
                         customInput={Input}
                         thousandSeparator
+                        decimalScale={0}
                         readOnly
                         className="bg-muted"
                       />
