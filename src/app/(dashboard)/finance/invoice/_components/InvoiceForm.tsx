@@ -38,6 +38,7 @@ import { invoiceUpdate, memo } from "../../list-invoice/_components/action";
 import Link from "next/link";
 import { env } from "@/lib/env";
 import { SupplierSelector } from "./SupplierSelector";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface iAppProps {
   data?: invoiceShowType;
@@ -120,205 +121,213 @@ const InvoiceForm = ({ data, suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
   }
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <div className="space-y-6">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tanggal</FormLabel>
-                    <FormControl>
-                      <Input type="date" required {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">Edit Invoice</CardTitle>
+      </CardHeader>
 
-              <FormField
-                control={form.control}
-                name="trx_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type Trx</FormLabel>
-                    <Select
-                      required
-                      value={field.value ? String(field.value) : ""}
-                      onValueChange={(val) => {
-                        field.onChange(Number(val));
-                        const selected = typeTrxes.find(
-                          (t) => t.id === Number(val),
-                        );
-                        setCoas(selected?.trx_dtl ?? []);
-                      }}
-                    >
-                      <FormControl className="w-full">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Type Trx" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {typeTrxes.map((item) => (
-                          <SelectItem key={item.id} value={String(item.id)}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="supplier_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Supplier</FormLabel>
-                    <SupplierSelector
-                      value={field.value}
-                      onSelect={(item) => {
-                        field.onChange(item.id);
-                        setSupplierAccounts(item.account ? [item.account] : []);
-                      }}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="payment_method"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cara Bayar</FormLabel>
-                    <Select
-                      required
-                      value={field.value}
-                      onValueChange={(val) => field.onChange(val)}
-                    >
-                      <FormControl className="w-full">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Cara Bayar" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="BANK">BANK</SelectItem>
-                        <SelectItem value="KAS">KAS</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {paymentMethod === "BANK" ? (
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="space-y-6">
                 <FormField
                   control={form.control}
-                  name="supplier_account_id"
+                  name="date"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nomor Rekening</FormLabel>
+                      <FormLabel>Tanggal</FormLabel>
+                      <FormControl>
+                        <Input type="date" required {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="trx_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type Trx</FormLabel>
                       <Select
+                        required
                         value={field.value ? String(field.value) : ""}
-                        onValueChange={(val) => field.onChange(Number(val))}
+                        onValueChange={(val) => {
+                          field.onChange(Number(val));
+                          const selected = typeTrxes.find(
+                            (t) => t.id === Number(val),
+                          );
+                          setCoas(selected?.trx_dtl ?? []);
+                        }}
                       >
                         <FormControl className="w-full">
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Nomor Rekening" />
+                            <SelectValue placeholder="Select Type Trx" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {supplierAccounts.map((item) => (
+                          {typeTrxes.map((item) => (
                             <SelectItem key={item.id} value={String(item.id)}>
-                              {item.bank.name} - {item.account_number}
+                              {item.name}
                             </SelectItem>
                           ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="supplier_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Supplier</FormLabel>
+                      <SupplierSelector
+                        value={field.value}
+                        onSelect={(item) => {
+                          field.onChange(item.id);
+                          setSupplierAccounts(
+                            item.account ? [item.account] : [],
+                          );
+                        }}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="payment_method"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cara Bayar</FormLabel>
+                      <Select
+                        required
+                        value={field.value}
+                        onValueChange={(val) => field.onChange(val)}
+                      >
+                        <FormControl className="w-full">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Cara Bayar" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="BANK">BANK</SelectItem>
+                          <SelectItem value="KAS">KAS</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              ) : null}
 
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Keterangan</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Keterangan" required {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="attachment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Attachment</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        placeholder="Browse File"
-                        accept=".pdf"
-                        onChange={(e) => field.onChange(e.target.files?.[0])}
-                      />
-                    </FormControl>
-                    {data?.attachment ? (
-                      <div className="flex items-center gap-1">
-                        <Paperclip className="size-4" />
-                        <Link
-                          href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600"
+                {paymentMethod === "BANK" ? (
+                  <FormField
+                    control={form.control}
+                    name="supplier_account_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nomor Rekening</FormLabel>
+                        <Select
+                          value={field.value ? String(field.value) : ""}
+                          onValueChange={(val) => field.onChange(Number(val))}
                         >
-                          {data.attachment.filename}
-                        </Link>
-                      </div>
-                    ) : null}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          <FormControl className="w-full">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Nomor Rekening" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {supplierAccounts.map((item) => (
+                              <SelectItem key={item.id} value={String(item.id)}>
+                                {item.bank.name} - {item.account_number}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : null}
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Keterangan</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Keterangan" required {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="attachment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Attachment</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          placeholder="Browse File"
+                          accept=".pdf"
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                        />
+                      </FormControl>
+                      {data?.attachment ? (
+                        <div className="flex items-center gap-1">
+                          <Paperclip className="size-4" />
+                          <Link
+                            href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600"
+                          >
+                            {data.attachment.filename}
+                          </Link>
+                        </div>
+                      ) : null}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
-          </div>
 
-          <InvoiceDetail coas={coas} pphs={pphs} rvs={rvs} />
+            <InvoiceDetail coas={coas} pphs={pphs} rvs={rvs} />
 
+            <Button
+              type="submit"
+              className="w-full cursor-pointer"
+              disabled={isPending}
+            >
+              <LoadingSwap isLoading={isPending}>
+                {data?.id ? "Update" : "Create"}
+              </LoadingSwap>
+            </Button>
+          </form>
+        </Form>
+
+        {data?.id ? (
           <Button
-            type="submit"
-            className="w-full cursor-pointer"
+            className="w-full mt-6 cursor-pointer bg-teal-500 hover:bg-teal-600"
             disabled={isPending}
+            onClick={downloadMemo}
           >
-            <LoadingSwap isLoading={isPending}>
-              {data?.id ? "Update" : "Create"}
-            </LoadingSwap>
+            <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
           </Button>
-        </form>
-      </Form>
-
-      {data?.id ? (
-        <Button
-          className="w-full mt-6 cursor-pointer bg-teal-500 hover:bg-teal-600"
-          disabled={isPending}
-          onClick={downloadMemo}
-        >
-          <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
-        </Button>
-      ) : null}
-    </>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 };
 

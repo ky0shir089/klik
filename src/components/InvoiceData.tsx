@@ -29,7 +29,7 @@ const InvoiceData = ({ data }: invoiceShowType) => {
 
             <TableRow>
               <TableHead>Type Trx</TableHead>
-              <TableCell>{data.trx_dtl.trx.name}</TableCell>
+              <TableCell>{data.type_trx.name}</TableCell>
             </TableRow>
 
             <TableRow>

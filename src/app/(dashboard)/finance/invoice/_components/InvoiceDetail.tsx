@@ -71,7 +71,7 @@ const InvoiceDetailRow = memo(
             ? value
             : (getValues(`details.${index}.ppn_rate`) ?? 0);
 
-        const pph = pphs.find((p) => p.id === Number(currentPphId));
+        const pph = pphs.find((p) => p.id === currentPphId);
         const pphRate = pph?.rate ?? 0;
 
         const pphAmount = (currentItemAmount * pphRate) / 100;
@@ -221,7 +221,6 @@ const InvoiceDetailRow = memo(
                         value={field.value}
                         customInput={Input}
                         thousandSeparator
-                        decimalScale={0}
                         readOnly
                         className="bg-muted"
                       />
@@ -242,6 +241,7 @@ const InvoiceDetailRow = memo(
                         value={field.value}
                         customInput={Input}
                         thousandSeparator
+                        decimalScale={0}
                         readOnly
                         className="bg-muted"
                       />

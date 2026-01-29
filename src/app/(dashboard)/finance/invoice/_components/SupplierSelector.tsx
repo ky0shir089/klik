@@ -47,10 +47,6 @@ export const SupplierSelector = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   useEffect(() => {
-    if (!open) {
-      return;
-    }
-
     async function fetchSuppliers() {
       setIsLoading(true);
       try {
@@ -65,7 +61,7 @@ export const SupplierSelector = ({
     }
 
     fetchSuppliers();
-  }, [debouncedSearchQuery, open]);
+  }, [value, debouncedSearchQuery, open]);
 
   const selectedSupplierName =
     supplierOptions.find((item) => item.id === value)?.name || "";

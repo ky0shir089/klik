@@ -5,12 +5,7 @@ import InvoiceAction from "../_components/InvoiceAction";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import InvoiceForm from "../../invoice/_components/InvoiceForm";
-import {
-  selectPph,
-  selectRv,
-  selectTypeTrx,
-} from "@/data/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { selectPph, selectRv, selectTypeTrx } from "@/data/select";
 import { supplierIndex } from "@/data/supplier";
 
 interface PageProps {
@@ -61,17 +56,9 @@ const EditInvoicePage = async ({ params }: PageProps) => {
   const { invoiceId } = await params;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Edit Invoice</CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <Suspense fallback={<FormSkeleton />}>
-          <RenderForm invoiceId={invoiceId} />
-        </Suspense>
-      </CardContent>
-    </Card>
+    <Suspense fallback={<FormSkeleton />}>
+      <RenderForm invoiceId={invoiceId} />
+    </Suspense>
   );
 };
 
