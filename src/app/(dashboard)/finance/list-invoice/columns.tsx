@@ -19,7 +19,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   {
     header: "Type Trx",
     accessorKey: "trx_id",
-    cell: ({ row }) => row.original.trx_dtl.trx.name,
+    cell: ({ row }) => row.original.type_trx.name,
   },
   {
     header: "Description",

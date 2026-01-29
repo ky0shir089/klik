@@ -180,7 +180,6 @@ const InvoiceForm = ({ data, suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
                   <FormItem>
                     <FormLabel>Supplier</FormLabel>
                     <SupplierSelector
-                      suppliers={suppliers}
                       value={field.value}
                       onSelect={(item) => {
                         field.onChange(item.id);

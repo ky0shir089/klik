@@ -29,13 +29,11 @@ import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface SupplierSelectorProps {
-  suppliers: supplierShowType[];
   value?: number | null;
   onSelect: (supplier: supplierShowType) => void;
 }
 
 export const SupplierSelector = ({
-  suppliers,
   value,
   onSelect,
 }: SupplierSelectorProps) => {
@@ -70,7 +68,7 @@ export const SupplierSelector = ({
   }, [debouncedSearchQuery, open]);
 
   const selectedSupplierName =
-    suppliers.find((item) => item.id === value)?.name || "";
+    supplierOptions.find((item) => item.id === value)?.name || "";
 
   return (
     <div className="flex items-center gap-2">
