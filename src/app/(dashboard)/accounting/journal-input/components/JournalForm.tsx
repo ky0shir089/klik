@@ -47,10 +47,10 @@ const JournalForm = ({ data, coas }: JournalFormProps) => {
   });
 
   const totalDebit =
-    details?.reduce((acc, item) => acc + (item.debit || 0), 0) || 0;
+    details?.reduce((acc, item) => acc + Number(item.debit || 0), 0) || 0;
 
   const totalCredit =
-    details?.reduce((acc, item) => acc + (item.credit || 0), 0) || 0;
+    details?.reduce((acc, item) => acc + Number(item.credit || 0), 0) || 0;
 
   function onSubmit(values: journalInputSchemaType) {
     if (totalDebit !== totalCredit) {

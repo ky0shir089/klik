@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { supplierIndex, supplierShowType } from "@/data/supplier";
+import { supplierIndex, supplierShow, supplierShowType } from "@/data/supplier";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -47,6 +47,8 @@ export const SupplierSelector = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   useEffect(() => {
+    if (!open) return;
+
     async function fetchSuppliers() {
       setIsLoading(true);
       try {
@@ -61,7 +63,18 @@ export const SupplierSelector = ({
     }
 
     fetchSuppliers();
-  }, [value, debouncedSearchQuery, open]);
+  }, [debouncedSearchQuery, open]);
+
+  useEffect(() => {
+    if (!value) return;
+
+    async function fetchSuppliers() {
+      const { data } = await supplierShow(value!);
+      setSupplierOptions([data]);
+    }
+
+    fetchSuppliers();
+  }, [value]);
 
   const selectedSupplierName =
     supplierOptions.find((item) => item.id === value)?.name || "";
@@ -95,7 +108,7 @@ export const SupplierSelector = ({
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
 
-                  <div className="rounded-md border">
+                  <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
                     <Table>
                       <TableHeader>
                         <TableRow>

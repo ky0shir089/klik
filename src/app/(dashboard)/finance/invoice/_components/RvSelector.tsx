@@ -30,12 +30,11 @@ import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface RvSelectorProps {
-  rv: rvShowType[];
   value?: number | null;
   onSelect: (rv: rvShowType) => void;
 }
 
-export const RvSelector = ({ rv: rvs, value, onSelect }: RvSelectorProps) => {
+export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [rvOptions, setRvOptions] = useState<rvShowType[]>([]);
@@ -64,7 +63,8 @@ export const RvSelector = ({ rv: rvs, value, onSelect }: RvSelectorProps) => {
     fetchSuppliers();
   }, [debouncedSearchQuery, open]);
 
-  const selectedRvName = rvs.find((item) => item.id === value)?.rv_no || "";
+  const selectedRvName =
+    rvOptions.find((item) => item.id === value)?.rv_no || "";
 
   return (
     <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export const RvSelector = ({ rv: rvs, value, onSelect }: RvSelectorProps) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
 
-                  <div className="border rounded-md">
+                  <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
                     <Table>
                       <TableHeader>
                         <TableRow>

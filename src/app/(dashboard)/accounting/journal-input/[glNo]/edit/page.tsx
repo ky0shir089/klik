@@ -13,7 +13,7 @@ type Params = Promise<{ glNo: string }>;
 const RenderForm = async ({ glNo }: { glNo: string }) => {
   const [result, { data: coas }] = await Promise.all([
     journalShow(glNo),
-    selectCoa("CHILDREN"),
+    selectCoa(),
   ]);
 
   if (result.isUnauthorized) {

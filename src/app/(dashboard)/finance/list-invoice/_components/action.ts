@@ -47,7 +47,7 @@ export async function invoiceUpdate(id: number, values: invoiceSchemaType) {
   if (values.supplier_account_id !== null) {
     formData.append(
       "supplier_account_id",
-      values.supplier_account_id.toString()
+      values.supplier_account_id.toString(),
     );
   }
   formData.append("description", values.description);
@@ -56,12 +56,13 @@ export async function invoiceUpdate(id: number, values: invoiceSchemaType) {
   }
   formData.append("status", values.status);
   values.details.forEach((item, i) => {
+    formData.append(`details[${i}][id]`, item.id!.toString());
     formData.append(`details[${i}][inv_coa_id]`, item.inv_coa_id.toString());
     formData.append(`details[${i}][description]`, item.description);
     if (item.item_amount !== null) {
       formData.append(
         `details[${i}][item_amount]`,
-        item.item_amount.toString()
+        item.item_amount.toString(),
       );
     }
     if (item.pph_id !== null) {

@@ -44,7 +44,6 @@ const InvoiceDetailRow = memo(
     remove,
     coas,
     pphs,
-    rvs,
   }: {
     index: number;
     section: string;
@@ -303,7 +302,6 @@ const InvoiceDetailRow = memo(
                 render={({ field }) => (
                   <FormItem className="flex items-center gap-1">
                     <RvSelector
-                      rv={rvs}
                       value={field.value}
                       onSelect={(item) => field.onChange(item.id)}
                     />

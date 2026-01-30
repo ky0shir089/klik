@@ -5,26 +5,19 @@ import InvoiceAction from "../_components/InvoiceAction";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import InvoiceForm from "../../invoice/_components/InvoiceForm";
-import { selectPph, selectRv, selectTypeTrx } from "@/data/select";
-import { supplierIndex } from "@/data/supplier";
+import { selectPph, selectTypeTrx } from "@/data/select";
+import { supplierShow } from "@/data/supplier";
+import { rvClassificationShow } from "@/data/rv-classification";
 
 interface PageProps {
   params: Promise<{ invoiceId: number }>;
 }
 
 const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
-  const [
-    result,
-    { data: typeTrxes },
-    { data: suppliers },
-    { data: pphs },
-    { data: rvs },
-  ] = await Promise.all([
+  const [result, { data: typeTrxes }, { data: pphs }] = await Promise.all([
     invoiceShow(invoiceId),
     selectTypeTrx("OUT"),
-    supplierIndex(1, 10),
     selectPph(),
-    selectRv(1, 10),
   ]);
 
   if (result.isUnauthorized) {
@@ -38,14 +31,18 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   }
 
   const { data } = result;
+  const [{ data: suppliers }, { data: rvs }] = await Promise.all([
+    supplierShow(data.supplier_id),
+    rvClassificationShow(data.rv_id),
+  ]);
 
   return data.status === "REQUEST" ? (
     <InvoiceForm
       data={data}
-      suppliers={suppliers.data}
+      suppliers={[suppliers]}
       typeTrxes={typeTrxes}
       pphs={pphs}
-      rvs={rvs.data}
+      rvs={[rvs]}
     />
   ) : (
     <InvoiceAction data={data} />

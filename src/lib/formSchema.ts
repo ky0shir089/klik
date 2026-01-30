@@ -132,6 +132,7 @@ export const uploadFileSchema = z.object({
 export type uploadFileSchemaType = z.infer<typeof uploadFileSchema>;
 
 export const invoiceDetailSchema = z.object({
+  id: z.number().positive().optional(),
   inv_coa_id: z.number().positive(),
   description: z.string().min(1),
   item_amount: z.number().positive().nullable(),
