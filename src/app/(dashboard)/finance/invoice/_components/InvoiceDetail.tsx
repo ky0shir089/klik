@@ -32,6 +32,7 @@ import { rvShowType } from "@/data/rv";
 import { RvSelector } from "./RvSelector";
 
 interface iAppProps {
+  invoiceId?: number;
   coas: coaShowType[];
   pphs: pphShowType[];
   rvs: rvShowType[];
@@ -371,6 +372,7 @@ const InvoiceDetailRow = memo(
 InvoiceDetailRow.displayName = "InvoiceDetailRow";
 
 export const defaultDetailItem: invoiceSchemaType["details"][number] = {
+  id: null,
   inv_coa_id: 0,
   description: "",
   item_amount: null,

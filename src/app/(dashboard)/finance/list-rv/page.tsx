@@ -55,8 +55,10 @@ const RvPage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const { data: typeTrxes } = await selectTypeTrx("IN");
-  const { data: banks } = await selectBankAccount();
+  const [{ data: typeTrxes }, { data: banks }] = await Promise.all([
+    selectTypeTrx("IN"),
+    selectBankAccount(),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">

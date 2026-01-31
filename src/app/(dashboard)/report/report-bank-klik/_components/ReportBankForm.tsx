@@ -40,7 +40,7 @@ const ReportBankForm = ({ banks }: { banks: coaShowType[] }) => {
         const url = window.URL.createObjectURL(file);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `report-bank.xlsx`;
+        a.download = `report-bank-${permission.replace(":", "-")}-${from}-${to}.xlsx`;
         a.click();
         window.URL.revokeObjectURL(url);
       } catch (error) {

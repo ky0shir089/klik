@@ -40,7 +40,7 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
         const url = window.URL.createObjectURL(file);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `report-bank.xlsx`;
+        a.download = `report-bank-${permission.replace(":", "-")}-${from}-${to}.xlsx`;
         a.click();
         window.URL.revokeObjectURL(url);
       } catch (error) {
@@ -91,9 +91,12 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
                 onValueChange={(val) => {
                   setBank(parseInt(val));
                   const selectedBank = banks.find(
-                    (item) => item.id === Number(val)
+                    (item) => item.id === Number(val),
                   );
-                  const removeBank = selectedBank?.description.replace("Bank ", "");
+                  const removeBank = selectedBank?.description.replace(
+                    "Bank ",
+                    "",
+                  );
                   const slug = removeBank?.toLowerCase().replace(" - ", ":");
                   setPermission(slug);
                 }}

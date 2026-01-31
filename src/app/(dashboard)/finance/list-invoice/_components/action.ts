@@ -56,7 +56,9 @@ export async function invoiceUpdate(id: number, values: invoiceSchemaType) {
   }
   formData.append("status", values.status);
   values.details.forEach((item, i) => {
-    formData.append(`details[${i}][id]`, item.id!.toString());
+    if (item.id !== null) {
+      formData.append(`details[${i}][id]`, item.id.toString());
+    }
     formData.append(`details[${i}][inv_coa_id]`, item.inv_coa_id.toString());
     formData.append(`details[${i}][description]`, item.description);
     if (item.item_amount !== null) {
