@@ -14,7 +14,7 @@ export const columns: ColumnDef<rvShowType>[] = [
   {
     header: "Tanggal",
     accessorKey: "date",
-    cell: ({ row }) => new Date(row.original.date).toISOString().split("T")[0],
+    cell: ({ row }) => row.original.date.split(" ")[0],
   },
   {
     header: "Type Trx",
