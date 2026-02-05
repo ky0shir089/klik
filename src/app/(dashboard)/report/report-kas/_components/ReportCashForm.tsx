@@ -103,7 +103,7 @@ const ReportCashForm = ({ cashes }: { cashes: cashProps[] }) => {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a Bank" />
+                  <SelectValue placeholder="Select Kas" />
                 </SelectTrigger>
                 <SelectContent>
                   {cashes.map((item) => (
