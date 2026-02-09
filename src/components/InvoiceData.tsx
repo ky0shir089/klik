@@ -116,23 +116,23 @@ const InvoiceData = ({ data }: invoiceShowType) => {
                 <TableCell>{item.coa.description}</TableCell>
                 <TableCell>{item.description}</TableCell>
                 <TableCell className="text-right">
-                  {item.item_amount.toLocaleString("id-ID")}
+                  {Number(item.item_amount).toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell>{item.pph?.name ?? "-"}</TableCell>
                 <TableCell>{item.pph?.rate ?? 0}</TableCell>
                 <TableCell className="text-right">
-                  {item.pph_amount.toLocaleString("id-ID")}
+                  {Number(item.pph_amount).toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell>{item.ppn_rate}</TableCell>
                 <TableCell className="text-right">
-                  {item.ppn_amount.toLocaleString("id-ID")}
+                  {Number(item.ppn_amount).toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell>{item.rv?.rv_no ?? "-"}</TableCell>
                 <TableCell className="text-right">
-                  {item.total_amount.toLocaleString("id-ID")}
+                  {Number(item.total_amount).toLocaleString("id-ID")}
                 </TableCell>
               </TableRow>
-            )
+            ),
           )}
         </TableBody>
       </Table>

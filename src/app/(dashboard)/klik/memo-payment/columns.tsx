@@ -41,14 +41,14 @@ const Column = ({ data, meta }: iAppProps) => {
   const isAllSelected = useMemo(
     () =>
       pageIds.length > 0 && pageIds.every((id) => rowSelection.includes(id)),
-    [pageIds, rowSelection]
+    [pageIds, rowSelection],
   );
 
   const handleSelectAll = (checked: boolean) => {
     setRowSelection((prev) =>
       checked
         ? [...prev, ...pageIds.filter((id) => !prev.includes(id))]
-        : prev.filter((id) => !pageIds.includes(id))
+        : prev.filter((id) => !pageIds.includes(id)),
     );
   };
 
@@ -61,11 +61,11 @@ const Column = ({ data, meta }: iAppProps) => {
 
   const sumTotalUnit = useMemo(
     () => itemsToSum.reduce((acc, item) => acc + Number(item.total_unit), 0),
-    [itemsToSum]
+    [itemsToSum],
   );
   const sumTotalAmount = useMemo(
     () => itemsToSum.reduce((acc, item) => acc + Number(item.total_amount), 0),
-    [itemsToSum]
+    [itemsToSum],
   );
 
   async function donwloadPdf() {
@@ -101,7 +101,7 @@ const Column = ({ data, meta }: iAppProps) => {
             <TableHead>Bidder</TableHead>
             <TableHead>Balai Lelang</TableHead>
             <TableHead>Total Unit</TableHead>
-            <TableHead>Total Amount</TableHead>
+            <TableHead className="text-right">Total Amount</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -115,7 +115,7 @@ const Column = ({ data, meta }: iAppProps) => {
                     checked={rowSelection.includes(item.id)}
                     onCheckedChange={(checked) =>
                       setRowSelection(
-                        updateArray(rowSelection || [], item.id, !!checked)
+                        updateArray(rowSelection || [], item.id, !!checked),
                       )
                     }
                   />
@@ -123,7 +123,7 @@ const Column = ({ data, meta }: iAppProps) => {
                 <TableCell>{item.customer.name}</TableCell>
                 <TableCell>{item.branch_name}</TableCell>
                 <TableCell>{item.total_unit}</TableCell>
-                <TableCell>
+                <TableCell className="text-right">
                   {Number(item.total_amount).toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell>

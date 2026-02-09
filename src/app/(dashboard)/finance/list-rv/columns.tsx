@@ -40,13 +40,22 @@ export const columns: ColumnDef<rvShowType>[] = [
         : null,
   },
   {
-    header: "Amount",
+    header: () => <div className="text-right">Amount</div>,
     accessorKey: "starting_balance",
-    cell: ({ row }) => row.original.starting_balance.toLocaleString("id-ID"),
+    cell: ({ row }) => (
+      <div className="text-right">
+        {Number(row.original.starting_balance).toLocaleString("id-ID")}
+      </div>
+    ),
   },
   {
-    header: "Balance",
-    cell: ({ row }) => row.original.ending_balance.toLocaleString("id-ID"),
+    header: () => <div className="text-right">Balance</div>,
+    accessorKey: "ending_balance",
+    cell: ({ row }) => (
+      <div className="text-right">
+        {Number(row.original.ending_balance).toLocaleString("id-ID")}
+      </div>
+    ),
   },
   {
     header: "Status",

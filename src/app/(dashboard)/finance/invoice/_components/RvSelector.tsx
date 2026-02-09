@@ -82,7 +82,7 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
                   <MoreHorizontal />
                 </InputGroupButton>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-3xl">
                 <DialogHeader>
                   <DialogTitle>Select Rv</DialogTitle>
                   <DialogDescription>List of Value.</DialogDescription>
@@ -95,7 +95,7 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
 
-                  <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
+                  <div className="-mx-4 max-h-[50vh] overflow-y-auto overflow-x-auto px-4">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -119,7 +119,9 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
                               <TableCell>{item.rv_no}</TableCell>
                               <TableCell>{item.description}</TableCell>
                               <TableCell>
-                                {item.ending_balance.toLocaleString("id-ID")}
+                                {Number(item.ending_balance).toLocaleString(
+                                  "id-ID",
+                                )}
                               </TableCell>
                               <TableCell>
                                 <Button

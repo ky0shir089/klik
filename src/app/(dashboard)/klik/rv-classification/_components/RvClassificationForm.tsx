@@ -89,7 +89,7 @@ const RvTable = memo(function RvTable({
               <TableCell>{rv.date}</TableCell>
               <TableCell>{rv.description}</TableCell>
               <TableCell className="text-right">
-                {rv.ending_balance.toLocaleString("id-ID")}
+                {Number(rv.ending_balance).toLocaleString("id-ID")}
               </TableCell>
             </TableRow>
           ))}
@@ -98,7 +98,7 @@ const RvTable = memo(function RvTable({
           <TableRow>
             <TableCell colSpan={4}>Total</TableCell>
             <TableCell className="text-right">
-              {sumRvAmount.toLocaleString("id-ID")}
+              {Number(sumRvAmount).toLocaleString("id-ID")}
             </TableCell>
           </TableRow>
         </TableFooter>

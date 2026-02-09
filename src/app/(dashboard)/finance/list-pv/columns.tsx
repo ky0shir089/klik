@@ -42,9 +42,13 @@ export const columns: ColumnDef<pvShowType>[] = [
         : null,
   },
   {
-    header: "Amount",
+    header: () => "Amount",
     accessorKey: "pv_amount",
-    cell: ({ row }) => row.original.pv_amount.toLocaleString("id-ID"),
+    cell: ({ row }) => (
+      <div className="text-right">
+        {Number(row.original.pv_amount).toLocaleString("id-ID")}
+      </div>
+    ),
   },
   {
     header: "Status",

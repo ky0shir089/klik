@@ -17,9 +17,13 @@ export const columns: ColumnDef<paymentShowType>[] = [
     accessorKey: "total_unit",
   },
   {
-    header: "Total Amount",
+    header: () => <div className="text-right">Total Amount</div>,
     accessorKey: "total_amount",
-    cell: ({ row }) => row.original.total_amount.toLocaleString("id-ID"),
+    cell: ({ row }) => (
+      <div className="text-right">
+        {row.original.total_amount.toLocaleString("id-ID")}
+      </div>
+    ),
   },
   {
     header: "Status",
