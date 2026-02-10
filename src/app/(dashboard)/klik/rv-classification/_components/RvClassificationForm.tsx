@@ -256,7 +256,7 @@ const RvClassificationForm = ({ data }: RvClassificationFormProps) => {
       .filter((rv: { id: number }) => selectedRvs.has(rv.id))
       .reduce(
         (acc: number, rv: { ending_balance: number }) =>
-          acc + rv.ending_balance,
+          acc + Number(rv.ending_balance),
         0,
       );
   }, [selectedRvIds, data.rvs]);
