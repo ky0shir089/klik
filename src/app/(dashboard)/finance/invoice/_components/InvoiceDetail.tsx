@@ -144,7 +144,7 @@ const InvoiceDetailRow = memo(
                     <FormControl>
                       <NumericFormat
                         required
-                        value={field.value}
+                        value={Number(field.value)}
                         customInput={Input}
                         thousandSeparator
                         onValueChange={(values) => {
@@ -339,7 +339,7 @@ const InvoiceDetailRow = memo(
                     <FormControl>
                       <NumericFormat
                         required
-                        value={field.value}
+                        value={Number(field.value)}
                         customInput={Input}
                         thousandSeparator
                         decimalScale={0}

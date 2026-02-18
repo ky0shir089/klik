@@ -25,7 +25,6 @@ interface iAppProps {
 }
 
 const InvoiceAction = ({ data }: iAppProps) => {
-  console.log(data);
   const router = useRouter();
 
   const form = useForm<invoiceStatusSchemaType>();
