@@ -66,6 +66,10 @@ const InvoiceForm = ({ data, suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
 
   const details = data?.details.map((item: invoiceShowType["details"][0]) => ({
     ...item,
+    item_amount: Number(item.item_amount),
+    pph_amount: Number(item.pph_amount),
+    ppn_amount: Number(item.ppn_amount),
+    total_amount: Number(item.total_amount),
     pph_rate: item.pph?.rate ?? 0,
   }));
 

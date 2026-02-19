@@ -43,7 +43,8 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   {
     header: "Amount",
     accessorKey: "amount",
-    cell: ({ row }) => row.original.total_amount.toLocaleString("id-ID"),
+    cell: ({ row }) =>
+      Number(row.original.total_amount).toLocaleString("id-ID"),
   },
   {
     header: "Status",
