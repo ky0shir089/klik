@@ -128,7 +128,7 @@ const InvoiceForm = ({ data, suppliers, typeTrxes, pphs, rvs }: iAppProps) => {
     <Card>
       <CardHeader>
         <CardTitle className="text-2xl">
-          {data?.id ? "Edit" : "Create"} Invoice
+          {data?.id ? `Edit Invoice - ${data.invoice_no}` : "Create Invoice"}
         </CardTitle>
       </CardHeader>
 
