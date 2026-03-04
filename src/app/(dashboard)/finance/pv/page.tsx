@@ -9,18 +9,20 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import PvFormSkeleton from "./_components/PvFormSkeleton";
 
-type searchParams = Promise<{ paymentId: number; typeTrx: number }>;
+type searchParams = Promise<{ method: string; paymentId: number; typeTrx: number }>;
 
 const RenderForm = async ({
+  method,
   paymentId,
   typeTrx,
 }: {
+  method: string;
   paymentId: number;
   typeTrx: number;
 }) => {
   const [result, { data: bankAccounts }, { data: payment }] = await Promise.all(
     [
-      selectUnpaidPayment(),
+      selectUnpaidPayment(method),
       selectBankAccount(),
       paymentId
         ? typeTrx == 2
@@ -41,7 +43,7 @@ const RenderForm = async ({
 };
 
 const PvPage = async ({ searchParams }: { searchParams: searchParams }) => {
-  const { paymentId, typeTrx } = await searchParams;
+  const { method, paymentId, typeTrx } = await searchParams;
 
   return (
     <Card>
@@ -51,7 +53,7 @@ const PvPage = async ({ searchParams }: { searchParams: searchParams }) => {
 
       <CardContent>
         <Suspense fallback={<PvFormSkeleton />}>
-          <RenderForm paymentId={paymentId} typeTrx={typeTrx} />
+          <RenderForm method={method} paymentId={paymentId} typeTrx={typeTrx} />
         </Suspense>
       </CardContent>
     </Card>

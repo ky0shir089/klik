@@ -27,7 +27,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   },
   {
     header: "Supplier",
-    accessorFn: (row) => row.supplier_account.supplier.name,
+    accessorFn: (row) => row.supplier.name,
   },
   {
     header: "Payment Method",
@@ -37,7 +37,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
     header: "Bank",
     accessorFn: (row) =>
       row.payment_method === "BANK"
-        ? `${row.supplier_account.bank.name} - ${row.supplier_account?.account_number}`
+        ? `${row.supplier_account.bank.name} - ${row.supplier.name}`
         : null,
   },
   {

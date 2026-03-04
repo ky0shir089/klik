@@ -25,7 +25,7 @@ export const columns: ColumnDef<pvShowType>[] = [
     header: "Bank",
     accessorKey: "bank_account",
     cell: ({ row }) =>
-      row.original.bank_account
+      row.original.payment_method === "BANK"
         ? `${row.original.bank_account?.bank.name} - ${row.original.bank_account?.account_number}`
         : null,
   },

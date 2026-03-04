@@ -59,7 +59,9 @@ const InvoiceData = ({ data }: invoiceShowType) => {
 
             <TableRow>
               <TableHead>Amount</TableHead>
-              <TableCell>{data.total_amount.toLocaleString("id-ID")}</TableCell>
+              <TableCell>
+                {Number(data.total_amount).toLocaleString("id-ID")}
+              </TableCell>
             </TableRow>
 
             {data.attachment ? (

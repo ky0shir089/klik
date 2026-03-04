@@ -100,7 +100,7 @@ const Column = ({ data, meta }: iAppProps) => {
             </TableHead>
             <TableHead>Bidder</TableHead>
             <TableHead>Balai Lelang</TableHead>
-            <TableHead>Total Unit</TableHead>
+            <TableHead className="text-right">Total Unit</TableHead>
             <TableHead className="text-right">Total Amount</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
@@ -122,7 +122,7 @@ const Column = ({ data, meta }: iAppProps) => {
                 </TableCell>
                 <TableCell>{item.customer.name}</TableCell>
                 <TableCell>{item.branch_name}</TableCell>
-                <TableCell>{item.total_unit}</TableCell>
+                <TableCell className="text-right">{item.total_unit}</TableCell>
                 <TableCell className="text-right">
                   {Number(item.total_amount).toLocaleString("id-ID")}
                 </TableCell>

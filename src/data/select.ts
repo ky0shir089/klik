@@ -75,8 +75,12 @@ export async function selectUnpaidBidder(
   return data;
 }
 
-export async function selectUnpaidPayment() {
-  const { data } = await axiosInstance.get(`/select/v1/unpaid-payment`);
+export async function selectUnpaidPayment(method?: string) {
+  const { data } = await axiosInstance.get(`/select/v1/unpaid-payment`, {
+    params: {
+      method,
+    },
+  });
   return data;
 }
 

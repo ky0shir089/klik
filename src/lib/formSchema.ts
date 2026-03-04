@@ -146,17 +146,26 @@ export const invoiceDetailSchema = z.object({
 });
 export type invoiceDetailSchemaType = z.infer<typeof invoiceDetailSchema>;
 
-export const invoiceSchema = z.object({
-  date: z.iso.date(),
-  trx_id: z.number().positive().nullable(),
-  supplier_id: z.number().positive().nullable(),
-  payment_method: z.string().min(1),
-  supplier_account_id: z.number().positive().nullable(),
-  description: z.string().min(1),
-  attachment: z.union([z.instanceof(File), z.null()]),
-  status: z.string().min(1),
-  details: z.array(invoiceDetailSchema).min(1, "Select at least one item"),
-});
+export const invoiceSchema = z
+  .object({
+    date: z.iso.date(),
+    trx_id: z.number().positive().nullable(),
+    supplier_id: z.number().positive().nullable(),
+    payment_method: z.string().min(1),
+    supplier_account_id: z.number().positive().nullable(),
+    description: z.string().min(1),
+    attachment: z.union([z.instanceof(File), z.null()]),
+    status: z.string().min(1),
+    details: z.array(invoiceDetailSchema).min(1, "Select at least one item"),
+  })
+  .refine(
+    (data) =>
+      data.payment_method === "BANK" ? data.supplier_account_id !== null : true,
+    {
+      message: "Supplier account is required when payment method is BANK",
+      path: ["supplier_account_id"],
+    },
+  );
 export type invoiceSchemaType = z.infer<typeof invoiceSchema>;
 
 export const invoiceStatusSchema = z.object({
@@ -215,3 +224,33 @@ export const journalInputSchema = z.object({
   details: z.array(jurnalDetailSchema).min(2),
 });
 export type journalInputSchemaType = z.infer<typeof journalInputSchema>;
+
+export const sppKlikSchema = z
+  .object({
+    spp_id: z.number().positive(),
+    status: z.string().min(1),
+    alasan: z.string().optional(),
+    customer_id: z.number().positive(),
+    branch_name: z.string().min(1),
+    units: z
+      .array(
+        z.object({
+          id: z.number().positive(),
+          contract_number: z.string().min(1),
+          package_number: z.string().min(1),
+          distributed_price: z.number().positive(),
+        }),
+      )
+      .min(1, "Select at least one Unit"),
+  })
+  .refine(
+    (data) =>
+      data.status === "rejected"
+        ? data.alasan !== undefined && data.alasan.trim() !== ""
+        : true,
+    {
+      message: "Reason is required when status is rejected",
+      path: ["alasan"],
+    },
+  );
+export type sppKlikSchemaType = z.infer<typeof sppKlikSchema>;

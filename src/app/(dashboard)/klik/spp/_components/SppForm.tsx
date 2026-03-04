@@ -60,7 +60,8 @@ const UnitTable = memo(function UnitTable({
   return (
     <div>
       <h3 className="text-xl">Data Unit</h3>
-      <Table>
+      <div className="overflow-x-auto">
+        <Table>
         <TableHeader>
           <TableRow>
             <TableHead>
@@ -179,6 +180,7 @@ const UnitTable = memo(function UnitTable({
           </TableRow>
         </TableFooter>
       </Table>
+      </div>
     </div>
   );
 });

@@ -74,7 +74,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
   const form = useForm<pvSchemaType>({
     resolver: zodResolver(pvSchema),
     defaultValues: {
-      paid_date: new Date().toISOString().substring(0, 10),
+      paid_date: new Date().toISOString().slice(0, 10),
       description: "",
       payment_method: "BANK",
       bank_account_id: null,
@@ -87,13 +87,13 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
   const watchedSubtotal = form.watch("pvs");
   const sumTotalAmount = watchedSubtotal
     ? data
-        .filter((item: { id: number }) =>
-          form.getValues("pvs").includes(item.id),
-        )
-        .reduce(
-          (acc: number, item: { pv_amount: number }) => acc + item.pv_amount,
-          0,
-        )
+      .filter((item: { id: number }) =>
+        form.getValues("pvs").includes(item.id),
+      )
+      .reduce(
+        (acc: number, item: { pv_amount: number }) => acc + item.pv_amount,
+        0,
+      )
     : 0;
 
   const onSubmit = useCallback(
@@ -167,7 +167,11 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
               <Select
                 required
                 value={field.value}
-                onValueChange={(val) => field.onChange(val)}
+                onValueChange={(val) => {
+                  field.onChange(val)
+                  params.set("method", val);
+                  router.replace(pathname + "?" + params);
+                }}
               >
                 <FormControl className="w-full">
                   <SelectTrigger>

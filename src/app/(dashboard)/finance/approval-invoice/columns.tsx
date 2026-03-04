@@ -27,7 +27,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   },
   {
     header: "Supplier",
-    accessorFn: (row) => row.supplier_account.supplier.name,
+    accessorFn: (row) => row.supplier.name,
   },
   {
     header: "Payment Method",
