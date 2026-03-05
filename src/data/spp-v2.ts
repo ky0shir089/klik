@@ -5,7 +5,7 @@ import { parseAxiosError } from "@/lib/parseAxiosError";
 
 export async function listSpp(page: number, rows: number, search?: string) {
   try {
-    const { data } = await axiosInstance.get(`/klik/v2/spp`, {
+    const { data } = await axiosInstance.get(`/klik/v2/spp-v2`, {
       params: {
         page,
         rows,
@@ -21,7 +21,7 @@ export type listSppType = Awaited<ReturnType<typeof listSpp>>[0];
 
 export async function sppDetail(id: number) {
   try {
-    const { data } = await axiosInstance.get(`/klik/v2/spp/${id}`);
+    const { data } = await axiosInstance.get(`/klik/v2/spp-v2/${id}`);
     return data;
   } catch (error) {
     return parseAxiosError(error);

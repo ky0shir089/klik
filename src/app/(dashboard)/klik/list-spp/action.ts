@@ -17,7 +17,7 @@ export async function syncStatus(values: sppKlikSchemaType) {
 
   try {
     const { data } = await axiosInstance.put(
-      `/klik/v2/spp/${validation.data.spp_id}`,
+      `/klik/v2/spp-v2/${validation.data.spp_id}`,
       validation.data,
     );
     return data;
