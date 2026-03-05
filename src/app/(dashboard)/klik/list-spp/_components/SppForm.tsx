@@ -70,17 +70,55 @@ const SppForm = ({ data }: iAppProps) => {
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableHead>Bidder</TableHead>
+              <TableCell>{data.bidder_name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableHead>Balai Lelang</TableHead>
+              <TableCell>{data.branch_name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableHead>Nomor Paket</TableHead>
+              <TableCell>{data.package_number}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
+        <div className="space-y-4">
+          <p className="text-muted-foreground">File Pendukung</p>
+
+          <div className="flex justify-start gap-4">
+            {data.files.map((file: fileProps) => (
+              <div
+                key={file.id}
+                className="flex flex-col items-center justify-center gap-2"
+              >
+                <Link
+                  href={`https://api.devlmu.com/kliklelang/images/service/image/${file.file_path}`}
+                  target="_blank"
+                >
+                  <File className="size-12" />
+                </Link>
+                <span className="text-sm">{file.keterangan}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="overflow-hidden border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Tgl Lelang</TableHead>
-              <TableHead>Balai Lelang</TableHead>
               <TableHead>Nopol</TableHead>
               <TableHead>Noka</TableHead>
               <TableHead>Nosin</TableHead>
               <TableHead>No Kontrak</TableHead>
-              <TableHead>No Paket</TableHead>
               <TableHead className="text-right">Harga Lelang</TableHead>
               <TableHead className="text-right">Potongan Tiket</TableHead>
               <TableHead className="text-right">Fee</TableHead>
@@ -93,12 +131,10 @@ const SppForm = ({ data }: iAppProps) => {
             {data.units.map((item: customerShowType["units"][number]) => (
               <TableRow key={item.id}>
                 <TableCell>{item?.auction.auction_date}</TableCell>
-                <TableCell>{item?.auction.branch_name}</TableCell>
                 <TableCell>{item.police_number}</TableCell>
                 <TableCell>{item.chassis_number}</TableCell>
                 <TableCell>{item.engine_number}</TableCell>
                 <TableCell>{item.contract_number}</TableCell>
-                <TableCell>{item.package_number}</TableCell>
                 <TableCell className="text-right">
                   {item.price.toLocaleString("id-ID")}
                 </TableCell>
@@ -122,7 +158,7 @@ const SppForm = ({ data }: iAppProps) => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={7}>Total</TableCell>
+              <TableCell colSpan={5}>Total</TableCell>
               <TableCell className="text-right">
                 {data.sum_price.toLocaleString("id-ID")}
               </TableCell>
@@ -144,23 +180,6 @@ const SppForm = ({ data }: iAppProps) => {
             </TableRow>
           </TableFooter>
         </Table>
-      </div>
-
-      <div className="flex justify-start gap-4">
-        {data.files.map((file: fileProps) => (
-          <div
-            key={file.id}
-            className="flex flex-col items-center justify-center gap-2"
-          >
-            <Link
-              href={`https://api.devlmu.com/kliklelang/images/service/image/${file.file_path}`}
-              target="_blank"
-            >
-              <File className="size-12" />
-            </Link>
-            <span className="text-sm">{file.keterangan}</span>
-          </div>
-        ))}
       </div>
 
       <div className="grid grid-cols-2 gap-2">
