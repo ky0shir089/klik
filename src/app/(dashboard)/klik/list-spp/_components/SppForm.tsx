@@ -91,14 +91,14 @@ const SppForm = ({ data }: iAppProps) => {
         <div className="space-y-4">
           <p className="text-muted-foreground">File Pendukung</p>
 
-          <div className="flex justify-start gap-4">
+          <div className="flex justify-start gap-4 flex-wrap">
             {data.files.map((file: fileProps) => (
               <div
                 key={file.id}
                 className="flex flex-col items-center justify-center gap-2"
               >
                 <Link
-                  href={`https://api.devlmu.com/kliklelang/images/service/image/${file.file_path}`}
+                  href={`https://api.kliklelang.co.id/service/image/${file.file_path}`}
                   target="_blank"
                 >
                   <File className="size-12" />
@@ -121,7 +121,7 @@ const SppForm = ({ data }: iAppProps) => {
               <TableHead>No Kontrak</TableHead>
               <TableHead className="text-right">Harga Lelang</TableHead>
               <TableHead className="text-right">Potongan Tiket</TableHead>
-              <TableHead className="text-right">Fee</TableHead>
+              <TableHead className="text-right">Titipan Fee</TableHead>
               <TableHead className="text-right">Total</TableHead>
               <TableHead className="text-right">Harga Distribusi</TableHead>
               <TableHead className="text-right">Selisih</TableHead>

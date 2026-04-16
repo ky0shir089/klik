@@ -6,7 +6,6 @@ import { parseAxiosError } from "@/lib/parseAxiosError";
 
 export async function syncStatus(values: sppKlikSchemaType) {
   const validation = sppKlikSchema.safeParse(values);
-  console.log(validation);
 
   if (!validation.success) {
     return {
@@ -16,8 +15,8 @@ export async function syncStatus(values: sppKlikSchemaType) {
   }
 
   try {
-    const { data } = await axiosInstance.put(
-      `/klik/v2/spp-v2/${validation.data.spp_id}`,
+    const { data } = await axiosInstance.post(
+      `/klik/v2/spp-v2/sync-status`,
       validation.data,
     );
     return data;
