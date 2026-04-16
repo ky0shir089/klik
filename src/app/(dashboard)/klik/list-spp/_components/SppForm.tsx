@@ -40,6 +40,7 @@ interface fileProps {
 }
 
 const SppForm = ({ data }: iAppProps) => {
+  console.log(data);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
