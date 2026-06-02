@@ -104,3 +104,53 @@ export async function selectRv(page: number, size: number, search?: string) {
   });
   return data;
 }
+
+export async function selectByadUnit(branch_name: string) {
+  const { data } = await axiosInstance.get(`/select/v1/byad-unit`, {
+    params: {
+      branch_name,
+    },
+  });
+  return data;
+}
+
+export async function selectBranch() {
+  const { data } = await axiosInstance.get(`/select/v1/branch`);
+  return data;
+}
+export type branchShowType = Awaited<ReturnType<typeof selectBranch>>;
+
+export async function selectByad(page: number, size: number) {
+  const { data } = await axiosInstance.get(`/select/v1/byad`, {
+    params: {
+      page,
+      size,
+    },
+  });
+  return data;
+}
+
+export async function selectUser() {
+  const { data } = await axiosInstance.get(`/select/v1/user`);
+  return data;
+}
+
+export async function selectPrepayment() {
+  const { data } = await axiosInstance.get(`/select/v1/prepayment`);
+  return data;
+}
+
+export async function selectPaidOffUnit(
+  page: number,
+  size: number,
+  search?: string,
+) {
+  const { data } = await axiosInstance.get(`/select/v1/paid-off-unit`, {
+    params: {
+      page,
+      size,
+      search,
+    },
+  });
+  return data;
+}

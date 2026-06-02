@@ -6,12 +6,8 @@ import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import InvoiceForm from "../../invoice/_components/InvoiceForm";
 import { selectPph, selectTypeTrx } from "@/data/select";
-import { supplierShow } from "@/data/supplier";
-import { rvClassificationShow } from "@/data/rv-classification";
 
-interface PageProps {
-  params: Promise<{ invoiceId: number }>;
-}
+type Params = Promise<{ invoiceId: number }>;
 
 const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   const [result, { data: typeTrxes }, { data: pphs }] = await Promise.all([
@@ -31,25 +27,15 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   }
 
   const { data } = result;
-  const [{ data: suppliers }, { data: rvs }] = await Promise.all([
-    supplierShow(data.supplier_id),
-    rvClassificationShow(data.rv_id),
-  ]);
 
   return data.status === "REQUEST" ? (
-    <InvoiceForm
-      data={data}
-      suppliers={[suppliers]}
-      typeTrxes={typeTrxes}
-      pphs={pphs}
-      rvs={[rvs]}
-    />
+    <InvoiceForm data={data} typeTrxes={typeTrxes} pphs={pphs} />
   ) : (
     <InvoiceAction data={data} />
   );
 };
 
-const EditInvoicePage = async ({ params }: PageProps) => {
+const EditInvoicePage = async ({ params }: { params: Params }) => {
   const { invoiceId } = await params;
 
   return (

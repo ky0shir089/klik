@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export async function parseAxiosError(error: unknown) {
+  console.log(error);
   if (axios.isAxiosError(error)) {
     if (error.response?.status === 401) {
       return { isUnauthorized: true, message: error.response.data.message };

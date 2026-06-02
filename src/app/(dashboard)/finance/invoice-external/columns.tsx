@@ -8,8 +8,8 @@ import Link from "next/link";
 
 export const columns: ColumnDef<invoiceShowType>[] = [
   {
-    header: "Invoice No",
-    accessorKey: "invoice_no",
+    header: "Invoice External No",
+    accessorKey: "invoice_external_no",
   },
   {
     header: "Tanggal",
@@ -17,9 +17,9 @@ export const columns: ColumnDef<invoiceShowType>[] = [
     cell: ({ row }) => row.original.date,
   },
   {
-    header: "Type Trx",
-    accessorKey: "trx_id",
-    cell: ({ row }) => row.original.type_trx.name,
+    header: "Jatuh Tempo",
+    accessorKey: "due_date",
+    cell: ({ row }) => row.original.due_date,
   },
   {
     header: "Description",
@@ -30,21 +30,20 @@ export const columns: ColumnDef<invoiceShowType>[] = [
     accessorFn: (row) => row.supplier.name,
   },
   {
-    header: "Payment Method",
-    accessorKey: "payment_method",
+    header: () => <div className="text-center">Unit</div>,
+    accessorKey: "total_unit",
+    cell: ({ row }) => (
+      <div className="text-center">{row.original.total_unit}</div>
+    ),
   },
   {
-    header: "Bank",
-    accessorFn: (row) =>
-      row.payment_method === "BANK"
-        ? `${row.supplier_account.bank.name} - ${row.supplier_account?.account_number}`
-        : null,
-  },
-  {
-    header: "Amount",
-    accessorKey: "amount",
-    cell: ({ row }) =>
-      Number(row.original.total_amount).toLocaleString("id-ID"),
+    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "total_amount",
+    cell: ({ row }) => (
+      <div className="text-right">
+        {Number(row.original.total_amount).toLocaleString("id-ID")}
+      </div>
+    ),
   },
   {
     header: "Status",
@@ -55,7 +54,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
     cell: ({ row }) => (
       <Link
         className={buttonVariants({ variant: "link", size: "sm" })}
-        href={`/finance/approval-invoice/${row.original.id}`}
+        href={`/finance/invoice-external/${row.original.id}`}
       >
         <Eye />
         View

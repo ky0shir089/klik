@@ -30,7 +30,7 @@ const ReportRvForm = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Report RV</CardTitle>
+        <CardTitle className="text-2xl">Report RV Titipan</CardTitle>
       </CardHeader>
 
       <CardContent>

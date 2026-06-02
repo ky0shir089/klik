@@ -32,7 +32,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
   const form = useForm<invoiceStatusSchemaType>();
   const [isPending, startTransition] = useTransition();
 
-  const points = {
+  const existingSignatureData = {
     "path-1": JSON.parse(data.signature) ?? [],
   };
 
@@ -40,7 +40,6 @@ const InvoiceAction = ({ data }: iAppProps) => {
     const values = {
       ...data,
       status,
-      signature: null,
     };
 
     startTransition(async () => {
@@ -63,12 +62,12 @@ const InvoiceAction = ({ data }: iAppProps) => {
       </CardHeader>
 
       <CardContent>
-        <InvoiceData data={data} points={points} />
+        <InvoiceData data={data} />
 
-        {points["path-1"].length > 0 ? (
+        {existingSignatureData["path-1"].length > 0 ? (
           <div className="flex items-center justify-center w-full">
             <div className="w-full h-auto border-2 border-yellow-500 sm:max-w-sm">
-              <Signature ref={$svg} defaultPoints={points} readonly />
+              <Signature ref={$svg} defaultPoints={existingSignatureData["path-1"]} readonly />
             </div>
           </div>
         ) : null}

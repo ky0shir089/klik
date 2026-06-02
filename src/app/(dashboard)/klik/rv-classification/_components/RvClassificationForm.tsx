@@ -158,7 +158,7 @@ const UnitTable = memo(function UnitTable({
             <TableHead>Nosin</TableHead>
             <TableHead className="text-right">Harga Lelang</TableHead>
             <TableHead className="text-right">Potongan Tiket</TableHead>
-            <TableHead className="text-right">Fee</TableHead>
+            <TableHead className="text-right">Titipan Fee</TableHead>
             <TableHead className="text-right">Total</TableHead>
           </TableRow>
         </TableHeader>

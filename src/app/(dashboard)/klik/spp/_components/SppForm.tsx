@@ -62,48 +62,9 @@ const UnitTable = memo(function UnitTable({
       <h3 className="text-xl">Data Unit</h3>
       <div className="overflow-x-auto">
         <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              <FormField
-                control={control}
-                name="units"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Checkbox
-                        checked={
-                          allUnitIds.length > 0 &&
-                          field.value?.length === allUnitIds.length
-                        }
-                        onCheckedChange={(checked) =>
-                          field.onChange(checked ? allUnitIds : [])
-                        }
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </TableHead>
-            <TableHead>Tgl Lelang</TableHead>
-            <TableHead>Balai Lelang</TableHead>
-            <TableHead>Nopol</TableHead>
-            <TableHead>Noka</TableHead>
-            <TableHead>Nosin</TableHead>
-            <TableHead>No Kontrak</TableHead>
-            <TableHead>No Paket</TableHead>
-            <TableHead className="text-right">Harga Lelang</TableHead>
-            <TableHead className="text-right">Potongan Tiket</TableHead>
-            <TableHead className="text-right">Fee</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead className="text-right">Harga Distribusi</TableHead>
-            <TableHead className="text-right">Selisih</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {units.map((item: customerShowType["units"][number]) => (
-            <TableRow key={item.id}>
-              <TableCell>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
                 <FormField
                   control={control}
                   name="units"
@@ -111,75 +72,114 @@ const UnitTable = memo(function UnitTable({
                     <FormItem>
                       <FormControl>
                         <Checkbox
-                          checked={field.value?.includes(item.id)}
+                          checked={
+                            allUnitIds.length > 0 &&
+                            field.value?.length === allUnitIds.length
+                          }
                           onCheckedChange={(checked) =>
-                            field.onChange(
-                              updateArray(
-                                field.value || [],
-                                item.id,
-                                !!checked,
-                              ),
-                            )
+                            field.onChange(checked ? allUnitIds : [])
                           }
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
-              </TableCell>
-              <TableCell>{item?.auction.auction_date}</TableCell>
-              <TableCell>{item?.auction.branch_name}</TableCell>
-              <TableCell>{item.police_number}</TableCell>
-              <TableCell>{item.chassis_number}</TableCell>
-              <TableCell>{item.engine_number}</TableCell>
-              <TableCell>{item.contract_number}</TableCell>
-              <TableCell>{item.package_number}</TableCell>
+              </TableHead>
+              <TableHead>Tgl Lelang</TableHead>
+              <TableHead>Balai Lelang</TableHead>
+              <TableHead>Nopol</TableHead>
+              <TableHead>Noka</TableHead>
+              <TableHead>Nosin</TableHead>
+              <TableHead>No Kontrak</TableHead>
+              <TableHead>No Paket</TableHead>
+              <TableHead className="text-right">Harga Lelang</TableHead>
+              <TableHead className="text-right">Potongan Tiket</TableHead>
+              <TableHead className="text-right">TitipanFee</TableHead>
+              <TableHead className="text-right">Total</TableHead>
+              <TableHead className="text-right">Harga Distribusi</TableHead>
+              <TableHead className="text-right">Selisih</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {units.map((item: customerShowType["units"][number]) => (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <FormField
+                    control={control}
+                    name="units"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(item.id)}
+                            onCheckedChange={(checked) =>
+                              field.onChange(
+                                updateArray(
+                                  field.value || [],
+                                  item.id,
+                                  !!checked,
+                                ),
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TableCell>
+                <TableCell>{item?.auction.auction_date}</TableCell>
+                <TableCell>{item?.auction.branch_name}</TableCell>
+                <TableCell>{item.police_number}</TableCell>
+                <TableCell>{item.chassis_number}</TableCell>
+                <TableCell>{item.engine_number}</TableCell>
+                <TableCell>{item.contract_number}</TableCell>
+                <TableCell>{item.package_number}</TableCell>
+                <TableCell className="text-right">
+                  {item.price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.ticket_price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.admin_fee.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.final_price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.distributed_price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.diff_price.toLocaleString("id-ID")}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>Total</TableCell>
               <TableCell className="text-right">
-                {item.price.toLocaleString("id-ID")}
+                {sumBasePrice.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.ticket_price.toLocaleString("id-ID")}
+                {sumTicketPrice.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.admin_fee.toLocaleString("id-ID")}
+                {sumFee.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.final_price.toLocaleString("id-ID")}
+                {sumFinalPrice.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.distributed_price.toLocaleString("id-ID")}
+                {sumDistributed.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.diff_price.toLocaleString("id-ID")}
+                {sumDiff.toLocaleString("id-ID")}
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={8}>Total</TableCell>
-            <TableCell className="text-right">
-              {sumBasePrice.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumTicketPrice.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumFee.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumFinalPrice.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumDistributed.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumDiff.toLocaleString("id-ID")}
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+          </TableFooter>
+        </Table>
       </div>
     </div>
   );

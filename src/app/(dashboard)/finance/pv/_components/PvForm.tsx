@@ -87,13 +87,13 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
   const watchedSubtotal = form.watch("pvs");
   const sumTotalAmount = watchedSubtotal
     ? data
-      .filter((item: { id: number }) =>
-        form.getValues("pvs").includes(item.id),
-      )
-      .reduce(
-        (acc: number, item: { pv_amount: number }) => acc + item.pv_amount,
-        0,
-      )
+        .filter((item: { id: number }) =>
+          form.getValues("pvs").includes(item.id),
+        )
+        .reduce(
+          (acc: number, item: { pv_amount: number }) => acc + item.pv_amount,
+          0,
+        )
     : 0;
 
   const onSubmit = useCallback(
@@ -168,7 +168,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                 required
                 value={field.value}
                 onValueChange={(val) => {
-                  field.onChange(val)
+                  field.onChange(val);
                   params.set("method", val);
                   router.replace(pathname + "?" + params);
                 }}
@@ -296,7 +296,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                           <DialogTitle></DialogTitle>
                           <DialogDescription></DialogDescription>
                         </DialogHeader>
-                        <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
+                        <div className="no-scrollbar -mx-4 w-screen max-h-[50vh] overflow-y-auto px-4">
                           {item.trx_dtl_id == 2 ? (
                             <PaymentForm data={payment} />
                           ) : (

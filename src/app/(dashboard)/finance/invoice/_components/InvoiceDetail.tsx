@@ -28,14 +28,12 @@ import { pphShowType } from "@/data/pph";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash, X } from "lucide-react";
 import { memo, useCallback } from "react";
-import { rvShowType } from "@/data/rv";
 import { RvSelector } from "./RvSelector";
 
 interface iAppProps {
   invoiceId?: number;
   coas: coaShowType[];
   pphs: pphShowType[];
-  rvs: rvShowType[];
 }
 
 const InvoiceDetailRow = memo(
@@ -51,7 +49,6 @@ const InvoiceDetailRow = memo(
     remove: (index: number) => void;
     coas: coaShowType[];
     pphs: pphShowType[];
-    rvs: rvShowType[];
   }) => {
     const { control, setValue, getValues } =
       useFormContext<invoiceSchemaType>();
@@ -385,7 +382,7 @@ export const defaultDetailItem: invoiceSchemaType["details"][number] = {
   total_amount: 0,
 };
 
-const InvoiceDetail = ({ coas, pphs, rvs }: iAppProps) => {
+const InvoiceDetail = ({ coas, pphs }: iAppProps) => {
   const { control } = useFormContext<invoiceSchemaType>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -414,7 +411,6 @@ const InvoiceDetail = ({ coas, pphs, rvs }: iAppProps) => {
                   remove={remove}
                   coas={coas}
                   pphs={pphs}
-                  rvs={rvs}
                 />
               ))}
             </TableBody>
@@ -443,7 +439,6 @@ const InvoiceDetail = ({ coas, pphs, rvs }: iAppProps) => {
                   remove={remove}
                   coas={coas}
                   pphs={pphs}
-                  rvs={rvs}
                 />
               ))}
             </TableBody>
@@ -468,7 +463,6 @@ const InvoiceDetail = ({ coas, pphs, rvs }: iAppProps) => {
                   remove={remove}
                   coas={coas}
                   pphs={pphs}
-                  rvs={rvs}
                 />
               ))}
             </TableBody>

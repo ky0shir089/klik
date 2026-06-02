@@ -68,7 +68,7 @@ const Column = ({ data, meta }: iAppProps) => {
     [itemsToSum],
   );
 
-  async function donwloadPdf() {
+  async function downloadPdf() {
     startTransition(async () => {
       const values = {
         spps: rowSelection,
@@ -154,7 +154,7 @@ const Column = ({ data, meta }: iAppProps) => {
         <Button
           className="cursor-pointer"
           disabled={isPending}
-          onClick={donwloadPdf}
+          onClick={downloadPdf}
         >
           <LoadingSwap isLoading={isPending}>Pengajuan Pelunasan</LoadingSwap>
         </Button>

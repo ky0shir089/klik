@@ -1,16 +1,19 @@
 import Unauthorized from "@/components/unauthorized";
 import { notFound, redirect } from "next/navigation";
-import { invoiceShow } from "@/data/invoice";
-import InvoiceAction from "../_components/InvoiceAction";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
+import { selectPph, selectTypeTrx } from "@/data/select";
+import LpjForm from "../_components/LpjForm";
+import { settlementShow } from "@/data/settlement";
 
-interface PageProps {
-  params: Promise<{ invoiceId: number }>;
-}
+type Params = Promise<{ invoiceId: number }>;
 
 const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
-  const result = await invoiceShow(invoiceId);
+  const [result, { data: typeTrxes }, { data: pphs }] = await Promise.all([
+    settlementShow(invoiceId),
+    selectTypeTrx("OUT"),
+    selectPph(),
+  ]);
 
   if (result.isUnauthorized) {
     redirect("/login");
@@ -23,11 +26,17 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   }
 
   const { data } = result;
+  const invoice = {
+    ...data.invoice,
+    id: data.id,
+    pv_id: data.prepayment_pv_id,
+    balance: data.balance,
+  };
 
-  return <InvoiceAction data={data} />;
+  return <LpjForm data={invoice} typeTrxes={typeTrxes} pphs={pphs} />;
 };
 
-const EditInvoicePage = async ({ params }: PageProps) => {
+const EditInvoicePage = async ({ params }: { params: Params }) => {
   const { invoiceId } = await params;
 
   return (

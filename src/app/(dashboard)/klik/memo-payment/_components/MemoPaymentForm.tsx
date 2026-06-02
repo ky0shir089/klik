@@ -81,7 +81,7 @@ const UnitTable = memo(function UnitTable({
             <TableHead>No Paket</TableHead>
             <TableHead className="text-right">Harga Lelang</TableHead>
             <TableHead className="text-right">Potongan Tiket</TableHead>
-            <TableHead className="text-right">Fee</TableHead>
+            <TableHead className="text-right">TitipanFee</TableHead>
             <TableHead className="text-right">Total</TableHead>
             <TableHead className="text-right">Harga Distribusi</TableHead>
             <TableHead className="text-right">Selisih</TableHead>

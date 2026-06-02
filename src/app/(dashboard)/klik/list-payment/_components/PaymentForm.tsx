@@ -23,7 +23,7 @@ interface iAppProps {
 const PaymentForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
 
-  async function donwloadPdf() {
+  async function downloadPdf() {
     startTransition(async () => {
       try {
         const file = await pdf(data.id);
@@ -83,7 +83,7 @@ const PaymentForm = ({ data }: iAppProps) => {
                         <TableHead className="text-right">
                           Potongan Tiket
                         </TableHead>
-                        <TableHead className="text-right">Fee</TableHead>
+                        <TableHead className="text-right">Titipan Fee</TableHead>
                         <TableHead className="text-right">Total</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -132,7 +132,7 @@ const PaymentForm = ({ data }: iAppProps) => {
         <Button
           className="w-full cursor-pointer"
           disabled={isPending}
-          onClick={donwloadPdf}
+          onClick={downloadPdf}
         >
           <LoadingSwap isLoading={isPending}>
             Download Memo Pelunasan

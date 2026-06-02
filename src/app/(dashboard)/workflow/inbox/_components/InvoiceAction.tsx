@@ -11,7 +11,7 @@ import {
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { invoiceStatusSchemaType } from "@/lib/formSchema";
 import { cn } from "@/lib/utils";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { invoiceUpdate } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -19,18 +19,42 @@ import { useForm } from "react-hook-form";
 import { invoiceShowType } from "@/data/invoice";
 import Signature, { SignatureRef } from "@uiw/react-signature";
 import InvoiceData from "@/components/InvoiceData";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface iAppProps {
   data: invoiceShowType;
+  user: { id: number };
 }
 
-const InvoiceAction = ({ data }: iAppProps) => {
+const InvoiceAction = ({ data, user }: iAppProps) => {
   const router = useRouter();
 
   const form = useForm<invoiceStatusSchemaType>();
   const [isPending, startTransition] = useTransition();
   const [isApprove, setIsApprove] = useState<boolean>(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
+  const [remark, setRemark] = useState<string>("");
   const [points, setPoints] = useState<number[][]>([]);
+  const signatureContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isApprove) {
+      signatureContainerRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+  }, [isApprove]);
 
   const $svg = useRef<SignatureRef>(null);
   const handle = () => {
@@ -44,11 +68,15 @@ const InvoiceAction = ({ data }: iAppProps) => {
     }
   };
 
-  function onSubmit(status: string) {
+  function onSubmit(status: string, remark?: string) {
     const values = {
       ...data,
       status,
-      signature: null,
+      remark: remark || null,
+      signature: points.length > 0 ? points : null,
+      wf_history_id: data.wf_histories.filter(
+        (item: { user_id: number }) => item.user_id == user.id,
+      )[0].id,
     };
 
     startTransition(async () => {
@@ -57,7 +85,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
       if (result.success) {
         form.reset();
         toast.success(result.message);
-        router.push("/finance/approval-invoice");
+        router.push("/workflow/inbox");
       } else {
         toast.error(result.message);
       }
@@ -77,18 +105,56 @@ const InvoiceAction = ({ data }: iAppProps) => {
 
         {data.status === "REQUEST" ? (
           <CardFooter className={cn("grid grid-cols-2 gap-2")}>
-            <Button
-              type="submit"
-              variant="destructive"
-              onClick={() => onSubmit("REJECT")}
+            <AlertDialog
+              open={isRejectModalOpen}
+              onOpenChange={setIsRejectModalOpen}
             >
-              <LoadingSwap isLoading={isPending}>Reject</LoadingSwap>
-            </Button>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" type="button">
+                  <LoadingSwap isLoading={isPending}>Reject</LoadingSwap>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reject Invoice</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Please provide a reason for rejecting this invoice.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="py-4">
+                  <Textarea
+                    placeholder="Enter rejection remark here..."
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                  />
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setRemark("")}>
+                    Cancel
+                  </AlertDialogCancel>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      if (!remark.trim()) {
+                        toast.error("Remark is required for rejection");
+                        return;
+                      }
+                      onSubmit("REJECT", remark);
+                    }}
+                    disabled={isPending}
+                  >
+                    <LoadingSwap isLoading={isPending}>
+                      Confirm Reject
+                    </LoadingSwap>
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
             <Button
-              type="submit"
+              type="button"
               className="bg-green-400 "
-              onClick={() => onSubmit("APPROVE")}
+              onClick={() => setIsApprove(true)}
             >
               <LoadingSwap isLoading={isPending}>Approve</LoadingSwap>
             </Button>
@@ -97,7 +163,10 @@ const InvoiceAction = ({ data }: iAppProps) => {
       </Card>
 
       {isApprove ? (
-        <div className="flex flex-col items-center justify-center w-full p-2 mx-2 mb-10 border-2 border-yellow-500">
+        <div
+          ref={signatureContainerRef}
+          className="flex flex-col items-center justify-center w-full p-2 mx-2 mb-10 border-2 border-yellow-500"
+        >
           <p className="mb-2 text-sm font-medium">
             Please provide your signature to approve this invoice
           </p>

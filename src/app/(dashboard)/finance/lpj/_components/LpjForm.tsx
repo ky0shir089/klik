@@ -1,0 +1,381 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition, useMemo, useCallback } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { lpjSchema, lpjSchemaType } from "@/lib/formSchema";
+import { LoadingSwap } from "@/components/ui/loading-swap";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { typeTrxShowType } from "@/data/type-trx";
+import { coaShowType } from "@/data/coa";
+import { pphShowType } from "@/data/pph";
+import { Paperclip } from "lucide-react";
+import { invoiceShowType } from "@/data/invoice";
+import { pvShowType } from "@/data/pv";
+import { memo } from "../../list-invoice/_components/action";
+import Link from "next/link";
+import { env } from "@/lib/env";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import InvoiceDetail, { defaultDetailItem } from "./LpjDetail";
+import { PvSelector } from "./PvSelector";
+import { lpjStore, lpjUpdate } from "../action";
+import { SupplierSelector } from "./SupplierSelector";
+import { supplierShowType } from "@/data/supplier";
+import { bankAccountShowType } from "@/data/bank-account";
+
+interface iAppProps {
+  data?: invoiceShowType;
+  typeTrxes: typeTrxShowType[];
+  pphs: pphShowType[];
+}
+
+const LpjForm = ({ data, typeTrxes, pphs }: iAppProps) => {
+   console.log(data)
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const [selectedPvBalance, setSelectedPvBalance] = useState<number>(
+    data?.balance ? Number(data.balance) : 0,
+  );
+  const selectedCoa = typeTrxes.find(
+    (item) => item.id === data?.trx_id,
+  )?.trx_dtl;
+  const [coas, setCoas] = useState<coaShowType[]>(selectedCoa || []);
+  const [supplierAccounts, setSupplierAccounts] = useState<
+    bankAccountShowType[]
+  >([]);
+
+  const details = useMemo(
+    () =>
+      data?.details.map((item: invoiceShowType["details"][0]) => ({
+        ...item,
+        item_amount: Number(item.item_amount),
+        pph_amount: Number(item.pph_amount),
+        ppn_amount: Number(item.ppn_amount),
+        total_amount: Number(item.total_amount),
+        pph_rate: item.pph?.rate ?? 0,
+      })) || [defaultDetailItem],
+    [data?.details],
+  );
+
+  const defaultValues = useMemo(
+    () => ({
+      date: data?.date || new Date().toISOString().slice(0, 10),
+      trx_id: data?.trx_id || "",
+      payment_method: data?.payment_method || "PREPAYMENT",
+      pv_id: data?.pv_id || "",
+      supplier_id: data?.supplier_id || "",
+      supplier_account_id: data?.supplier_account_id || "",
+      description: data?.description || "",
+      attachment: null,
+      status: data?.status || "REQUEST",
+      details,
+    }),
+    [data, details],
+  );
+
+  const form = useForm<lpjSchemaType>({
+    resolver: zodResolver(lpjSchema),
+    defaultValues,
+  });
+
+  const handleSupplierSelect = useCallback(
+    (item: supplierShowType) => {
+      form.setValue("supplier_id", item.id);
+      setSupplierAccounts(item.account ? [item.account] : []);
+      if (item.account) {
+        form.setValue("supplier_account_id", item.account.id);
+      }
+    },
+    [form, setSupplierAccounts],
+  );
+
+  const handlePvSelect = useCallback(
+    (item: pvShowType) => {
+      form.setValue("pv_id", item.prepayment_pv_id);
+      setSelectedPvBalance(Number(item.balance));
+      form.setValue("supplier_id", item.pv.supplier_id);
+      form.setValue("supplier_account_id", item.pv.supplier_account_id);
+      if (item.pv.supplier_account) {
+        setSupplierAccounts([item.pv.supplier_account]);
+      }
+    },
+    [form, setSupplierAccounts],
+  );
+
+  async function downloadMemo() {
+    startTransition(async () => {
+      try {
+        const file = await memo(data.id);
+        const url = URL.createObjectURL(file);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Memo_Invoice_${data.invoice_no.replaceAll("/", "_")}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Download error:", error);
+        alert("Error downloading file.");
+      }
+    });
+  }
+
+  function onSubmit(values: lpjSchemaType) {
+    const totalDetailsAmount = values.details.reduce(
+      (acc, detail) => acc + (detail.total_amount || 0),
+      0,
+    );
+
+    if (totalDetailsAmount !== selectedPvBalance) {
+      const isConfirmed = window.confirm(
+        `Total detail amount (${totalDetailsAmount.toLocaleString("id-ID")}) does not match PV amount (${selectedPvBalance.toLocaleString("id-ID")}). Do you want to continue?`,
+      );
+
+      if (!isConfirmed) return;
+    }
+
+    startTransition(async () => {
+      const result = data.id
+        ? await lpjUpdate(data.id, values)
+        : await lpjStore(values);
+        console.log("API result:", result);
+
+      if (result.success) {
+        form.reset();
+        toast.success(result.message);
+        router.push("/finance/lpj");
+      } else {
+        toast.error(result.message);
+      }
+    });
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">
+          {data?.id ? `Edit LPJ - ${data.invoice_no}` : "Create LPJ"}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="grid items-start grid-cols-1 gap-4 space-y-2 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tanggal</FormLabel>
+                    <FormControl>
+                      <Input type="date" required {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="trx_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type Trx</FormLabel>
+                    <Select
+                      required
+                      value={field.value ? String(field.value) : ""}
+                      onValueChange={(val) => {
+                        field.onChange(Number(val));
+                        const selected = typeTrxes.find(
+                          (t) => t.id === Number(val),
+                        );
+                        setCoas(selected?.trx_dtl ?? []);
+                      }}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Type Trx" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {typeTrxes.map((item) => (
+                          <SelectItem key={item.id} value={String(item.id)}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="payment_method"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cara Bayar</FormLabel>
+                    <FormControl className="w-full">
+                      <Input placeholder="Cara Bayar" readOnly {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="pv_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select PV</FormLabel>
+                    <PvSelector
+                      value={field.value}
+                      onSelect={handlePvSelect}
+                      disabled={!!data?.pv_id}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="supplier_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Supplier</FormLabel>
+                    <SupplierSelector
+                      value={field.value}
+                      onSelect={handleSupplierSelect}
+                      disabled={!!data?.pv_id}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="supplier_account_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nomor Rekening</FormLabel>
+                    <Select
+                      value={field.value ? String(field.value) : ""}
+                      onValueChange={(val) => field.onChange(Number(val))}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Nomor Rekening" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {supplierAccounts.map((item) => (
+                          <SelectItem key={item.id} value={String(item.id)}>
+                            {item.bank.name} - {item.account_number}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Keterangan</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Keterangan" required {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="attachment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Attachment (Max Size: 1MB)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        placeholder="Browse File"
+                        accept=".pdf"
+                        onChange={(e) => field.onChange(e.target.files?.[0])}
+                      />
+                    </FormControl>
+                    {data?.attachment ? (
+                      <div className="flex items-center gap-1">
+                        <Paperclip className="size-4" />
+                        <Link
+                          href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600"
+                        >
+                          {data.attachment.filename}
+                        </Link>
+                      </div>
+                    ) : null}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <InvoiceDetail coas={coas} pphs={pphs} />
+
+            <Button
+              type="submit"
+              className="w-full cursor-pointer"
+              disabled={isPending}
+            >
+              <LoadingSwap isLoading={isPending}>
+                {data?.id ? "Update" : "Create"}
+              </LoadingSwap>
+            </Button>
+          </form>
+        </Form>
+
+        {data?.id ? (
+          <Button
+            className="w-full mt-6 bg-teal-500 cursor-pointer hover:bg-teal-600"
+            disabled={isPending}
+            onClick={downloadMemo}
+          >
+            <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
+          </Button>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default LpjForm;
