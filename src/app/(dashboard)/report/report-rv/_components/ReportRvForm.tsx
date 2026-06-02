@@ -5,32 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reportRv } from "../action";
 import { useTransition } from "react";
 import { LoadingSwap } from "@/components/ui/loading-swap";
-import { toast } from "sonner";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 const ReportRvForm = () => {
   const [isPending, startTransition] = useTransition();
+  const downloadFile = useAuthenticatedFileDownload();
 
   function onSubmit() {
     startTransition(async () => {
-      try {
-        const file = await reportRv();
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `report-rv.xlsx`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        toast.error("Error downloading file.");
-      }
+      const file = await reportRv();
+      downloadFile(file, "report-rv.xlsx");
     });
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Report RV</CardTitle>
+        <CardTitle className="text-2xl">Report RV Titipan</CardTitle>
       </CardHeader>
 
       <CardContent>

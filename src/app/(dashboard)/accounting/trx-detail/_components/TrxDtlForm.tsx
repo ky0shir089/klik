@@ -15,6 +15,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { trxDtlSchema, trxDtlSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { trxDtlStore, trxDtlUpdate } from "../action";
 import { trxDtlShowType } from "@/data/trx-dtl";
 import { LoadingSwap } from "@/components/ui/loading-swap";
@@ -53,6 +54,7 @@ interface iAppProps {
 const TrxDtlForm = ({ data, trxes, coas }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const [open, setOpen] = useState(false);
 
@@ -70,6 +72,10 @@ const TrxDtlForm = ({ data, trxes, coas }: iAppProps) => {
       const result = data?.id
         ? await trxDtlUpdate(data?.id, values)
         : await trxDtlStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

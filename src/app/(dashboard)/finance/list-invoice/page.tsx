@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { invoiceIndex } from "@/data/invoice";
 import FilterListInvoice from "./_components/FilterListInvoice";
 import { selectTypeTrx } from "@/data/select";
@@ -23,9 +23,7 @@ const RenderTable = async ({
   size: number;
 }) => {
   const result = await invoiceIndex(currentPage, size, query, typeTrx, method);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -51,7 +49,10 @@ const InvoicePage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const { data: typeTrxes } = await selectTypeTrx("OUT");
+  const typeTrxResult = await selectTypeTrx("OUT");
+  await redirectIfUnauthorized(typeTrxResult);
+
+  const { data: typeTrxes } = typeTrxResult;
 
   return (
     <>

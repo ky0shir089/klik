@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { customerIndex } from "@/data/customer";
 import FilterRv from "./_components/FilterRv";
 
@@ -20,9 +20,7 @@ const RenderTable = async ({
   tab: string;
 }) => {
   const result = await customerIndex(currentPage, size, tab, query);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

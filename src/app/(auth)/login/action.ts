@@ -3,6 +3,10 @@
 import axiosInstance from "@/lib/axios";
 import { signInSchema, signInSchemaType } from "@/lib/formSchema";
 import { parseAxiosError } from "@/lib/parseAxiosError";
+import {
+  SESSION_ACCESS_TOKEN_COOKIE_NAME,
+  SESSION_USER_COOKIE_NAME,
+} from "@/lib/session-cookies";
 import { cookies } from "next/headers";
 
 export async function signIn(values: signInSchemaType) {
@@ -15,29 +19,27 @@ export async function signIn(values: signInSchemaType) {
     };
   }
 
-  const today = new Date();
-  const endOfDay = today.setHours(23, 59, 59, 999);
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
 
   try {
     const { data } = await axiosInstance.post(`/auth/sign-in`, values);
 
     const cookieStore = await cookies();
 
-    const isProd = process.env.NODE_ENV === "production" && !process.env.LOCAL_DEV;
-
-    cookieStore.set("user", JSON.stringify(data.data), {
+    cookieStore.set(SESSION_USER_COOKIE_NAME, JSON.stringify(data.data), {
       path: "/",
       expires: endOfDay,
       httpOnly: true,
-      secure: isProd,
+      secure: false,
       sameSite: "lax",
     });
 
-    cookieStore.set("access_token", data.access_token, {
+    cookieStore.set(SESSION_ACCESS_TOKEN_COOKIE_NAME, data.access_token, {
       path: "/",
       expires: endOfDay,
       httpOnly: true,
-      secure: isProd,
+      secure: false,
       sameSite: "lax",
     });
 

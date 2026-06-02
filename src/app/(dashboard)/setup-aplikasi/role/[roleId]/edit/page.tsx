@@ -1,7 +1,8 @@
 import { roleShow } from "@/data/role";
 import Unauthorized from "@/components/unauthorized";
 import { selectMenuPermission } from "@/data/select";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import RoleForm from "../../_components/RoleForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -11,14 +12,12 @@ import FormSkeleton from "@/components/form-skeleton";
 type Params = Promise<{ roleId: number }>;
 
 const RenderForm = async ({ roleId }: { roleId: number }) => {
-  const [result, { data: menuPermission }] = await Promise.all([
+  const [result, menuPermissionResult] = await Promise.all([
     roleShow(roleId),
     selectMenuPermission(),
   ]);
+  await redirectIfUnauthorized(result, menuPermissionResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -27,6 +26,7 @@ const RenderForm = async ({ roleId }: { roleId: number }) => {
   }
 
   const { data } = result;
+  const { data: menuPermission } = menuPermissionResult;
 
   return <RoleForm data={data} menuPermission={menuPermission} />;
 };

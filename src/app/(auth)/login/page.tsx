@@ -1,13 +1,18 @@
 import { LoginForm } from "./_components/LoginForm";
 import { redirect } from "next/navigation";
-import { getCookieData } from "@/lib/cookieData";
+import { sanitizeReturnPath } from "@/lib/auth-redirect";
+import { getSessionUser } from "@/lib/session-user";
 import Image from "next/image";
 
-export default async function Page() {
-  const user = await getCookieData("user");
+export default async function Page(props: {
+  searchParams?: Promise<{ next?: string; reason?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const nextPath = sanitizeReturnPath(searchParams?.next);
+  const user = await getSessionUser();
 
   if (user) {
-    redirect("/");
+    redirect(nextPath);
   }
 
   return (

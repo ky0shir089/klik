@@ -11,14 +11,15 @@ import {
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { invoiceStatusSchemaType } from "@/lib/formSchema";
 import { cn } from "@/lib/utils";
-import { useRef, useTransition } from "react";
-import { statusUpdate } from "./action";
+import { useTransition } from "react";
+import { memo, statusUpdate } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { invoiceShowType } from "@/data/invoice";
-import Signature from "@uiw/react-signature";
 import InvoiceData from "@/components/InvoiceData";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 interface iAppProps {
   data: invoiceShowType;
@@ -26,25 +27,33 @@ interface iAppProps {
 
 const InvoiceAction = ({ data }: iAppProps) => {
   const router = useRouter();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const $svg = useRef<any>(null);
+  const handleExpiredSession = useExpiredSessionRedirect();
+  const downloadFile = useAuthenticatedFileDownload();
 
   const form = useForm<invoiceStatusSchemaType>();
   const [isPending, startTransition] = useTransition();
 
-  const points = {
-    "path-1": JSON.parse(data.signature) ?? [],
-  };
+  async function downloadMemo() {
+    startTransition(async () => {
+      const file = await memo(data.id);
+      downloadFile(
+        file,
+        `Memo_Invoice_${data.invoice_no.replaceAll("/", "_")}.pdf`,
+      );
+    });
+  }
 
   function onSubmit(status: string) {
     const values = {
       ...data,
       status,
-      signature: null,
     };
 
     startTransition(async () => {
       const result = await statusUpdate(data.id, values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();
@@ -63,15 +72,15 @@ const InvoiceAction = ({ data }: iAppProps) => {
       </CardHeader>
 
       <CardContent>
-        <InvoiceData data={data} points={points} />
+        <InvoiceData data={data} />
 
-        {points["path-1"].length > 0 ? (
-          <div className="flex items-center justify-center w-full">
-            <div className="w-full h-auto border-2 border-yellow-500 sm:max-w-sm">
-              <Signature ref={$svg} defaultPoints={points} readonly />
-            </div>
-          </div>
-        ) : null}
+        <Button
+          className="w-full mt-6 bg-teal-500 cursor-pointer hover:bg-teal-600"
+          disabled={isPending}
+          onClick={downloadMemo}
+        >
+          <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
+        </Button>
       </CardContent>
 
       {data.status === "APPROVE" ? (

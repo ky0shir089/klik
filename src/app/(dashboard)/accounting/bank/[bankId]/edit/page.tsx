@@ -1,7 +1,8 @@
 import { bankShow } from "@/data/bank";
 import BankForm from "../../_components/BankForm";
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
@@ -11,10 +12,7 @@ type Params = Promise<{ bankId: number }>;
 
 const RenderForm = async ({ bankId }: { bankId: number }) => {
   const result = await bankShow(bankId);
-
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

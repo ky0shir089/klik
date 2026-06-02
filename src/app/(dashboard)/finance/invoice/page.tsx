@@ -1,33 +1,23 @@
-import { selectPph, selectRv, selectTypeTrx } from "@/data/select";
+import { selectPph, selectTypeTrx } from "@/data/select";
 import InvoiceForm from "./_components/InvoiceForm";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
-import { supplierIndex } from "@/data/supplier";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const [
-    { data: typeTrxes },
-    { data: suppliers },
-    { data: pphs },
-    { data: rvs },
-  ] = await Promise.all([
+  const [typeTrxResult, pphResult] = await Promise.all([
     selectTypeTrx("OUT"),
-    supplierIndex(1, 10),
     selectPph(),
-    selectRv(1, 10),
   ]);
+  await redirectIfUnauthorized(typeTrxResult, pphResult);
 
-  return (
-    <InvoiceForm
-      suppliers={suppliers.data}
-      typeTrxes={typeTrxes}
-      pphs={pphs}
-      rvs={rvs.data}
-    />
-  );
+  const { data: typeTrxes } = typeTrxResult;
+  const { data: pphs } = pphResult;
+
+  return <InvoiceForm typeTrxes={typeTrxes} pphs={pphs} />;
 };
 
 const NewInvoicePage = () => {

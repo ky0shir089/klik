@@ -45,7 +45,7 @@ const FilterListInvoice = ({ typeTrxes }: iAppProps) => {
         </SelectTrigger>
         <SelectContent>
           {typeTrxes.map((typeTrx) => (
-            <SelectItem key={typeTrx.id} value={typeTrx.id}>
+            <SelectItem key={String(typeTrx.id)} value={String(typeTrx.id)}>
               {typeTrx.name}
             </SelectItem>
           ))}

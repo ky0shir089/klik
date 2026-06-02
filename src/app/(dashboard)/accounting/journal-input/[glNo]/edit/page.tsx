@@ -1,6 +1,7 @@
 import { selectCoa } from "@/data/select";
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
@@ -11,14 +12,12 @@ import { journalShow } from "@/data/journal-input";
 type Params = Promise<{ glNo: string }>;
 
 const RenderForm = async ({ glNo }: { glNo: string }) => {
-  const [result, { data: coas }] = await Promise.all([
+  const [result, coaResult] = await Promise.all([
     journalShow(glNo),
     selectCoa(),
   ]);
+  await redirectIfUnauthorized(result, coaResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -27,6 +26,7 @@ const RenderForm = async ({ glNo }: { glNo: string }) => {
   }
 
   const { data } = result;
+  const { data: coas } = coaResult;
 
   return <JournalForm data={data} coas={coas} />;
 };

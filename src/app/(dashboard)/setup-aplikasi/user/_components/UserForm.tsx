@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { userSchema, userSchemaType } from "@/lib/formSchema";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -36,6 +37,7 @@ interface iAppProps {
 const UserForm = ({ data, roles }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<userSchemaType>({
     resolver: zodResolver(userSchema),
@@ -52,6 +54,10 @@ const UserForm = ({ data, roles }: iAppProps) => {
       const result = data?.id
         ? await userUpdate(data?.id, values)
         : await userStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

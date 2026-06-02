@@ -4,8 +4,10 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { redirect } from "next/navigation";
-import { invoiceInbox } from "@/data/invoice";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
+import { settlementIndex } from "@/data/settlement";
+import Link from "next/dist/client/link";
+import { buttonVariants } from "@/components/ui/button";
 
 const RenderTable = async ({
   query,
@@ -16,17 +18,15 @@ const RenderTable = async ({
   currentPage: number;
   size: number;
 }) => {
-  const result = await invoiceInbox(currentPage, size, query);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  const result = await settlementIndex(currentPage, size, query);
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }
   const { data } = result;
-  const { data: invoices, ...meta } = data;
+  const { data: settlements, ...meta } = data;
 
-  return <DataTable columns={columns} data={invoices} meta={meta} />;
+  return <DataTable columns={columns} data={settlements} meta={meta} />;
 };
 
 const InvoicePage = async (props: {
@@ -44,10 +44,16 @@ const InvoicePage = async (props: {
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="mb-4 text-3xl font-bold">Approval Invoice</h2>
+        <h2 className="mb-4 text-3xl font-bold">List LPJ</h2>
+
+        <Link href="/finance/lpj/new" className={buttonVariants()}>
+          New LPJ
+        </Link>
       </div>
 
-      <SearchBox />
+      <div className="flex flex-col items-center gap-2 sm:flex-row">
+        <SearchBox />
+      </div>
 
       <Suspense
         key={`${query}-${currentPage}-${size}`}

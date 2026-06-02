@@ -50,6 +50,7 @@ import { paymentShowType } from "@/data/repayment";
 import PaymentForm from "@/app/(dashboard)/klik/list-payment/_components/PaymentForm";
 import { Eye } from "lucide-react";
 import InvoiceAction from "../../list-invoice/_components/InvoiceAction";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface iAppProps {
   data: pvShowType;
@@ -62,6 +63,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const [isPending, startTransition] = useTransition();
 
@@ -87,13 +89,13 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
   const watchedSubtotal = form.watch("pvs");
   const sumTotalAmount = watchedSubtotal
     ? data
-      .filter((item: { id: number }) =>
-        form.getValues("pvs").includes(item.id),
-      )
-      .reduce(
-        (acc: number, item: { pv_amount: number }) => acc + item.pv_amount,
-        0,
-      )
+        .filter((item: { id: number }) =>
+          form.getValues("pvs").includes(item.id),
+        )
+        .reduce(
+          (acc: number, item: { pv_amount: number }) => acc + item.pv_amount,
+          0,
+        )
     : 0;
 
   const onSubmit = useCallback(
@@ -109,6 +111,10 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
 
       startTransition(async () => {
         const result = await pvStore(values);
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
         if (result.success) {
           form.reset();
           toast.success(result.message);
@@ -118,7 +124,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
         }
       });
     },
-    [data, router, form],
+    [data, router, form, handleExpiredSession],
   );
 
   async function createURL(paymentId: string, typeTrx: string) {
@@ -168,7 +174,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                 required
                 value={field.value}
                 onValueChange={(val) => {
-                  field.onChange(val)
+                  field.onChange(val);
                   params.set("method", val);
                   router.replace(pathname + "?" + params);
                 }}
@@ -296,7 +302,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                           <DialogTitle></DialogTitle>
                           <DialogDescription></DialogDescription>
                         </DialogHeader>
-                        <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4">
+                        <div className="no-scrollbar -mx-4 w-screen max-h-[50vh] overflow-y-auto px-4">
                           {item.trx_dtl_id == 2 ? (
                             <PaymentForm data={payment} />
                           ) : (

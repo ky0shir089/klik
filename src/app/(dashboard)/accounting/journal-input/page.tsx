@@ -4,11 +4,15 @@ import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
 import JournalForm from "./components/JournalForm";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const { data: coas } = await selectCoa();
+  const coaResult = await selectCoa();
+  await redirectIfUnauthorized(coaResult);
+
+  const { data: coas } = coaResult;
 
   return <JournalForm coas={coas} />;
 };

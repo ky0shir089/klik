@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { metaProps } from "@/components/ui/data-table";
 import {
   Dialog,
   DialogContent,
@@ -26,8 +27,11 @@ import {
 import { rvShowType } from "@/data/rv";
 import { selectRv } from "@/data/select";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
+import Pagination from "./Pagination";
+import { useSearchParams } from "next/navigation";
 
 interface RvSelectorProps {
   value?: number | null;
@@ -35,23 +39,33 @@ interface RvSelectorProps {
 }
 
 export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const size = Number(searchParams.get("size")) || 10;
+
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [rvOptions, setRvOptions] = useState<rvShowType[]>([]);
+  const [meta, setMeta] = useState({} as metaProps);
   const [isLoading, setIsLoading] = useState(false);
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    async function fetchSuppliers() {
+    async function fetchRvs() {
       setIsLoading(true);
       try {
-        const { data } = await selectRv(1, 10, debouncedSearchQuery);
-        setRvOptions(data.data);
+        const result = await selectRv(currentPage, size, debouncedSearchQuery);
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
+        if (result?.data) {
+          const { data: rvs, ...meta } = result.data;
+          setRvOptions(rvs);
+          setMeta(meta);
+        }
       } catch (error) {
         console.error("Failed to fetch rvs:", error);
         setRvOptions([]);
@@ -60,8 +74,18 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
       }
     }
 
-    fetchSuppliers();
-  }, [debouncedSearchQuery, open]);
+    if (open || (value && rvOptions.length === 0)) {
+      fetchRvs();
+    }
+  }, [
+    debouncedSearchQuery,
+    open,
+    value,
+    rvOptions.length,
+    currentPage,
+    size,
+    handleExpiredSession,
+  ]);
 
   const selectedRvName =
     rvOptions.find((item) => item.id === value)?.rv_no || "";
@@ -146,6 +170,8 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
                         )}
                       </TableBody>
                     </Table>
+
+                    <Pagination meta={meta} />
                   </div>
                 </div>
               </DialogContent>

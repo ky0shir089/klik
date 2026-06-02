@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,7 +17,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useSignOut } from "@/hooks/use-signout";
 
 export function NavUser({
   user,
@@ -88,9 +88,11 @@ export function NavUser({
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={useSignOut}>
-              <LogOut />
-              Log out
+            <DropdownMenuItem asChild>
+              <Link href="/logout">
+                <LogOut />
+                Log out
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

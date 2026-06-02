@@ -7,12 +7,13 @@ import { useState, useTransition } from "react";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 const ReportGlForm = () => {
   const [isPending, startTransition] = useTransition();
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
+  const downloadFile = useAuthenticatedFileDownload();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -23,17 +24,9 @@ const ReportGlForm = () => {
     };
 
     startTransition(async () => {
-      try {
-        const file = await reportGl(values);
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `report-gl.xlsx`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        toast.error("Error downloading file.");
+      const file = await reportGl(values);
+      if (!downloadFile(file, "report-gl.xlsx")) {
+        return;
       }
 
       setFrom("");

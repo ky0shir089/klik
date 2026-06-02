@@ -1,7 +1,8 @@
 import { trxDtlShow } from "@/data/trx-dtl";
 import TrxDtlForm from "../../_components/TrxDtlForm";
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { selectCoa, selectTypeTrx } from "@/data/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
@@ -10,15 +11,13 @@ import FormSkeleton from "@/components/form-skeleton";
 type Params = Promise<{ trxDtlId: number }>;
 
 const RenderForm = async ({ trxDtlId }: { trxDtlId: number }) => {
-  const [result, { data: trxes }, { data: coas }] = await Promise.all([
+  const [result, typeTrxResult, coaResult] = await Promise.all([
     trxDtlShow(trxDtlId),
     selectTypeTrx(),
     selectCoa("CHILDREN"),
   ]);
+  await redirectIfUnauthorized(result, typeTrxResult, coaResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -27,6 +26,8 @@ const RenderForm = async ({ trxDtlId }: { trxDtlId: number }) => {
   }
 
   const { data } = result;
+  const { data: trxes } = typeTrxResult;
+  const { data: coas } = coaResult;
 
   return <TrxDtlForm data={data} trxes={trxes} coas={coas} />;
 };

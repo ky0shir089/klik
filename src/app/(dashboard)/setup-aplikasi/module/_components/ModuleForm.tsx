@@ -16,6 +16,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { moduleSchema, moduleSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { moduleStore, moduleUpdate } from "../action";
 import { moduleShowType } from "@/data/module";
 import { LoadingSwap } from "@/components/ui/loading-swap";
@@ -27,6 +28,7 @@ interface iAppProps {
 const ModuleForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<moduleSchemaType>({
     resolver: zodResolver(moduleSchema),
@@ -42,6 +44,10 @@ const ModuleForm = ({ data }: iAppProps) => {
       const result = data?.id
         ? await moduleUpdate(data?.id, values)
         : await moduleStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

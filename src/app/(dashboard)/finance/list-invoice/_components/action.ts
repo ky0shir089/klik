@@ -55,29 +55,7 @@ export async function invoiceUpdate(id: number, values: invoiceSchemaType) {
     formData.append("attachment", values.attachment);
   }
   formData.append("status", values.status);
-  values.details.forEach((item, i) => {
-    if (item.id !== null) {
-      formData.append(`details[${i}][id]`, item.id.toString());
-    }
-    formData.append(`details[${i}][inv_coa_id]`, item.inv_coa_id.toString());
-    formData.append(`details[${i}][description]`, item.description);
-    if (item.item_amount !== null) {
-      formData.append(
-        `details[${i}][item_amount]`,
-        item.item_amount.toString(),
-      );
-    }
-    if (item.pph_id !== null) {
-      formData.append(`details[${i}][pph_id]`, item.pph_id.toString());
-    }
-    formData.append(`details[${i}][pph_rate]`, item.pph_rate.toString());
-    formData.append(`details[${i}][pph_amount]`, item.pph_amount.toString());
-    formData.append(`details[${i}][ppn_rate]`, item.ppn_rate.toString());
-    formData.append(`details[${i}][ppn_amount]`, item.ppn_amount.toString());
-    if (item.rv_id !== null) {
-      formData.append(`details[${i}][rv_id]`, item.rv_id.toString());
-    }
-  });
+  formData.append("details", JSON.stringify(values.details));
 
   try {
     const { data } = await axiosInstance.post(

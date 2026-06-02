@@ -5,11 +5,15 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const { data } = await selectCoa("CHILDREN");
+  const result = await selectCoa("CHILDREN");
+  await redirectIfUnauthorized(result);
+
+  const { data } = result;
 
   return <PphForm coas={data} />;
 };

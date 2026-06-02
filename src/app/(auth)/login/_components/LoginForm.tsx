@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  sanitizeReturnPath,
+  SESSION_EXPIRED_REASON,
+} from "@/lib/auth-redirect";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -33,6 +37,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const hasShownExpiredToastRef = useRef(false);
 
   const [isLoading, startTransition] = useTransition();
 
@@ -44,16 +50,29 @@ export function LoginForm({
     },
   });
 
+  const nextPath = sanitizeReturnPath(searchParams.get("next"));
+  const reason = searchParams.get("reason");
+
+  useEffect(() => {
+    if (
+      reason === SESSION_EXPIRED_REASON &&
+      !hasShownExpiredToastRef.current
+    ) {
+      hasShownExpiredToastRef.current = true;
+      toast.error("Session expired, please log in again.");
+    }
+  }, [reason]);
+
   function onSubmit(values: signInSchemaType) {
     startTransition(async () => {
       const result = await signIn(values);
-      
+
       if (result.success) {
         toast.success(result.message);
         if (result.data.change_password) {
-          router.push(`/change-password`);
+          router.replace(`/change-password`);
         } else {
-          router.push("/");
+          router.replace(nextPath);
         }
       } else {
         toast.error(result.message);

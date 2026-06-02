@@ -1,5 +1,6 @@
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
 import PaymentFormSkeleton from "@/components/PaymentFormSkeleton";
@@ -10,9 +11,7 @@ type Params = Promise<{ sppId: number }>;
 
 const RenderForm = async ({ sppId }: { sppId: number }) => {
   const result = await sppDetail(sppId);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

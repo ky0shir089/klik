@@ -23,3 +23,13 @@ export async function sppStore(values: sppSchemaType) {
     return parseAxiosError(error);
   }
 }
+
+export async function unitCancel(customer_id: number, unit_id: number) {
+  try {
+    const { data } = await axiosInstance.put(`/klik/v1/unit/${unit_id}`);
+    revalidatePath(`/klik/spp/${customer_id}`);
+    return data;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
+}

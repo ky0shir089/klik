@@ -64,6 +64,7 @@ export const typeTrxSchema = z.object({
   code: z.string().min(1),
   name: z.string().min(1),
   in_out: z.enum(["IN", "OUT"]),
+  role_id: z.number().positive().nullable(),
   is_active: z.boolean(),
 });
 export type typeTrxSchemaType = z.infer<typeof typeTrxSchema>;
@@ -98,6 +99,7 @@ export const rvSchema = z.object({
   bank_account_id: z.number().positive().nullable(),
   coa_id: z.number().positive(),
   starting_balance: z.number().positive().nullable(),
+  invoice_id: z.number().positive().nullable(),
 });
 export type rvSchemaType = z.infer<typeof rvSchema>;
 
@@ -119,7 +121,7 @@ export type paymentSchemaType = z.infer<typeof paymentSchema>;
 export const pvSchema = z.object({
   paid_date: z.iso.date(),
   description: z.string().min(1),
-  payment_method: z.string().min(1),
+  payment_method: z.enum(["BANK", "KAS"]),
   bank_account_id: z.number().positive().nullable(),
   pvs: z.array(z.number().positive()).min(1, "Select at least one PV"),
 });
@@ -150,9 +152,9 @@ export const invoiceSchema = z
   .object({
     date: z.iso.date(),
     trx_id: z.number().positive().nullable(),
-    supplier_id: z.number().positive().nullable(),
-    payment_method: z.string().min(1),
-    supplier_account_id: z.number().positive().nullable(),
+    supplier_id: z.number().positive(),
+    payment_method: z.enum(["BANK", "KAS"]),
+    supplier_account_id: z.number().positive(),
     description: z.string().min(1),
     attachment: z.union([z.instanceof(File), z.null()]),
     status: z.string().min(1),
@@ -170,7 +172,8 @@ export type invoiceSchemaType = z.infer<typeof invoiceSchema>;
 
 export const invoiceStatusSchema = z.object({
   status: z.string(),
-  signature: z.array(z.array(z.number())).min(1).nullable(),
+  signature: z.record(z.string(), z.array(z.array(z.number()))).nullable(),
+  wf_history_id: z.number().positive(),
 });
 export type invoiceStatusSchemaType = z.infer<typeof invoiceStatusSchema>;
 
@@ -254,3 +257,95 @@ export const sppKlikSchema = z
     },
   );
 export type sppKlikSchemaType = z.infer<typeof sppKlikSchema>;
+
+export const byadSchema = z.object({
+  date: z.iso.date(),
+  branch: z.string().min(1),
+  description: z.string().min(1),
+  attachment: z.union([z.instanceof(File), z.null()]),
+  status: z.string().min(3),
+  details: z
+    .array(
+      z.object({
+        unit_id: z.number().positive(),
+        byad_amount: z.number().positive(),
+      }),
+    )
+    .min(1, "Select at least one Unit"),
+});
+export type byadSchemaType = z.infer<typeof byadSchema>;
+
+export const byadPaymentSchema = z.object({
+  date: z.iso.date(),
+  status: z.string().min(3),
+  details: z.array(z.number().positive()).min(1, "Select at least one BYAD"),
+});
+export type byadPaymentSchemaType = z.infer<typeof byadPaymentSchema>;
+
+export const workflowSchema = z.object({
+  name: z.string().min(3),
+  type_trx: z
+    .array(z.number().positive())
+    .min(1, "Select at least one Transaction Type"),
+  min_amount: z.number().min(0),
+  max_amount: z.number().positive().nullable(),
+  is_active: z.boolean(),
+  details: z
+    .array(
+      z.object({
+        user_id: z.number().positive(),
+        sequence: z.number().positive().min(1),
+      }),
+    )
+    .min(2, "Select at least two Users")
+    .refine(
+      (items) => new Set(items.map((i) => i.user_id)).size === items.length,
+      {
+        message: "Each user in the workflow must be unique",
+      },
+    ),
+});
+export type workflowSchemaType = z.infer<typeof workflowSchema>;
+
+export const lpjDetailSchema = z.object({
+  id: z.number().positive().nullable(),
+  inv_coa_id: z.number().positive(),
+  description: z.string().min(1),
+  item_amount: z.number().positive().nullable(),
+  pph_id: z.number().positive().nullable(),
+  pph_rate: z.number().min(0).max(100),
+  pph_amount: z.number().min(0),
+  ppn_rate: z.number().min(0).max(100),
+  ppn_amount: z.number().min(0),
+  total_amount: z.number().positive(),
+});
+export type lpjDetailSchemaType = z.infer<typeof lpjDetailSchema>;
+
+export const lpjSchema = z.object({
+  date: z.iso.date(),
+  trx_id: z.number().positive(),
+  payment_method: z.string().min(1),
+  pv_id: z.number().positive(),
+  supplier_id: z.number().positive(),
+  supplier_account_id: z.number().positive(),
+  description: z.string().min(1),
+  attachment: z.union([z.instanceof(File), z.null()]),
+  status: z.string().min(1),
+  details: z.array(lpjDetailSchema).min(1, "Select at least one item"),
+});
+export type lpjSchemaType = z.infer<typeof lpjSchema>;
+
+export const invoiceExternalSchema = z.object({
+  date: z.iso.date(),
+  due_date: z.number().positive().min(15),
+  supplier_id: z.number().positive(),
+  description: z.string().min(1),
+  signatory: z.string().min(1),
+  attachment: z.union([z.instanceof(File), z.null()]),
+  status: z.string().min(1),
+  from_date: z.iso.date(),
+  to_date: z.iso.date(),
+  total_amount_manual: z.number(),
+  units: z.array(z.number().positive()).nullable(),
+});
+export type invoiceExternalSchemaType = z.infer<typeof invoiceExternalSchema>;

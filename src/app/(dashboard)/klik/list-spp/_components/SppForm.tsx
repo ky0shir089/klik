@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { syncStatus } from "../action";
 import { File } from "lucide-react";
 import Link from "next/link";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface iAppProps {
   data?: Pick<customerShowType, "units"[0]>;
@@ -44,6 +45,7 @@ const SppForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
+  const handleExpiredSession = useExpiredSessionRedirect();
   const countPaidOffUnits = data?.units.filter(
     (item: { payment_status: string }) => item.payment_status === "LUNAS",
   );
@@ -62,6 +64,9 @@ const SppForm = ({ data }: iAppProps) => {
 
     startTransition(async () => {
       const result = await syncStatus(values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         toast.success(result.message);

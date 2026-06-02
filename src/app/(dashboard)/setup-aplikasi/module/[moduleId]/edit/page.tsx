@@ -1,7 +1,8 @@
 import { moduleShow } from "@/data/module";
 import ModuleForm from "../../_components/ModuleForm";
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
@@ -11,10 +12,7 @@ type Params = Promise<{ moduleId: number }>;
 
 const RenderForm = async ({ moduleId }: { moduleId: number }) => {
   const result = await moduleShow(moduleId);
-
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

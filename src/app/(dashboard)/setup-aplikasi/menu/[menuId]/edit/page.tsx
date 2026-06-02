@@ -2,7 +2,8 @@ import MenuForm from "../../_components/MenuForm";
 import { selectModule } from "@/data/select";
 import Unauthorized from "@/components/unauthorized";
 import { menuShow } from "@/data/menu";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
@@ -11,14 +12,12 @@ import FormSkeleton from "@/components/form-skeleton";
 type Params = Promise<{ menuId: number }>;
 
 const RenderForm = async ({ menuId }: { menuId: number }) => {
-  const [result, { data: modules }] = await Promise.all([
+  const [result, moduleResult] = await Promise.all([
     menuShow(menuId),
     selectModule(),
   ]);
+  await redirectIfUnauthorized(result, moduleResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -27,6 +26,7 @@ const RenderForm = async ({ menuId }: { menuId: number }) => {
   }
 
   const { data } = result;
+  const { data: modules } = moduleResult;
 
   return <MenuForm data={data} modules={modules} />;
 };

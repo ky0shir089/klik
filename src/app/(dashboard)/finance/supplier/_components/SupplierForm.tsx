@@ -16,6 +16,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { supplierSchema, supplierSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { supplierStore, supplierUpdate } from "../action";
 import { supplierShowType } from "@/data/supplier";
 import { LoadingSwap } from "@/components/ui/loading-swap";
@@ -36,6 +37,7 @@ interface iAppProps {
 const SupplierForm = ({ data, banks }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<supplierSchemaType>({
     resolver: zodResolver(supplierSchema),
@@ -52,6 +54,10 @@ const SupplierForm = ({ data, banks }: iAppProps) => {
       const result = data?.id
         ? await supplierUpdate(data?.id, values)
         : await supplierStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

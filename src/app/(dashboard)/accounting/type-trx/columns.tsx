@@ -24,6 +24,10 @@ export const columns: ColumnDef<typeTrxShowType>[] = [
     accessorKey: "in_out",
   },
   {
+    header: "Role",
+    accessorFn: (row) => row.role?.name,
+  },
+  {
     header: "Status",
     accessorKey: "is_active",
     cell: ({ getValue }) => (getValue() ? "ACTIVE" : "INACTIVE"),

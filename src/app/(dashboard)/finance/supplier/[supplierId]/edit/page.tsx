@@ -1,7 +1,8 @@
 import { supplierShow } from "@/data/supplier";
 import SupplierForm from "../../_components/SupplierForm";
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { selectBank } from "@/data/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -14,14 +15,12 @@ type Params = Promise<{ supplierId: number }>;
 const RenderForm = async ({ supplierId }: { supplierId: number }) => {
   await connection();
 
-  const [result, { data: banks }] = await Promise.all([
+  const [result, bankResult] = await Promise.all([
     supplierShow(supplierId),
     selectBank(),
   ]);
+  await redirectIfUnauthorized(result, bankResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -29,6 +28,7 @@ const RenderForm = async ({ supplierId }: { supplierId: number }) => {
     return notFound();
   }
   const { data } = result;
+  const { data: banks } = bankResult;
 
   return <SupplierForm data={data} banks={banks} />;
 };

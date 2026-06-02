@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { menuSchema, menuSchemaType } from "@/lib/formSchema";
 import { menuStore, menuUpdate } from "../action";
 import {
@@ -37,6 +38,7 @@ interface iAppProps {
 const MenuForm = ({ data, modules }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<menuSchemaType>({
     resolver: zodResolver(menuSchema),
@@ -55,6 +57,10 @@ const MenuForm = ({ data, modules }: iAppProps) => {
       const result = data?.id
         ? await menuUpdate(data.id, values)
         : await menuStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

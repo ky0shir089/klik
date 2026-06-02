@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface iAppProps {
   data?: coaShowType;
@@ -43,6 +44,7 @@ interface iAppProps {
 const CoaForm = ({ data, coas }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<coaSchemaType>({
     resolver: zodResolver(coaSchema),
@@ -68,6 +70,9 @@ const CoaForm = ({ data, coas }: iAppProps) => {
       const result = data?.id
         ? await coaUpdate(data?.id, values)
         : await coaStore(values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

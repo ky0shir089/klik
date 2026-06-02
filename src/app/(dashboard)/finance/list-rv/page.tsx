@@ -5,7 +5,7 @@ import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { rvIndex } from "@/data/rv";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import FilterListRv from "./_components/FilterListRv";
 import { selectBankAccount, selectTypeTrx } from "@/data/select";
 
@@ -25,9 +25,7 @@ const RenderTable = async ({
   size: number;
 }) => {
   const result = await rvIndex(currentPage, size, query, typeTrx, method, bank);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -55,10 +53,14 @@ const RvPage = async (props: {
   const currentPage = Number(searchParams?.page) || 1;
   const size = Number(searchParams?.size) || 10;
 
-  const [{ data: typeTrxes }, { data: banks }] = await Promise.all([
+  const [typeTrxResult, bankResult] = await Promise.all([
     selectTypeTrx("IN"),
     selectBankAccount(),
   ]);
+  await redirectIfUnauthorized(typeTrxResult, bankResult);
+
+  const { data: typeTrxes } = typeTrxResult;
+  const { data: banks } = bankResult;
 
   return (
     <div className="flex flex-col gap-6">

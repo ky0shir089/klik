@@ -55,7 +55,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
     cell: ({ row }) => (
       <Link
         className={buttonVariants({ variant: "link", size: "sm" })}
-        href={`/finance/approval-invoice/${row.original.id}`}
+        href={`/workflow/inbox/${row.original.id}`}
       >
         <Eye />
         View

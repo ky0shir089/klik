@@ -10,6 +10,7 @@ import { invoiceShowType } from "@/data/invoice";
 import { env } from "@/lib/env";
 import { Paperclip } from "lucide-react";
 import Link from "next/link";
+import { TimelineTracker } from "./TimelineTracker";
 
 const InvoiceData = ({ data }: invoiceShowType) => {
   return (
@@ -87,8 +88,22 @@ const InvoiceData = ({ data }: invoiceShowType) => {
               <TableHead>Status</TableHead>
               <TableCell>{data.status}</TableCell>
             </TableRow>
+
+            {data.payment_method == "PREPAYMENT" ? (
+              <TableRow>
+                <TableHead>PV No</TableHead>
+                <TableCell>
+                  {data.settlement?.pv.pv_no} -{" "}
+                  {data.settlement?.pv.pv_amount.toLocaleString("id-ID")}
+                </TableCell>
+              </TableRow>
+            ) : null}
           </TableBody>
         </Table>
+
+        {data.wf_histories.length > 0 && (
+          <TimelineTracker items={data.wf_histories} />
+        )}
       </div>
 
       <Table>
@@ -121,15 +136,21 @@ const InvoiceData = ({ data }: invoiceShowType) => {
                   {Number(item.item_amount).toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell>{item.pph?.name ?? "-"}</TableCell>
-                <TableCell>{item.pph?.rate ?? 0}</TableCell>
+                <TableCell className="text-center">
+                  {item.pph?.rate ?? 0}
+                </TableCell>
                 <TableCell className="text-right">
                   {Number(item.pph_amount).toLocaleString("id-ID")}
                 </TableCell>
-                <TableCell>{item.ppn_rate}</TableCell>
+                <TableCell className="text-center">{item.ppn_rate}</TableCell>
                 <TableCell className="text-right">
                   {Number(item.ppn_amount).toLocaleString("id-ID")}
                 </TableCell>
-                <TableCell>{item.rv?.rv_no ?? "-"}</TableCell>
+                <TableCell>
+                  {item.rv
+                    ? `${item.rv?.rv_no} - ${Number(item.rv?.ending_balance).toLocaleString("id-ID")}`
+                    : "-"}
+                </TableCell>
                 <TableCell className="text-right">
                   {Number(item.total_amount).toLocaleString("id-ID")}
                 </TableCell>

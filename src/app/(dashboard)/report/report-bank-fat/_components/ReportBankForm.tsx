@@ -7,7 +7,6 @@ import { useState, useTransition } from "react";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -16,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { bankShowType } from "@/data/bank";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
   const [isPending, startTransition] = useTransition();
@@ -23,6 +23,7 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
   const [to, setTo] = useState<string>("");
   const [bank, setBank] = useState<number>(0);
   const [permission, setPermission] = useState<string>("");
+  const downloadFile = useAuthenticatedFileDownload();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,17 +36,17 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
     };
 
     startTransition(async () => {
-      try {
-        const file = await reportBank(values);
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `report-bank-${permission.replace(":", "-")}-${from}-${to}.xlsx`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        toast.error("Unathorized to download file.");
+      const file = await reportBank(values);
+      if (
+        !downloadFile(
+          file,
+          `report-bank-${permission.replace(":", "-")}-${from}-${to}.xlsx`,
+          {
+            errorMessage: "Unauthorized to download file.",
+          },
+        )
+      ) {
+        return;
       }
 
       setFrom("");

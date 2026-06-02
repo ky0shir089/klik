@@ -23,11 +23,13 @@ import { customerShowType } from "@/data/customer";
 import { sppSchema, sppSchemaType } from "@/lib/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { memo, useMemo, useTransition } from "react";
+import { memo, useCallback, useMemo, useTransition } from "react";
 import { Control, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { sumUnitFields } from "@/lib/helper";
-import { sppStore } from "../action";
+import { sppStore, unitCancel } from "../action";
+import { X } from "lucide-react";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface SppFormProps {
   data: customerShowType;
@@ -46,6 +48,8 @@ const UnitTable = memo(function UnitTable({
   sumFinalPrice,
   sumDistributed,
   sumDiff,
+  handleRemoveUnit,
+  isPending,
 }: {
   control: Control<sppSchemaType>;
   units: customerShowType["units"];
@@ -56,54 +60,17 @@ const UnitTable = memo(function UnitTable({
   sumFinalPrice: number;
   sumDistributed: number;
   sumDiff: number;
+  handleRemoveUnit: (unit_id: number) => void;
+  isPending: boolean;
 }) {
   return (
     <div>
       <h3 className="text-xl">Data Unit</h3>
       <div className="overflow-x-auto">
         <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              <FormField
-                control={control}
-                name="units"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Checkbox
-                        checked={
-                          allUnitIds.length > 0 &&
-                          field.value?.length === allUnitIds.length
-                        }
-                        onCheckedChange={(checked) =>
-                          field.onChange(checked ? allUnitIds : [])
-                        }
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </TableHead>
-            <TableHead>Tgl Lelang</TableHead>
-            <TableHead>Balai Lelang</TableHead>
-            <TableHead>Nopol</TableHead>
-            <TableHead>Noka</TableHead>
-            <TableHead>Nosin</TableHead>
-            <TableHead>No Kontrak</TableHead>
-            <TableHead>No Paket</TableHead>
-            <TableHead className="text-right">Harga Lelang</TableHead>
-            <TableHead className="text-right">Potongan Tiket</TableHead>
-            <TableHead className="text-right">Fee</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead className="text-right">Harga Distribusi</TableHead>
-            <TableHead className="text-right">Selisih</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {units.map((item: customerShowType["units"][number]) => (
-            <TableRow key={item.id}>
-              <TableCell>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
                 <FormField
                   control={control}
                   name="units"
@@ -111,75 +78,126 @@ const UnitTable = memo(function UnitTable({
                     <FormItem>
                       <FormControl>
                         <Checkbox
-                          checked={field.value?.includes(item.id)}
+                          checked={
+                            allUnitIds.length > 0 &&
+                            field.value?.length === allUnitIds.length
+                          }
                           onCheckedChange={(checked) =>
-                            field.onChange(
-                              updateArray(
-                                field.value || [],
-                                item.id,
-                                !!checked,
-                              ),
-                            )
+                            field.onChange(checked ? allUnitIds : [])
                           }
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
-              </TableCell>
-              <TableCell>{item?.auction.auction_date}</TableCell>
-              <TableCell>{item?.auction.branch_name}</TableCell>
-              <TableCell>{item.police_number}</TableCell>
-              <TableCell>{item.chassis_number}</TableCell>
-              <TableCell>{item.engine_number}</TableCell>
-              <TableCell>{item.contract_number}</TableCell>
-              <TableCell>{item.package_number}</TableCell>
+              </TableHead>
+              <TableHead>Tgl Lelang</TableHead>
+              <TableHead>Balai Lelang</TableHead>
+              <TableHead>Nopol</TableHead>
+              <TableHead>Noka</TableHead>
+              <TableHead>Nosin</TableHead>
+              <TableHead>No Kontrak</TableHead>
+              <TableHead>No Paket</TableHead>
+              <TableHead className="text-right">Harga Lelang</TableHead>
+              <TableHead className="text-right">Potongan Tiket</TableHead>
+              <TableHead className="text-right">TitipanFee</TableHead>
+              <TableHead className="text-right">Total</TableHead>
+              <TableHead className="text-right">Harga Distribusi</TableHead>
+              <TableHead className="text-right">Selisih</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {units.map((item: customerShowType["units"][number]) => (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <FormField
+                    control={control}
+                    name="units"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(item.id)}
+                            onCheckedChange={(checked) =>
+                              field.onChange(
+                                updateArray(
+                                  field.value || [],
+                                  item.id,
+                                  !!checked,
+                                ),
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TableCell>
+                <TableCell>{item?.auction.auction_date}</TableCell>
+                <TableCell>{item?.auction.branch_name}</TableCell>
+                <TableCell>{item.police_number}</TableCell>
+                <TableCell>{item.chassis_number}</TableCell>
+                <TableCell>{item.engine_number}</TableCell>
+                <TableCell>{item.contract_number}</TableCell>
+                <TableCell>{item.package_number}</TableCell>
+                <TableCell className="text-right">
+                  {item.price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.ticket_price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.admin_fee.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.final_price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.distributed_price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  {item.diff_price.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="destructive"
+                    className="cursor-pointer disabled:cursor-not-allowed"
+                    disabled={isPending}
+                    onClick={() => handleRemoveUnit(item.id)}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>Total</TableCell>
               <TableCell className="text-right">
-                {item.price.toLocaleString("id-ID")}
+                {sumBasePrice.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.ticket_price.toLocaleString("id-ID")}
+                {sumTicketPrice.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.admin_fee.toLocaleString("id-ID")}
+                {sumFee.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.final_price.toLocaleString("id-ID")}
+                {sumFinalPrice.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.distributed_price.toLocaleString("id-ID")}
+                {sumDistributed.toLocaleString("id-ID")}
               </TableCell>
               <TableCell className="text-right">
-                {item.diff_price.toLocaleString("id-ID")}
+                {sumDiff.toLocaleString("id-ID")}
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={8}>Total</TableCell>
-            <TableCell className="text-right">
-              {sumBasePrice.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumTicketPrice.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumFee.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumFinalPrice.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumDistributed.toLocaleString("id-ID")}
-            </TableCell>
-            <TableCell className="text-right">
-              {sumDiff.toLocaleString("id-ID")}
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+          </TableFooter>
+        </Table>
       </div>
     </div>
   );
@@ -188,6 +206,7 @@ const UnitTable = memo(function UnitTable({
 const SppForm = ({ data }: SppFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<sppSchemaType>({
     resolver: zodResolver(sppSchema),
@@ -215,9 +234,31 @@ const SppForm = ({ data }: SppFormProps) => {
     [data.units],
   );
 
+  const handleRemoveUnit = useCallback(
+    (unit_id: number) => {
+      if (!window.confirm("Apakah Anda yakin ingin membatalkan unit ini?"))
+        return;
+
+      startTransition(async () => {
+        const result = await unitCancel(data.klik_bidder_id, unit_id);
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
+        if (result.success) {
+          toast.success(result.message);
+          router.refresh();
+        } else {
+          toast.error(result.message);
+        }
+      });
+    },
+    [data.klik_bidder_id, router, handleExpiredSession],
+  );
+
   function onSubmit(values: sppSchemaType) {
     const checkSppStatus = data.units.filter(
-      (unit: customerShowType["units"]) =>
+      (unit: customerShowType["units"][number]) =>
         values.units.includes(unit.id) && unit.spp_status === null,
     );
 
@@ -226,8 +267,9 @@ const SppForm = ({ data }: SppFormProps) => {
       return;
     }
 
-    const selectedUnits = data.units.filter((unit: customerShowType["units"]) =>
-      values.units.includes(unit.id),
+    const selectedUnits = data.units.filter(
+      (unit: customerShowType["units"][number]) =>
+        values.units.includes(unit.id),
     );
     const branchNames = new Set(
       selectedUnits.map(
@@ -245,6 +287,9 @@ const SppForm = ({ data }: SppFormProps) => {
 
     startTransition(async () => {
       const result = await sppStore(values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();
@@ -292,6 +337,8 @@ const SppForm = ({ data }: SppFormProps) => {
           sumFinalPrice={sumFinalPrice}
           sumDistributed={sumDistributed}
           sumDiff={sumDiff}
+          handleRemoveUnit={handleRemoveUnit}
+          isPending={isPending}
         />
 
         <Button
