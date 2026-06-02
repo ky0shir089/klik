@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { Input } from "@/components/ui/input";
 import { uploadFileSchema, uploadFileSchemaType } from "@/lib/formSchema";
 import { useState, useTransition } from "react";
@@ -59,6 +60,7 @@ const UploadSppForm = () => {
   const [formKey, setFormKey] = useState(0);
   const [results, setResults] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<uploadFileSchemaType>({
     resolver: zodResolver(uploadFileSchema),
@@ -72,6 +74,10 @@ const UploadSppForm = () => {
       setResults([]);
 
       const result = await uploadSpp(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         toast.success(result.message);

@@ -1,6 +1,7 @@
 import { paymentShow } from "@/data/repayment";
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import PaymentForm from "../_components/PaymentForm";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -11,9 +12,7 @@ type Params = Promise<{ paymentId: number }>;
 
 const RenderForm = async ({ paymentId }: { paymentId: number }) => {
   const result = await paymentShow(paymentId);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

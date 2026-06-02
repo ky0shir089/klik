@@ -15,7 +15,9 @@ import { byadPaymentShowType } from "@/data/byad-payment";
 import { paymentShowType } from "@/data/repayment";
 import { cn } from "@/lib/utils";
 import { useTransition } from "react";
-import { byadPdf } from "../action";
+import { byadAttachment } from "../action";
+import { memo } from "@/app/(dashboard)/finance/list-invoice/_components/action";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 interface iAppProps {
   data: paymentShowType;
@@ -23,22 +25,19 @@ interface iAppProps {
 
 const ByadDetail = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
+  const downloadFile = useAuthenticatedFileDownload();
 
-  async function downloadPdf() {
+  async function downloadMemo() {
     startTransition(async () => {
-      try {
-        const file = await byadPdf(data.id);
+      const file = await memo(data.invoice_id);
+      downloadFile(file, "Memo_BYAD.pdf");
+    });
+  }
 
-        const url = URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Lampiran_BYAD.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        alert("Error downloading file.");
-      }
+  async function downloadAttachment() {
+    startTransition(async () => {
+      const file = await byadAttachment(data.id);
+      downloadFile(file, "Lampiran_BYAD.xlsx");
     });
   }
 
@@ -53,6 +52,7 @@ const ByadDetail = ({ data }: iAppProps) => {
                 <TableHead>Cabang</TableHead>
                 <TableHead>Total unit</TableHead>
                 <TableHead>Total Amount</TableHead>
+                <TableHead>BYAD Amount</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -64,6 +64,9 @@ const ByadDetail = ({ data }: iAppProps) => {
                 <TableCell>{item.byad.total_unit}</TableCell>
                 <TableCell>
                   {item.byad.total_amount.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell>
+                  {item.byad.byad_amount.toLocaleString("id-ID")}
                 </TableCell>
                 <TableCell>{item.byad.status}</TableCell>
               </TableRow>
@@ -121,11 +124,19 @@ const ByadDetail = ({ data }: iAppProps) => {
         ))}
       </CardContent>
 
-      <CardFooter>
+      <CardFooter className="grid grid-cols-2 gap-4">
+        <Button
+          className="w-full bg-teal-500 cursor-pointer hover:bg-teal-600"
+          disabled={isPending}
+          onClick={downloadMemo}
+        >
+          <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
+        </Button>
+
         <Button
           className="w-full cursor-pointer"
           disabled={isPending}
-          onClick={downloadPdf}
+          onClick={downloadAttachment}
         >
           <LoadingSwap isLoading={isPending}>Download Lampiran</LoadingSwap>
         </Button>

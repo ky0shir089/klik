@@ -4,11 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const { data } = await selectModule();
+  const result = await selectModule();
+  await redirectIfUnauthorized(result);
+
+  const { data } = result;
 
   return <MenuForm modules={data} />;
 };

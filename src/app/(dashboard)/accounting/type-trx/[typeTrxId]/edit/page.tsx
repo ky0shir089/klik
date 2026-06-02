@@ -1,20 +1,23 @@
 import { typeTrxShow } from "@/data/type-trx";
 import TypeTrxForm from "../../_components/TypeTrxForm";
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { cn } from "@/lib/utils";
+import { selectRole } from "@/data/select";
 
 type Params = Promise<{ typeTrxId: number }>;
 
 const RenderForm = async ({ typeTrxId }: { typeTrxId: number }) => {
-  const result = await typeTrxShow(typeTrxId);
+  const [result, roleResult] = await Promise.all([
+    typeTrxShow(typeTrxId),
+    selectRole(),
+  ]);
+  await redirectIfUnauthorized(result, roleResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -23,8 +26,9 @@ const RenderForm = async ({ typeTrxId }: { typeTrxId: number }) => {
   }
 
   const { data } = result;
+  const { data: roles } = roleResult;
 
-  return <TypeTrxForm data={data} />;
+  return <TypeTrxForm data={data} roles={roles} />;
 };
 
 const EditTypeTrxPage = async ({ params }: { params: Params }) => {

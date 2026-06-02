@@ -5,14 +5,19 @@ import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
 import { selectTypeTrx, selectUser } from "@/data/select";
 import WorkflowForm from "../_components/WorkflowForm";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const [{ data: users }, { data: typeTrxes }] = await Promise.all([
+  const [userResult, typeTrxResult] = await Promise.all([
     selectUser(),
-    selectTypeTrx(),
+    selectTypeTrx("OUT"),
   ]);
+  await redirectIfUnauthorized(userResult, typeTrxResult);
+
+  const { data: users } = userResult;
+  const { data: typeTrxes } = typeTrxResult;
 
   return <WorkflowForm users={users} typeTrxes={typeTrxes} />;
 };

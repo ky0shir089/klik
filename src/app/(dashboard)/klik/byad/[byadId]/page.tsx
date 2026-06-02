@@ -1,5 +1,6 @@
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { byadShow } from "@/data/byad";
 import ByadDetail from "../_components/ByadDetail";
 import { Suspense } from "react";
@@ -12,10 +13,7 @@ interface PageProps {
 
 const RenderDetail = async ({ byadId }: { byadId: number }) => {
   const result = await byadShow(byadId);
-
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

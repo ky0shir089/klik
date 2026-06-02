@@ -14,12 +14,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { toast } from "sonner";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { auctionSchema, auctionSchemaType } from "@/lib/formSchema";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { auctionStore } from "../action";
 
 const AuctionForm = () => {
   const [isPending, startTransition] = useTransition();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<auctionSchemaType>({
     resolver: zodResolver(auctionSchema),
@@ -31,6 +33,10 @@ const AuctionForm = () => {
   function onSubmit(values: auctionSchemaType) {
     startTransition(async () => {
       const result = await auctionStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

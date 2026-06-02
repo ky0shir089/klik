@@ -1,10 +1,10 @@
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
-import InvoiceExternalForm from "../_components/InvoiceExternalForm";
 import { invoiceExternalShow } from "@/data/invoice-external";
-import { differenceInDays } from "date-fns";
+import InvoiceExternalData from "../_components/InvoiceExternalData";
 
 type Params = Promise<{ invoiceExternalId: number }>;
 
@@ -15,9 +15,8 @@ const RenderForm = async ({
 }) => {
   const [result] = await Promise.all([invoiceExternalShow(invoiceExternalId)]);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
+
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -26,12 +25,8 @@ const RenderForm = async ({
   }
 
   const { data } = result;
-  const fixedData = {
-    ...data,
-    due_date: differenceInDays(new Date(data.due_date), new Date(data.date)),
-  };
 
-  return <InvoiceExternalForm data={fixedData} />;
+  return <InvoiceExternalData data={data} />;
 };
 
 const EditInvoicePage = async ({ params }: { params: Params }) => {

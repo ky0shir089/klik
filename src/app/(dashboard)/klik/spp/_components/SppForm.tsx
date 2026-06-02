@@ -23,11 +23,13 @@ import { customerShowType } from "@/data/customer";
 import { sppSchema, sppSchemaType } from "@/lib/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { memo, useMemo, useTransition } from "react";
+import { memo, useCallback, useMemo, useTransition } from "react";
 import { Control, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { sumUnitFields } from "@/lib/helper";
-import { sppStore } from "../action";
+import { sppStore, unitCancel } from "../action";
+import { X } from "lucide-react";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface SppFormProps {
   data: customerShowType;
@@ -46,6 +48,8 @@ const UnitTable = memo(function UnitTable({
   sumFinalPrice,
   sumDistributed,
   sumDiff,
+  handleRemoveUnit,
+  isPending,
 }: {
   control: Control<sppSchemaType>;
   units: customerShowType["units"];
@@ -56,6 +60,8 @@ const UnitTable = memo(function UnitTable({
   sumFinalPrice: number;
   sumDistributed: number;
   sumDiff: number;
+  handleRemoveUnit: (unit_id: number) => void;
+  isPending: boolean;
 }) {
   return (
     <div>
@@ -153,6 +159,18 @@ const UnitTable = memo(function UnitTable({
                 <TableCell className="text-right">
                   {item.diff_price.toLocaleString("id-ID")}
                 </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="destructive"
+                    className="cursor-pointer disabled:cursor-not-allowed"
+                    disabled={isPending}
+                    onClick={() => handleRemoveUnit(item.id)}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -188,6 +206,7 @@ const UnitTable = memo(function UnitTable({
 const SppForm = ({ data }: SppFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<sppSchemaType>({
     resolver: zodResolver(sppSchema),
@@ -215,9 +234,31 @@ const SppForm = ({ data }: SppFormProps) => {
     [data.units],
   );
 
+  const handleRemoveUnit = useCallback(
+    (unit_id: number) => {
+      if (!window.confirm("Apakah Anda yakin ingin membatalkan unit ini?"))
+        return;
+
+      startTransition(async () => {
+        const result = await unitCancel(data.klik_bidder_id, unit_id);
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
+        if (result.success) {
+          toast.success(result.message);
+          router.refresh();
+        } else {
+          toast.error(result.message);
+        }
+      });
+    },
+    [data.klik_bidder_id, router, handleExpiredSession],
+  );
+
   function onSubmit(values: sppSchemaType) {
     const checkSppStatus = data.units.filter(
-      (unit: customerShowType["units"]) =>
+      (unit: customerShowType["units"][number]) =>
         values.units.includes(unit.id) && unit.spp_status === null,
     );
 
@@ -226,8 +267,9 @@ const SppForm = ({ data }: SppFormProps) => {
       return;
     }
 
-    const selectedUnits = data.units.filter((unit: customerShowType["units"]) =>
-      values.units.includes(unit.id),
+    const selectedUnits = data.units.filter(
+      (unit: customerShowType["units"][number]) =>
+        values.units.includes(unit.id),
     );
     const branchNames = new Set(
       selectedUnits.map(
@@ -245,6 +287,9 @@ const SppForm = ({ data }: SppFormProps) => {
 
     startTransition(async () => {
       const result = await sppStore(values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();
@@ -292,6 +337,8 @@ const SppForm = ({ data }: SppFormProps) => {
           sumFinalPrice={sumFinalPrice}
           sumDistributed={sumDistributed}
           sumDiff={sumDiff}
+          handleRemoveUnit={handleRemoveUnit}
+          isPending={isPending}
         />
 
         <Button

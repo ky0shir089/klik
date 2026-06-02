@@ -5,14 +5,19 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
-  
-  const [{ data: trxes }, { data: coas }] = await Promise.all([
+
+  const [typeTrxResult, coaResult] = await Promise.all([
     selectTypeTrx(),
     selectCoa("CHILDREN"),
   ]);
+  await redirectIfUnauthorized(typeTrxResult, coaResult);
+
+  const { data: trxes } = typeTrxResult;
+  const { data: coas } = coaResult;
 
   return <TrxDtlForm trxes={trxes} coas={coas} />;
 };

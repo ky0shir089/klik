@@ -1,20 +1,51 @@
-import { selectBankAccount, selectTypeTrx } from "@/data/select";
+import {
+  selectBankAccount,
+  selectExternal,
+  selectMoneyInTransit,
+  selectTypeTrx,
+} from "@/data/select";
 import RvForm from "./_components/RvForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const [{ data: typeTrxes }, { data: bankAccounts }] = await Promise.all([
+  const [
+    typeTrxResult,
+    bankAccountResult,
+    moneyInTransitResult,
+    externalResult,
+  ] = await Promise.all([
     selectTypeTrx("IN"),
     selectBankAccount(),
+    selectMoneyInTransit(),
+    selectExternal(),
   ]);
+  await redirectIfUnauthorized(
+    typeTrxResult,
+    bankAccountResult,
+    moneyInTransitResult,
+    externalResult,
+  );
 
-  return <RvForm bankAccounts={bankAccounts} typeTrxes={typeTrxes} />;
+  const { data: typeTrxes } = typeTrxResult;
+  const { data: bankAccounts } = bankAccountResult;
+  const { data: moneyInTransit } = moneyInTransitResult;
+  const { data: externals } = externalResult;
+
+  return (
+    <RvForm
+      bankAccounts={bankAccounts}
+      typeTrxes={typeTrxes}
+      moneyInTransit={moneyInTransit}
+      externals={externals}
+    />
+  );
 };
 
 const NewRvPage = () => {

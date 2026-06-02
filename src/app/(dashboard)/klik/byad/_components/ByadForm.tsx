@@ -8,16 +8,33 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useForm, useWatch, UseFormReturn } from "react-hook-form";
+import {
+  type Control,
+  type UseFormGetValues,
+  type UseFormSetValue,
+  useForm,
+  useFormState,
+  useWatch,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { memo, useState, useTransition, useCallback, useEffect } from "react";
+import {
+  memo,
+  useState,
+  useTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { byadSchema, byadSchemaType } from "@/lib/formSchema";
 import { LoadingSwap } from "@/components/ui/loading-swap";
+import { NumericFormat } from "react-number-format";
 import {
   Command,
   CommandEmpty,
@@ -49,28 +66,52 @@ import { Paperclip, Loader2, Check, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { env } from "@/lib/env";
 import { Label } from "@/components/ui/label";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
-interface iAppProps {
+interface ByadFormProps {
   data?: byadShowType;
   branches: branchShowType[];
 }
+
+type ByadUnit = customerShowType["units"][number];
+type ByadDetails = byadSchemaType["details"];
+
+const EMPTY_DETAILS: ByadDetails = [];
+
+const buildByadDetail = (unit: ByadUnit): ByadDetails[number] => ({
+  unit_id: unit.id,
+  byad_amount: unit.byad_amount,
+});
+
+const getSelectAllState = (
+  selectedCount: number,
+  totalCount: number,
+): boolean | "indeterminate" => {
+  if (totalCount === 0 || selectedCount === 0) {
+    return false;
+  }
+
+  return selectedCount === totalCount ? true : "indeterminate";
+};
 
 const UnitRow = memo(
   ({
     item,
     isChecked,
-    onCheckChange,
+    onCheckedChange,
   }: {
-    item: customerShowType["units"][number];
+    item: ByadUnit;
     isChecked: boolean;
-    onCheckChange: (checked: boolean) => void;
+    onCheckedChange: (unit: ByadUnit, checked: boolean) => void;
   }) => {
     return (
       <TableRow>
         <TableCell>
           <Checkbox
             checked={isChecked}
-            onCheckedChange={(checked) => onCheckChange(checked === true)}
+            onCheckedChange={(checked) =>
+              onCheckedChange(item, checked === true)
+            }
           />
         </TableCell>
         <TableCell>{item?.auction.auction_date}</TableCell>
@@ -92,52 +133,71 @@ UnitRow.displayName = "UnitRow";
 
 const UnitTable = memo(
   ({
-    form,
-    internalUnits,
+    control,
+    getValues,
+    setValue,
+    units,
     isFetchingUnits,
   }: {
-    form: UseFormReturn<byadSchemaType>;
-    internalUnits: customerShowType["units"];
+    control: Control<byadSchemaType>;
+    getValues: UseFormGetValues<byadSchemaType>;
+    setValue: UseFormSetValue<byadSchemaType>;
+    units: ByadUnit[];
     isFetchingUnits: boolean;
   }) => {
-    const details: byadSchemaType["details"] =
-      useWatch({ control: form.control, name: "details" }) || [];
+    const details = useWatch({ control, name: "details" }) ?? EMPTY_DETAILS;
+    const { errors } = useFormState({ control, name: "details" });
+
+    const selectedUnitIds = useMemo(
+      () => new Set(details.map((d) => d.unit_id)),
+      [details],
+    );
+
+    const selectedVisibleCount = useMemo(
+      () => units.filter((unit) => selectedUnitIds.has(unit.id)).length,
+      [selectedUnitIds, units],
+    );
+
+    const allUnitDetails = useMemo(() => units.map(buildByadDetail), [units]);
 
     const handleRowCheck = useCallback(
-      (checked: boolean, item: customerShowType["units"][number]) => {
-        const currentDetails: byadSchemaType["details"] =
-          form.getValues("details") || [];
-        const newDetails = checked
-          ? [
-              ...currentDetails,
-              {
-                unit_id: item.id,
-                byad_amount: item.byad_amount,
-              },
-            ]
-          : currentDetails.filter((d) => d.unit_id !== item.id);
+      (unit: ByadUnit, checked: boolean) => {
+        const currentDetails = getValues("details") || [];
+        const hasDetail = currentDetails.some(
+          (detail) => detail.unit_id === unit.id,
+        );
 
-        form.setValue("details", newDetails, { shouldValidate: true });
+        if (checked === hasDetail) {
+          return;
+        }
+
+        const nextDetails = checked
+          ? [...currentDetails, buildByadDetail(unit)]
+          : currentDetails.filter((detail) => detail.unit_id !== unit.id);
+
+        setValue("details", nextDetails, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
       },
-      [form],
+      [getValues, setValue],
     );
 
     const handleSelectAll = useCallback(
       (checked: boolean) => {
-        const newDetails = checked
-          ? internalUnits.map((item: { id: number; byad_amount: number }) => ({
-              unit_id: item.id,
-              byad_amount: item.byad_amount,
-            }))
-          : [];
-        form.setValue("details", newDetails, { shouldValidate: true });
+        setValue("details", checked ? allUnitDetails : [], {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
       },
-      [form, internalUnits],
+      [allUnitDetails, setValue],
     );
 
-    const isAllSelected =
-      internalUnits.length > 0 && details.length === internalUnits.length;
-    const errors = form.formState.errors;
+    const selectAllState = getSelectAllState(
+      selectedVisibleCount,
+      units.length,
+    );
+    const detailError = errors.details?.message?.toString();
 
     return (
       <div className="space-y-3">
@@ -147,11 +207,11 @@ const UnitTable = memo(
               <TableRow>
                 <TableHead>
                   <Checkbox
-                    checked={isAllSelected}
+                    checked={selectAllState}
                     onCheckedChange={(checked) =>
                       handleSelectAll(checked === true)
                     }
-                    disabled={isFetchingUnits || internalUnits.length === 0}
+                    disabled={isFetchingUnits || units.length === 0}
                   />
                 </TableHead>
                 <TableHead>Tgl Lelang</TableHead>
@@ -166,32 +226,32 @@ const UnitTable = memo(
             <TableBody>
               {isFetchingUnits ? (
                 <TableRow>
-                  <TableCell colSpan={13} className="h-24 text-center">
+                  <TableCell colSpan={8} className="h-24 text-center">
                     <Loader2 className="mx-auto animate-spin" />
                   </TableCell>
                 </TableRow>
-              ) : internalUnits.length === 0 ? (
+              ) : units.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={13} className="h-24 text-center">
+                  <TableCell colSpan={8} className="h-24 text-center">
                     Tidak ada data unit
                   </TableCell>
                 </TableRow>
               ) : (
-                internalUnits.map((item: customerShowType["units"][number]) => (
+                units.map((item) => (
                   <UnitRow
                     key={item.id}
                     item={item}
-                    isChecked={details.some((d) => d.unit_id === item.id)}
-                    onCheckChange={(checked) => handleRowCheck(checked, item)}
+                    isChecked={selectedUnitIds.has(item.id)}
+                    onCheckedChange={handleRowCheck}
                   />
                 ))
               )}
             </TableBody>
           </Table>
         </div>
-        {errors.details && (
+        {detailError && (
           <p className="text-[0.8rem] font-medium text-destructive">
-            {errors.details.message?.toString()}
+            {detailError}
           </p>
         )}
       </div>
@@ -201,15 +261,74 @@ const UnitTable = memo(
 
 UnitTable.displayName = "UnitTable";
 
-const ByadForm = ({ data, branches }: iAppProps) => {
+const FormSummary = memo(function FormSummary({
+  control,
+  units,
+}: {
+  control: Control<byadSchemaType>;
+  units: ByadUnit[];
+}) {
+  const details = useWatch({ control, name: "details" }) ?? EMPTY_DETAILS;
+
+  const unitPrices = useMemo(
+    () => new Map(units.map((unit) => [unit.id, unit.price])),
+    [units],
+  );
+
+  const totals = useMemo(() => {
+    return details.reduce<{ amount: number; byad: number }>(
+      (acc, item) => ({
+        amount: acc.amount + (unitPrices.get(item.unit_id) ?? 0),
+        byad: acc.byad + (item.byad_amount || 0),
+      }),
+      { amount: 0, byad: 0 },
+    );
+  }, [details, unitPrices]);
+
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <Label>Total Harga Terbentuk</Label>
+        <NumericFormat
+          value={totals.amount}
+          customInput={Input}
+          thousandSeparator="."
+          decimalSeparator=","
+          readOnly
+          className="bg-muted font-semibold"
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label>Total Amount BYAD</Label>
+        <NumericFormat
+          value={totals.byad}
+          customInput={Input}
+          thousandSeparator="."
+          decimalSeparator=","
+          readOnly
+          className="bg-muted font-semibold"
+        />
+      </div>
+    </>
+  );
+});
+FormSummary.displayName = "FormSummary";
+
+const ByadForm = ({ data, branches }: ByadFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
+  const latestUnitRequestId = useRef(0);
 
   const [internalUnits, setInternalUnits] = useState<customerShowType["units"]>(
     [],
   );
   const [openBranch, setOpenBranch] = useState(false);
   const [isFetchingUnits, setIsFetchingUnits] = useState(false);
+  const [unitDateFrom, setUnitDateFrom] = useState("");
+  const [unitDateTo, setUnitDateTo] = useState("");
+  const isEdit = Boolean(data?.id);
 
   const form = useForm<byadSchemaType>({
     resolver: zodResolver(byadSchema),
@@ -223,38 +342,121 @@ const ByadForm = ({ data, branches }: iAppProps) => {
     },
   });
 
-  const details = form.watch("details");
-  const byadAmount = details.reduce(
-    (total, item) => total + item.byad_amount,
-    0,
-  );
+  const { control, getValues, handleSubmit, reset, setValue } = form;
+  const selectedBranch = useWatch({ control, name: "branch" }) ?? "";
+
+  const clearUnitsAndDetails = useCallback(() => {
+    latestUnitRequestId.current += 1;
+    setInternalUnits([]);
+    setIsFetchingUnits(false);
+    setValue("details", [], {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }, [setValue]);
 
   const fetchAndSetUnits = useCallback(
-    async (branch: string, resetDetails: boolean) => {
+    async (
+      branch: string,
+      resetDetails: boolean,
+      fromDate?: string,
+      toDate?: string,
+    ) => {
+      const requestId = latestUnitRequestId.current + 1;
+      latestUnitRequestId.current = requestId;
+
       if (!branch) {
         setInternalUnits([]);
         if (resetDetails) {
-          form.setValue("details", []);
+          setValue("details", [], {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
         }
         return;
       }
+
       setIsFetchingUnits(true);
       try {
-        const response = await selectByadUnit(branch);
-        if (response?.data) {
-          setInternalUnits(response.data);
-          if (resetDetails) {
-            form.setValue("details", []);
-          }
+        const response = await selectByadUnit(branch, fromDate, toDate);
+        if (requestId !== latestUnitRequestId.current) {
+          return;
+        }
+
+        if (handleExpiredSession(response)) {
+          return;
+        }
+
+        setInternalUnits(response?.data ?? []);
+        if (resetDetails) {
+          setValue("details", [], {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
         }
       } catch (error) {
+        if (requestId !== latestUnitRequestId.current) {
+          return;
+        }
+
         console.error("Gagal mengambil data unit:", error);
+        setInternalUnits([]);
         toast.error("Gagal mengambil data unit");
       } finally {
-        setIsFetchingUnits(false);
+        if (requestId === latestUnitRequestId.current) {
+          setIsFetchingUnits(false);
+        }
       }
     },
-    [form],
+    [handleExpiredSession, setValue],
+  );
+
+  const handleBranchSelect = useCallback(
+    (branch: string, onChange: (value: string) => void) => {
+      onChange(branch);
+      setUnitDateFrom("");
+      setUnitDateTo("");
+      clearUnitsAndDetails();
+      setOpenBranch(false);
+    },
+    [clearUnitsAndDetails],
+  );
+
+  const handleUnitDateFromChange = useCallback(
+    (value: string) => {
+      setUnitDateFrom(value);
+      clearUnitsAndDetails();
+      setUnitDateTo((currentToDate) => {
+        if (!value) {
+          return "";
+        }
+
+        if (!currentToDate || currentToDate >= value) {
+          return currentToDate;
+        }
+
+        toast.error(
+          "Tanggal 'Dari' tidak boleh lebih besar dari Tanggal 'Sampai'.",
+        );
+        return "";
+      });
+    },
+    [clearUnitsAndDetails],
+  );
+
+  const handleUnitDateToChange = useCallback(
+    (value: string) => {
+      if (unitDateFrom && value && value < unitDateFrom) {
+        toast.error("Tanggal 'Sampai' tidak boleh kurang dari Tanggal 'Dari'.");
+        setUnitDateTo("");
+        clearUnitsAndDetails();
+        return;
+      }
+
+      setUnitDateTo(value);
+      clearUnitsAndDetails();
+    },
+    [clearUnitsAndDetails, unitDateFrom],
   );
 
   function onSubmit(values: byadSchemaType) {
@@ -262,9 +464,12 @@ const ByadForm = ({ data, branches }: iAppProps) => {
       const result = data?.id
         ? await byadUpdate(data.id, values)
         : await byadStore(values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
-        form.reset();
+        reset();
         toast.success(result.message);
         router.push("/klik/byad");
       } else {
@@ -280,18 +485,28 @@ const ByadForm = ({ data, branches }: iAppProps) => {
     }
   }, [data?.branch, fetchAndSetUnits]);
 
+  useEffect(() => {
+    if (!selectedBranch || !unitDateFrom || !unitDateTo) {
+      return;
+    }
+
+    fetchAndSetUnits(selectedBranch, true, unitDateFrom, unitDateTo);
+  }, [fetchAndSetUnits, selectedBranch, unitDateFrom, unitDateTo]);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Pembuatan BYAD</CardTitle>
+        <CardTitle className="text-2xl">
+          {isEdit ? "Edit BYAD" : "Pembuatan BYAD"}
+        </CardTitle>
       </CardHeader>
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid items-start grid-cols-1 gap-4 space-y-2 sm:grid-cols-2">
               <FormField
-                control={form.control}
+                control={control}
                 name="date"
                 render={({ field }) => (
                   <FormItem>
@@ -305,7 +520,7 @@ const ByadForm = ({ data, branches }: iAppProps) => {
               />
 
               <FormField
-                control={form.control}
+                control={control}
                 name="branch"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
@@ -320,13 +535,9 @@ const ByadForm = ({ data, branches }: iAppProps) => {
                               "w-full justify-between",
                               !field.value && "text-muted-foreground",
                             )}
-                            disabled={isFetchingUnits || !!data?.id}
+                            disabled={isFetchingUnits || isEdit}
                           >
-                            {field.value
-                              ? branches.find(
-                                  (b) => b.branch_name === field.value,
-                                )?.branch_name
-                              : "Select Cabang"}
+                            {field.value || "Select Cabang"}
                             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                           </Button>
                         </FormControl>
@@ -339,23 +550,24 @@ const ByadForm = ({ data, branches }: iAppProps) => {
                             <CommandGroup>
                               {branches.map((item) => (
                                 <CommandItem
-                                  key={item.branch_id}
-                                  value={item.branch_name}
+                                  key={item.pejabat_lelang}
+                                  value={item.pejabat_lelang}
                                   onSelect={() => {
-                                    field.onChange(item.branch_name);
-                                    fetchAndSetUnits(item.branch_name, true);
-                                    setOpenBranch(false);
+                                    handleBranchSelect(
+                                      item.pejabat_lelang,
+                                      field.onChange,
+                                    );
                                   }}
                                 >
                                   <Check
                                     className={cn(
                                       "mr-2 h-4 w-4",
-                                      item.branch_name === field.value
+                                      item.pejabat_lelang === field.value
                                         ? "opacity-100"
                                         : "opacity-0",
                                     )}
                                   />
-                                  {item.branch_name}
+                                  {item.pejabat_lelang}
                                 </CommandItem>
                               ))}
                             </CommandGroup>
@@ -368,8 +580,39 @@ const ByadForm = ({ data, branches }: iAppProps) => {
                 )}
               />
 
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="byad-unit-date-from">
+                  Dari Tanggal Lelang
+                </Label>
+                <Input
+                  id="byad-unit-date-from"
+                  type="date"
+                  value={unitDateFrom}
+                  disabled={!selectedBranch}
+                  onChange={(event) =>
+                    handleUnitDateFromChange(event.target.value)
+                  }
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="byad-unit-date-to">
+                  Sampai Tanggal Lelang
+                </Label>
+                <Input
+                  id="byad-unit-date-to"
+                  type="date"
+                  value={unitDateTo}
+                  min={unitDateFrom}
+                  disabled={!selectedBranch || !unitDateFrom}
+                  onChange={(event) =>
+                    handleUnitDateToChange(event.target.value)
+                  }
+                />
+              </div>
+
               <FormField
-                control={form.control}
+                control={control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
@@ -383,11 +626,11 @@ const ByadForm = ({ data, branches }: iAppProps) => {
               />
 
               <FormField
-                control={form.control}
+                control={control}
                 name="attachment"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Attachment (Max Size: 1MB)</FormLabel>
+                    <FormLabel>Attachment</FormLabel>
                     <FormControl>
                       <Input
                         type="file"
@@ -396,11 +639,14 @@ const ByadForm = ({ data, branches }: iAppProps) => {
                         onChange={(e) => field.onChange(e.target.files?.[0])}
                       />
                     </FormControl>
+                    <FormDescription>
+                      Max file size 1MB. PDF format only.
+                    </FormDescription>
                     {data?.attachment ? (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 mt-2 text-sm">
                         <Paperclip className="size-4" />
                         <Link
-                          href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path}`}
+                          href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.attachment.path || ""}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600"
@@ -414,21 +660,13 @@ const ByadForm = ({ data, branches }: iAppProps) => {
                 )}
               />
 
-              <div className="flex flex-col gap-2">
-                <Label>Total Amount</Label>
-                <Input
-                  type="text"
-                  placeholder="Total Amount"
-                  required
-                  value={Number(byadAmount).toLocaleString("id-ID")}
-                  readOnly
-                />
-              </div>
+              <FormSummary control={control} units={internalUnits} />
             </div>
-
             <UnitTable
-              form={form}
-              internalUnits={internalUnits}
+              control={control}
+              getValues={getValues}
+              setValue={setValue}
+              units={internalUnits}
               isFetchingUnits={isFetchingUnits}
             />
 
@@ -438,7 +676,7 @@ const ByadForm = ({ data, branches }: iAppProps) => {
               disabled={isPending}
             >
               <LoadingSwap isLoading={isPending}>
-                {data?.id ? "Update" : "Create"}
+                {isEdit ? "Update" : "Create"}
               </LoadingSwap>
             </Button>
           </form>

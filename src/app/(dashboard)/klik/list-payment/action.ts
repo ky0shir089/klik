@@ -39,3 +39,19 @@ export async function pdf(id: number) {
     return parseAxiosError(error);
   }
 }
+
+export async function sppAttachment(id: number) {
+  try {
+    const response = await axiosInstance.get(`/klik/v1/spp-attachment/${id}`, {
+      responseType: "arraybuffer",
+    });
+
+    const file = new File([response.data], "export.xlsx", {
+      type: response.headers["content-type"] || "application/octet-stream",
+    });
+
+    return file;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
+}

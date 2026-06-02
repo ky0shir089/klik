@@ -1,5 +1,6 @@
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { selectPph, selectTypeTrx } from "@/data/select";
@@ -9,15 +10,13 @@ import { settlementShow } from "@/data/settlement";
 type Params = Promise<{ invoiceId: number }>;
 
 const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
-  const [result, { data: typeTrxes }, { data: pphs }] = await Promise.all([
+  const [result, typeTrxResult, pphResult] = await Promise.all([
     settlementShow(invoiceId),
     selectTypeTrx("OUT"),
     selectPph(),
   ]);
+  await redirectIfUnauthorized(result, typeTrxResult, pphResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -26,6 +25,8 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   }
 
   const { data } = result;
+  const { data: typeTrxes } = typeTrxResult;
+  const { data: pphs } = pphResult;
   const invoice = {
     ...data.invoice,
     id: data.id,

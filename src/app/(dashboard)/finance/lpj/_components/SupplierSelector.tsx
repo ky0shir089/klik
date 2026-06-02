@@ -21,6 +21,7 @@ import {
 import { FormControl } from "@/components/ui/form";
 import { supplierIndex, supplierShow, supplierShowType } from "@/data/supplier";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface SupplierSelectorProps {
   value?: number | null;
@@ -40,6 +41,7 @@ export const SupplierSelector = ({
   );
   const [isLoading, setIsLoading] = useState(false);
   const [selectedName, setSelectedName] = useState("");
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -52,7 +54,12 @@ export const SupplierSelector = ({
 
     async function fetchSelectedSupplier() {
       try {
-        const { data } = await supplierShow(value!);
+        const result = await supplierShow(value!);
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
+        const { data } = result;
         setSelectedName(data.name);
         setSupplierOptions([data]);
         onSelect(data);
@@ -62,7 +69,7 @@ export const SupplierSelector = ({
     }
 
     fetchSelectedSupplier();
-  }, [value, onSelect]);
+  }, [value, onSelect, handleExpiredSession]);
 
   useEffect(() => {
     if (!open) return;
@@ -76,7 +83,12 @@ export const SupplierSelector = ({
     async function fetchSuppliers() {
       setIsLoading(true);
       try {
-        const { data } = await supplierIndex(1, 10, debouncedSearchQuery);
+        const result = await supplierIndex(1, 10, debouncedSearchQuery);
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
+        const { data } = result;
         setSupplierOptions(data.data);
       } catch (error) {
         console.error("Failed to fetch suppliers:", error);
@@ -87,7 +99,7 @@ export const SupplierSelector = ({
     }
 
     fetchSuppliers();
-  }, [debouncedSearchQuery, open, value]);
+  }, [debouncedSearchQuery, open, value, handleExpiredSession]);
 
   return (
     <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>

@@ -5,16 +5,14 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import Unauthorized from "@/components/unauthorized";
 
 const RenderForm = async () => {
   await connection();
 
   const result = await selectBank();
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

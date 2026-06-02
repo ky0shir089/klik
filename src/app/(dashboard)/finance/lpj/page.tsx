@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { settlementIndex } from "@/data/settlement";
 import Link from "next/dist/client/link";
 import { buttonVariants } from "@/components/ui/button";
@@ -19,9 +19,7 @@ const RenderTable = async ({
   size: number;
 }) => {
   const result = await settlementIndex(currentPage, size, query);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

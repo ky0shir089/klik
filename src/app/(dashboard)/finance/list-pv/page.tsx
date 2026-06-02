@@ -5,7 +5,7 @@ import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { pvIndex } from "@/data/pv";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderTable = async ({
   query,
@@ -17,9 +17,7 @@ const RenderTable = async ({
   size: number;
 }) => {
   const result = await pvIndex(currentPage, size, query);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

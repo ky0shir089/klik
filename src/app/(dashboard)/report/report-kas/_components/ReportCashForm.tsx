@@ -7,7 +7,6 @@ import { useState, useTransition } from "react";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -15,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 interface cashProps {
   id: number;
@@ -27,6 +27,7 @@ const ReportCashForm = ({ cashes }: { cashes: cashProps[] }) => {
   const [to, setTo] = useState<string>("");
   const [cash, setCash] = useState<number>(0);
   const [permission, setPermission] = useState<string>("");
+  const downloadFile = useAuthenticatedFileDownload();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,17 +40,13 @@ const ReportCashForm = ({ cashes }: { cashes: cashProps[] }) => {
     };
 
     startTransition(async () => {
-      try {
-        const file = await reportCash(values);
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `report-kas-${from}-${to}.xlsx`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        toast.error("Unathorized to download file.");
+      const file = await reportCash(values);
+      if (
+        !downloadFile(file, `report-kas-${from}-${to}.xlsx`, {
+          errorMessage: "Unauthorized to download file.",
+        })
+      ) {
+        return;
       }
 
       // setFrom("");

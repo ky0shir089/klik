@@ -9,7 +9,6 @@ export async function invoiceUpdate(
   values: invoiceStatusSchemaType
 ) {
   const validation = invoiceStatusSchema.safeParse(values);
-  console.log(validation);
 
   if (!validation.success) {
     return {

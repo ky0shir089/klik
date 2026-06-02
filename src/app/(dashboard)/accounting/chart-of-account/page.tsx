@@ -1,7 +1,8 @@
 import React, { Suspense } from "react";
 import Unauthorized from "@/components/unauthorized";
 import { coaIndex, coaShow, coaShowType } from "@/data/coa";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import {
   SidebarContent,
   SidebarGroup,
@@ -17,9 +18,7 @@ import { TreeViewSkeleton } from "./_components/TreeViewSkeleton";
 
 const RenderTree = async () => {
   const result = await coaIndex();
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -44,14 +43,12 @@ const RenderTree = async () => {
 };
 
 const RenderForm = async ({ id }: { id: number | null }) => {
-  const [result, { data: coas }] = await Promise.all([
+  const [result, coaResult] = await Promise.all([
     id ? coaShow(id) : Promise.resolve({ data: null }),
     selectCoa("PARENT"),
   ]);
+  await redirectIfUnauthorized(result, coaResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -60,6 +57,7 @@ const RenderForm = async ({ id }: { id: number | null }) => {
   }
 
   const { data } = result;
+  const { data: coas } = coaResult;
 
   return <CoaForm data={data} coas={coas} />;
 };

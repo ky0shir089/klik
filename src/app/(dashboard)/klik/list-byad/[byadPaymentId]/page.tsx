@@ -1,5 +1,6 @@
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
@@ -11,9 +12,7 @@ type Params = Promise<{ byadPaymentId: number }>;
 
 const RenderForm = async ({ byadPaymentId }: { byadPaymentId: number }) => {
   const result = await byadPaymentShow(byadPaymentId);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

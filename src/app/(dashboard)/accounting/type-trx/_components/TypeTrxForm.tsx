@@ -16,6 +16,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { typeTrxSchema, typeTrxSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { typeTrxStore, typeTrxUpdate } from "../action";
 import { typeTrxShowType } from "@/data/type-trx";
 import { LoadingSwap } from "@/components/ui/loading-swap";
@@ -27,14 +28,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { roleShowType } from "@/data/role";
 
 interface iAppProps {
   data?: typeTrxShowType;
+  roles: roleShowType[];
 }
 
-const TypeTrxForm = ({ data }: iAppProps) => {
+const TypeTrxForm = ({ data, roles }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<typeTrxSchemaType>({
     resolver: zodResolver(typeTrxSchema),
@@ -42,6 +46,7 @@ const TypeTrxForm = ({ data }: iAppProps) => {
       code: data?.code || "",
       name: data?.name || "",
       in_out: data?.in_out || "",
+      role_id: data?.role_id || null,
       is_active: data?.is_active ?? true,
     },
   });
@@ -51,6 +56,10 @@ const TypeTrxForm = ({ data }: iAppProps) => {
       const result = data?.id
         ? await typeTrxUpdate(data?.id, values)
         : await typeTrxStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();
@@ -112,6 +121,34 @@ const TypeTrxForm = ({ data }: iAppProps) => {
                 <SelectContent>
                   <SelectItem value="IN">IN</SelectItem>
                   <SelectItem value="OUT">OUT</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="role_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Role</FormLabel>
+              <Select
+                value={field.value ? String(field.value) : ""}
+                onValueChange={(val) => field.onChange(Number(val))}
+              >
+                <FormControl className="w-full">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={String(role.id)}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

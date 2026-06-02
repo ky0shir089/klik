@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { rvClassificationIndex } from "@/data/rv-classification";
 import FilterSpp from "./_components/FilterSpp";
 
@@ -20,9 +20,7 @@ const RenderTable = async ({
   diff: string;
 }) => {
   const result = await rvClassificationIndex(currentPage, size, diff, query);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

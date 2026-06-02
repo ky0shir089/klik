@@ -2,6 +2,7 @@
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { byadShowType } from "@/data/byad";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { Eye } from "lucide-react";
 import Link from "next/link";
@@ -14,11 +15,16 @@ import { useRouter } from "next/navigation";
 const ActionCell = ({ row }: { row: Row<byadShowType> }) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const handleReject = () => {
     startTransition(async () => {
       try {
         const response = await byadDelete(row.original.id);
+        if (handleExpiredSession(response)) {
+          return;
+        }
+
         if (response.success) {
           toast.success("Byad rejected successfully");
           router.refresh();
@@ -86,6 +92,15 @@ export const columns: ColumnDef<byadShowType>[] = [
     cell: ({ row }) => (
       <div className="text-right">
         {Number(row.original.total_amount).toLocaleString("id-ID")}
+      </div>
+    ),
+  },
+  {
+    header: () => <div className="text-right">BYAD Amount</div>,
+    accessorKey: "byad_amount",
+    cell: ({ row }) => (
+      <div className="text-right">
+        {Number(row.original.byad_amount).toLocaleString("id-ID")}
       </div>
     ),
   },

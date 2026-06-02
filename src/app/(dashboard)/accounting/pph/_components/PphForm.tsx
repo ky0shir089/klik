@@ -15,6 +15,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { pphSchema, pphSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { pphStore, pphUpdate } from "../action";
 import { pphShowType } from "@/data/pph";
 import { LoadingSwap } from "@/components/ui/loading-swap";
@@ -37,6 +38,7 @@ interface iAppProps {
 const PphForm = ({ data, coas }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<pphSchemaType>({
     resolver: zodResolver(pphSchema),
@@ -52,6 +54,10 @@ const PphForm = ({ data, coas }: iAppProps) => {
       const result = data?.id
         ? await pphUpdate(data?.id, values)
         : await pphStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

@@ -5,11 +5,15 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const { data } = await selectRole();
+  const result = await selectRole();
+  await redirectIfUnauthorized(result);
+
+  const { data } = result;
 
   return <UserForm roles={data} />;
 };

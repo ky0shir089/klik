@@ -1,6 +1,9 @@
+import "server-only";
+
 import axios from "axios";
 import { env } from "./env";
-import { getCookieData } from "./cookieData";
+import { getCookieValue } from "./request-cookies";
+import { SESSION_ACCESS_TOKEN_COOKIE_NAME } from "./session-cookies";
 
 const headers = {
   Accept: "application/json",
@@ -17,7 +20,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {
-      const token = await getCookieData("access_token");
+      const token = await getCookieValue(SESSION_ACCESS_TOKEN_COOKIE_NAME);
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;

@@ -1,10 +1,14 @@
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import {
+  redirectIfUnauthorized,
+  redirectToMissingSession,
+} from "@/lib/server-auth";
 import { invoiceShow } from "@/data/invoice";
 import InvoiceAction from "../_components/InvoiceAction";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
-import { getCookieData } from "@/lib/cookieData";
+import { getSessionUser } from "@/lib/session-user";
 
 interface PageProps {
   params: Promise<{ invoiceId: number }>;
@@ -12,12 +16,14 @@ interface PageProps {
 
 const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
   const result = await invoiceShow(invoiceId);
-  const userData = (await getCookieData("user")) as string;
-  const user = JSON.parse(userData);
+  const user = await getSessionUser();
 
-  if (result.isUnauthorized) {
-    redirect("/login");
+  if (!user) {
+    await redirectToMissingSession();
   }
+
+  const sessionUser = user!;
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -27,7 +33,7 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
 
   const { data } = result;
 
-  return <InvoiceAction data={data} user={user} />;
+  return <InvoiceAction data={data} user={sessionUser} />;
 };
 
 const EditInvoicePage = async ({ params }: PageProps) => {

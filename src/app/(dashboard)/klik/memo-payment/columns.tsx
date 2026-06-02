@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { paymentStore } from "./action";
 import { metaProps } from "@/components/ui/data-table";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface iAppProps {
   data: sppShowType[];
@@ -32,6 +33,7 @@ const Column = ({ data, meta }: iAppProps) => {
 
   const [rowSelection, setRowSelection] = useState<number[]>([]);
   const [isPending, startTransition] = useTransition();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const updateArray = (arr: number[], id: number, add: boolean) =>
     add ? [...arr, id] : arr.filter((item) => item !== id);
@@ -75,6 +77,9 @@ const Column = ({ data, meta }: iAppProps) => {
       };
 
       const result = await paymentStore(values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         toast.success(result.message);

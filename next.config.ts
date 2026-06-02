@@ -4,13 +4,13 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   // cacheComponents: true,
-  allowedDevOrigins: ["192.168.77.129"],
+  allowedDevOrigins: ["192.168.77.251"],
   images: {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "192.168.77.129",
+        hostname: "192.168.77.251",
       },
       {
         protocol: "http",

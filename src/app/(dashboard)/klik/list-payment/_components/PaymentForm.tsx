@@ -14,7 +14,8 @@ import {
 import { paymentShowType } from "@/data/repayment";
 import { cn } from "@/lib/utils";
 import React, { useTransition } from "react";
-import { pdf } from "../action";
+import { pdf, sppAttachment } from "../action";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 interface iAppProps {
   data: paymentShowType;
@@ -22,22 +23,22 @@ interface iAppProps {
 
 const PaymentForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
+  const downloadFile = useAuthenticatedFileDownload();
 
   async function downloadPdf() {
     startTransition(async () => {
-      try {
-        const file = await pdf(data.id);
+      const file = await pdf(data.id);
+      downloadFile(
+        file,
+        `Memo_Pelunasan_${data.spp_no.replaceAll("/", "_")}.pdf`,
+      );
+    });
+  }
 
-        const url = URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Memo_Pelunasan_${data.spp_no.replaceAll("/", "_")}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        alert("Error downloading file.");
-      }
+  async function downloadAttachment() {
+    startTransition(async () => {
+      const file = await sppAttachment(data.id);
+      downloadFile(file, "Lampiran_SPP.xlsx");
     });
   }
 
@@ -83,7 +84,9 @@ const PaymentForm = ({ data }: iAppProps) => {
                         <TableHead className="text-right">
                           Potongan Tiket
                         </TableHead>
-                        <TableHead className="text-right">Titipan Fee</TableHead>
+                        <TableHead className="text-right">
+                          Titipan Fee
+                        </TableHead>
                         <TableHead className="text-right">Total</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -92,7 +95,7 @@ const PaymentForm = ({ data }: iAppProps) => {
                       {item.spp.details.map(
                         (
                           sub: Pick<paymentShowType, "spps"[0]>,
-                          index: number
+                          index: number,
                         ) => (
                           <TableRow key={sub.id}>
                             <TableCell>{index + 1}</TableCell>
@@ -117,7 +120,7 @@ const PaymentForm = ({ data }: iAppProps) => {
                               {sub.unit.final_price.toLocaleString("id-ID")}
                             </TableCell>
                           </TableRow>
-                        )
+                        ),
                       )}
                     </TableBody>
                   </Table>
@@ -128,15 +131,23 @@ const PaymentForm = ({ data }: iAppProps) => {
         ))}
       </CardContent>
 
-      <CardFooter>
+      <CardFooter className="grid grid-cols-2 gap-4">
         <Button
-          className="w-full cursor-pointer"
+          className="w-full bg-teal-500 cursor-pointer hover:bg-teal-600"
           disabled={isPending}
           onClick={downloadPdf}
         >
           <LoadingSwap isLoading={isPending}>
             Download Memo Pelunasan
           </LoadingSwap>
+        </Button>
+
+        <Button
+          className="w-full cursor-pointer"
+          disabled={isPending}
+          onClick={downloadAttachment}
+        >
+          <LoadingSwap isLoading={isPending}>Download Lampiran</LoadingSwap>
         </Button>
       </CardFooter>
     </>

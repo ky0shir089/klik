@@ -22,6 +22,7 @@ import {
   changePasswordSchema,
   changePasswordSchemaType,
 } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -31,6 +32,7 @@ import { changePassword } from "../action";
 
 const ChangePasswordForm = () => {
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const [isLoading, startTransition] = useTransition();
 
@@ -46,9 +48,14 @@ const ChangePasswordForm = () => {
   function onSubmit(values: changePasswordSchemaType) {
     startTransition(async () => {
       const result = await changePassword(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
+
       if (result.success) {
         toast.success(result.message);
-        router.push("/");
+        router.replace("/");
       } else {
         toast.error(result.message);
       }

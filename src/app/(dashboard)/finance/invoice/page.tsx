@@ -3,14 +3,19 @@ import InvoiceForm from "./_components/InvoiceForm";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const [{ data: typeTrxes }, { data: pphs }] = await Promise.all([
+  const [typeTrxResult, pphResult] = await Promise.all([
     selectTypeTrx("OUT"),
     selectPph(),
   ]);
+  await redirectIfUnauthorized(typeTrxResult, pphResult);
+
+  const { data: typeTrxes } = typeTrxResult;
+  const { data: pphs } = pphResult;
 
   return <InvoiceForm typeTrxes={typeTrxes} pphs={pphs} />;
 };

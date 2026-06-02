@@ -7,7 +7,7 @@ import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
 import SearchBox from "@/components/SearchBox";
 import { supplierIndex } from "@/data/supplier";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 export const RenderTable = async ({
   query,
@@ -19,9 +19,7 @@ export const RenderTable = async ({
   size: number;
 }) => {
   const result = await supplierIndex(currentPage, size, query);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

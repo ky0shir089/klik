@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -22,10 +23,15 @@ interface iAppProps {
 const RemoveRvForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   function onSubmit() {
     startTransition(async () => {
       const result = await rvUpdate(data?.id);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         toast.success(result.message);

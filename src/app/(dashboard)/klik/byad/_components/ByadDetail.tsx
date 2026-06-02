@@ -43,6 +43,11 @@ const ByadDetail = ({ data }: byadShowType) => {
               <TableCell>{data.total_amount.toLocaleString("id-ID")}</TableCell>
             </TableRow>
 
+            <TableRow>
+              <TableHead>Byad Amount</TableHead>
+              <TableCell>{data.byad_amount.toLocaleString("id-ID")}</TableCell>
+            </TableRow>
+
             {data.attachment ? (
               <TableRow>
                 <TableHead>Attachment</TableHead>

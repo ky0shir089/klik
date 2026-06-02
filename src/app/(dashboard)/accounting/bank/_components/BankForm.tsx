@@ -16,6 +16,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { bankSchema, bankSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { bankStore, bankUpdate } from "../action";
 import { bankShowType } from "@/data/bank";
 import { LoadingSwap } from "@/components/ui/loading-swap";
@@ -27,6 +28,7 @@ interface iAppProps {
 const BankForm = ({ data }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<bankSchemaType>({
     resolver: zodResolver(bankSchema),
@@ -41,6 +43,10 @@ const BankForm = ({ data }: iAppProps) => {
       const result = data?.id
         ? await bankUpdate(data?.id, values)
         : await bankStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

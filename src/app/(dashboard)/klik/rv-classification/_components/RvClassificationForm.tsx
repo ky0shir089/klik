@@ -31,6 +31,7 @@ import { Control, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { classificationStore } from "../action";
 import { sumUnitFields } from "@/lib/helper";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface RvClassificationFormProps {
   data: customerShowType;
@@ -237,6 +238,7 @@ const UnitTable = memo(function UnitTable({
 const RvClassificationForm = ({ data }: RvClassificationFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<rvClassificationSchemaType>({
     resolver: zodResolver(rvClassificationSchema),
@@ -283,6 +285,9 @@ const RvClassificationForm = ({ data }: RvClassificationFormProps) => {
 
     startTransition(async () => {
       const result = await classificationStore(values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

@@ -30,6 +30,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface iAppProps {
   data: invoiceShowType;
@@ -38,13 +39,14 @@ interface iAppProps {
 
 const InvoiceAction = ({ data, user }: iAppProps) => {
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<invoiceStatusSchemaType>();
   const [isPending, startTransition] = useTransition();
   const [isApprove, setIsApprove] = useState<boolean>(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
   const [remark, setRemark] = useState<string>("");
-  const [points, setPoints] = useState<number[][]>([]);
+  const [points, setPoints] = useState<Record<string, number[][]>>({});
   const signatureContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,12 +61,15 @@ const InvoiceAction = ({ data, user }: iAppProps) => {
   const $svg = useRef<SignatureRef>(null);
   const handle = () => {
     $svg.current?.clear();
-    setPoints([]);
+    setPoints({});
   };
 
   const handlePoints = (data: number[][]) => {
     if (data.length > 0) {
-      setPoints((prev) => [...prev, ...data]);
+      setPoints((prev) => ({
+        ...prev,
+        [`path-${Object.keys(prev).length + 1}`]: data,
+      }));
     }
   };
 
@@ -73,7 +78,7 @@ const InvoiceAction = ({ data, user }: iAppProps) => {
       ...data,
       status,
       remark: remark || null,
-      signature: points.length > 0 ? points : null,
+      signature: Object.keys(points).length > 0 ? points : null,
       wf_history_id: data.wf_histories.filter(
         (item: { user_id: number }) => item.user_id == user.id,
       )[0].id,
@@ -81,6 +86,9 @@ const InvoiceAction = ({ data, user }: iAppProps) => {
 
     startTransition(async () => {
       const result = await invoiceUpdate(data.id, values);
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();
@@ -172,11 +180,7 @@ const InvoiceAction = ({ data, user }: iAppProps) => {
           </p>
 
           <div className="w-full sm:max-w-sm">
-            <Signature
-              ref={$svg}
-              onPointer={handlePoints}
-              aria-label="Signature canvas"
-            />
+            <Signature ref={$svg} onPointer={handlePoints} />
           </div>
 
           <div className="grid w-full grid-cols-3 gap-2 mt-2">
@@ -194,7 +198,7 @@ const InvoiceAction = ({ data, user }: iAppProps) => {
               type="submit"
               className="bg-green-400"
               onClick={() => {
-                if (points.length === 0) {
+                if (Object.keys(points).length === 0) {
                   toast.error("Signature is required");
                   return;
                 }

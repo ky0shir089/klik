@@ -16,6 +16,8 @@ import { useState, useTransition, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { invoiceSchema, invoiceSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 import { invoiceStore } from "../action";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import {
@@ -48,6 +50,8 @@ interface iAppProps {
 const InvoiceForm = ({ data, typeTrxes, pphs }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
+  const downloadFile = useAuthenticatedFileDownload();
 
   const selectedCoa = typeTrxes.find(
     (item) => item.id === data?.trx_id,
@@ -103,18 +107,11 @@ const InvoiceForm = ({ data, typeTrxes, pphs }: iAppProps) => {
 
   async function downloadMemo() {
     startTransition(async () => {
-      try {
-        const file = await memo(data.id);
-        const url = URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Memo_Invoice_${data.invoice_no.replaceAll("/", "_")}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        alert("Error downloading file.");
-      }
+      const file = await memo(data.id);
+      downloadFile(
+        file,
+        `Memo_Invoice_${data.invoice_no.replaceAll("/", "_")}.pdf`,
+      );
     });
   }
 
@@ -123,6 +120,10 @@ const InvoiceForm = ({ data, typeTrxes, pphs }: iAppProps) => {
       const result = data?.id
         ? await invoiceUpdate(data.id, values)
         : await invoiceStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();
@@ -144,7 +145,15 @@ const InvoiceForm = ({ data, typeTrxes, pphs }: iAppProps) => {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
+                e.preventDefault();
+              }
+            }}
+          >
             <div className="grid items-start grid-cols-1 gap-4 space-y-2 sm:grid-cols-2">
               <FormField
                 control={form.control}
@@ -228,7 +237,6 @@ const InvoiceForm = ({ data, typeTrxes, pphs }: iAppProps) => {
                       <SelectContent>
                         <SelectItem value="BANK">BANK</SelectItem>
                         <SelectItem value="KAS">KAS</SelectItem>
-                        <SelectItem value="PREPAYMENT">PREPAYMENT</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

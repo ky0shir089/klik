@@ -1,6 +1,6 @@
 "use client";
 
-import Signature from "@uiw/react-signature";
+import Signature, { SignatureRef } from "@uiw/react-signature";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
@@ -17,8 +17,7 @@ interface TimelineEntry {
 }
 
 export function TimelineTracker({ items }: { items: TimelineEntry[] }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const $svg = useRef<any>(null);
+  const $svg = useRef<SignatureRef>(null);
 
   const formatter = new Intl.DateTimeFormat("sv-SE", {
     year: "numeric",
@@ -41,9 +40,11 @@ export function TimelineTracker({ items }: { items: TimelineEntry[] }) {
 
           <div className="space-y-6">
             {items.map((item, index) => {
-              const points = {
-                "path-1": JSON.parse(item.signature) ?? [],
-              };
+              const rawSignature = JSON.parse(item.signature) ?? {};
+              // Handle both old flat array format and new object format
+              const signaturePoints = Array.isArray(rawSignature)
+                ? { "path-1": rawSignature }
+                : rawSignature;
 
               return (
                 <div key={item.id} className="relative flex gap-x-3">
@@ -82,12 +83,12 @@ export function TimelineTracker({ items }: { items: TimelineEntry[] }) {
                         {item.status}
                       </p>
                     )}
-                    {points["path-1"].length > 0 ? (
+                    {Object.keys(signaturePoints).length > 0 ? (
                       <div className="flex items-center justify-center w-full">
                         <div className="w-full h-auto border-2 border-yellow-500 sm:max-w-sm">
                           <Signature
                             ref={$svg}
-                            defaultPoints={points}
+                            defaultPoints={signaturePoints}
                             readonly
                           />
                         </div>

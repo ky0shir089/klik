@@ -4,6 +4,8 @@ import { type ComponentProps, type ReactNode, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { LoadingSwap } from "@/components/ui/loading-swap"
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect"
+import type { UnauthorizedResult } from "@/lib/auth-result"
 import {
   AlertDialog,
   AlertDialogDescription,
@@ -16,22 +18,31 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+type ActionButtonResult =
+  | {
+      error?: boolean
+      message?: string
+    }
+  | UnauthorizedResult
+
 export function ActionButton({
   action,
   requireAreYouSure = false,
   areYouSureDescription = "This action cannot be undone.",
   ...props
 }: ComponentProps<typeof Button> & {
-  action: () => Promise<{ error: boolean; message?: string }>
+  action: () => Promise<ActionButtonResult>
   requireAreYouSure?: boolean
   areYouSureDescription?: ReactNode
 }) {
   const [isLoading, startTransition] = useTransition()
+  const handleExpiredSession = useExpiredSessionRedirect()
 
   function performAction() {
     startTransition(async () => {
       const data = await action()
-      if (data.error) toast.error(data.message ?? "Error")
+      if (handleExpiredSession(data)) return
+      if ("error" in data && data.error) toast.error(data.message ?? "Error")
     })
   }
 

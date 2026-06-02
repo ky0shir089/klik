@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { coaShowType } from "@/data/coa";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { journalInputSchema, journalInputSchemaType } from "@/lib/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,7 @@ interface JournalFormProps {
 const JournalForm = ({ data, coas }: JournalFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<journalInputSchemaType>({
     resolver: zodResolver(journalInputSchema),
@@ -60,6 +62,10 @@ const JournalForm = ({ data, coas }: JournalFormProps) => {
 
     startTransition(async () => {
       const result = await journalInputStore(values);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

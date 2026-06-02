@@ -27,6 +27,7 @@ import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { selectPrepayment } from "@/data/select";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
 interface PvSelectorProps {
   value?: number | null;
@@ -42,12 +43,18 @@ export const PvSelector = ({ value, onSelect, disabled }: PvSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [pvOptions, setPvOptions] = useState<pvShowType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   useEffect(() => {
     async function fetchPvs() {
       setIsLoading(true);
       try {
-        const { data } = await selectPrepayment();
+        const result = await selectPrepayment();
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
+        const { data } = result;
         setPvOptions(data);
       } catch (error) {
         console.error("Failed to fetch pvs:", error);
@@ -60,7 +67,14 @@ export const PvSelector = ({ value, onSelect, disabled }: PvSelectorProps) => {
     if (open || (value && pvOptions.length === 0)) {
       fetchPvs();
     }
-  }, [open, value, currentPage, size, pvOptions.length]);
+  }, [
+    open,
+    value,
+    currentPage,
+    size,
+    pvOptions.length,
+    handleExpiredSession,
+  ]);
 
   const selectedPvName =
     pvOptions.find((item) => item.prepayment_pv_id === value)?.pv.pv_no || "";

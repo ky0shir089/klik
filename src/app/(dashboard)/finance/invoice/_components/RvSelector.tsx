@@ -27,6 +27,7 @@ import {
 import { rvShowType } from "@/data/rv";
 import { selectRv } from "@/data/select";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 import Pagination from "./Pagination";
@@ -47,6 +48,7 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
   const [rvOptions, setRvOptions] = useState<rvShowType[]>([]);
   const [meta, setMeta] = useState({} as metaProps);
   const [isLoading, setIsLoading] = useState(false);
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -55,6 +57,10 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
       setIsLoading(true);
       try {
         const result = await selectRv(currentPage, size, debouncedSearchQuery);
+        if (handleExpiredSession(result)) {
+          return;
+        }
+
         if (result?.data) {
           const { data: rvs, ...meta } = result.data;
           setRvOptions(rvs);
@@ -71,7 +77,15 @@ export const RvSelector = ({ value, onSelect }: RvSelectorProps) => {
     if (open || (value && rvOptions.length === 0)) {
       fetchRvs();
     }
-  }, [debouncedSearchQuery, open, value, rvOptions.length, currentPage, size]);
+  }, [
+    debouncedSearchQuery,
+    open,
+    value,
+    rvOptions.length,
+    currentPage,
+    size,
+    handleExpiredSession,
+  ]);
 
   const selectedRvName =
     rvOptions.find((item) => item.id === value)?.rv_no || "";

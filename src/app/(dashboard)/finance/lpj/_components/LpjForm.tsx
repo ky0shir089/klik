@@ -16,6 +16,8 @@ import { useState, useTransition, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { lpjSchema, lpjSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
+import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import {
   Select,
@@ -48,9 +50,10 @@ interface iAppProps {
 }
 
 const LpjForm = ({ data, typeTrxes, pphs }: iAppProps) => {
-   console.log(data)
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
+  const downloadFile = useAuthenticatedFileDownload();
 
   const [selectedPvBalance, setSelectedPvBalance] = useState<number>(
     data?.balance ? Number(data.balance) : 0,
@@ -123,18 +126,11 @@ const LpjForm = ({ data, typeTrxes, pphs }: iAppProps) => {
 
   async function downloadMemo() {
     startTransition(async () => {
-      try {
-        const file = await memo(data.id);
-        const url = URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Memo_Invoice_${data.invoice_no.replaceAll("/", "_")}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Download error:", error);
-        alert("Error downloading file.");
-      }
+      const file = await memo(data.id);
+      downloadFile(
+        file,
+        `Memo_Invoice_${data.invoice_no.replaceAll("/", "_")}.pdf`,
+      );
     });
   }
 
@@ -153,10 +149,13 @@ const LpjForm = ({ data, typeTrxes, pphs }: iAppProps) => {
     }
 
     startTransition(async () => {
-      const result = data.id
+      const result = data?.id
         ? await lpjUpdate(data.id, values)
         : await lpjStore(values);
-        console.log("API result:", result);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

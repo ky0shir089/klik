@@ -5,14 +5,19 @@ import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const [{ data: banks }, { data: coas }] = await Promise.all([
+  const [bankResult, coaResult] = await Promise.all([
     selectBank(),
     selectCoa("BANK"),
   ]);
+  await redirectIfUnauthorized(bankResult, coaResult);
+
+  const { data: banks } = bankResult;
+  const { data: coas } = coaResult;
 
   return <BankAccountForm banks={banks} coas={coas} />;
 };

@@ -1,5 +1,6 @@
 import Unauthorized from "@/components/unauthorized";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
@@ -11,15 +12,13 @@ import WorkflowForm from "../../_components/WorkflowForm";
 type Params = Promise<{ wfId: number }>;
 
 const RenderForm = async ({ wfId }: { wfId: number }) => {
-  const [result, { data: users }, { data: typeTrxes }] = await Promise.all([
+  const [result, userResult, typeTrxResult] = await Promise.all([
     workflowShow(wfId),
     selectUser(),
-    selectTypeTrx(),
+    selectTypeTrx("OUT"),
   ]);
+  await redirectIfUnauthorized(result, userResult, typeTrxResult);
 
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
   if (result.isForbidden) {
     return <Unauthorized />;
   }
@@ -28,7 +27,8 @@ const RenderForm = async ({ wfId }: { wfId: number }) => {
   }
 
   const { data } = result;
-  console.log(data);
+  const { data: users } = userResult;
+  const { data: typeTrxes } = typeTrxResult;
 
   return <WorkflowForm data={data} users={users} typeTrxes={typeTrxes} />;
 };

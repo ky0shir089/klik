@@ -2,7 +2,7 @@ import Column from "./columns";
 import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/data-table-skeleton";
 import Unauthorized from "@/components/unauthorized";
-import { redirect } from "next/navigation";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { selectByad } from "@/data/select";
 
 const RenderTable = async ({
@@ -13,9 +13,7 @@ const RenderTable = async ({
   size: number;
 }) => {
   const result = await selectByad(currentPage, size);
-  if (result.isUnauthorized) {
-    redirect("/login");
-  }
+  await redirectIfUnauthorized(result);
   if (result.isForbidden) {
     return <Unauthorized />;
   }

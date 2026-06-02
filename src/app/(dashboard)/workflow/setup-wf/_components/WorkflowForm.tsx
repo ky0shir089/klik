@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { workflowSchema, workflowSchemaType } from "@/lib/formSchema";
+import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { moduleShowType } from "@/data/module";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Switch } from "@/components/ui/switch";
@@ -55,6 +56,7 @@ interface iAppProps {
 const WorkflowForm = ({ data, users, typeTrxes }: iAppProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const handleExpiredSession = useExpiredSessionRedirect();
 
   const form = useForm<workflowSchemaType>({
     resolver: zodResolver(workflowSchema),
@@ -82,11 +84,14 @@ const WorkflowForm = ({ data, users, typeTrxes }: iAppProps) => {
       })),
     };
 
-    console.log(normalizedValues);
     startTransition(async () => {
       const result = data?.id
-        ? await workflowUpdate(data?.id, values)
-        : await workflowStore(values);
+        ? await workflowUpdate(data?.id, normalizedValues)
+        : await workflowStore(normalizedValues);
+
+      if (handleExpiredSession(result)) {
+        return;
+      }
 
       if (result.success) {
         form.reset();

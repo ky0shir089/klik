@@ -1,13 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { dashboard } from "@/data/dashboard";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Activity, CreditCard, DollarSign, FileText } from "lucide-react";
 
 const DashboardPage = async () => {
-  const { data } = await dashboard();
+  const result = await dashboard();
+  await redirectIfUnauthorized(result);
+
+  const { data } = result;
+  const currencyFormatter = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold tracking-tight">Dashboard (ini masih data dummy buat coba2)</h1>
+      <h1 className="text-2xl font-bold tracking-tight">
+        Dashboard (ini masih data dummy buat coba2)
+      </h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -17,10 +27,9 @@ const DashboardPage = async () => {
             <DollarSign className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              }).format(data.totalInvoices)}</div>
+            <div className="text-2xl font-bold">
+              {currencyFormatter.format(data.totalInvoices)}
+            </div>
             <p className="text-xs text-muted-foreground">
               +20.1% from last month
             </p>
@@ -91,12 +100,13 @@ const DashboardPage = async () => {
                     <p className="text-sm font-medium leading-none">
                       {invoice.customer}
                     </p>
-                    <p className="text-sm text-muted-foreground">{invoice.id}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {invoice.id}
+                    </p>
                   </div>
-                  <div className="ml-auto font-medium">+{new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    }).format(invoice.amount)}</div>
+                  <div className="ml-auto font-medium">
+                    +{currencyFormatter.format(invoice.amount)}
+                  </div>
                 </div>
               ))}
             </div>

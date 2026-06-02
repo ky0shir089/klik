@@ -1,48 +1,50 @@
 "use server";
 
 import axiosInstance from "@/lib/axios";
+import { parseAxiosError } from "@/lib/parseAxiosError";
+
+async function selectRequest(
+  url: string,
+  params?: Record<string, string | number | undefined>,
+) {
+  try {
+    const { data } = await axiosInstance.get(url, { params });
+    return data;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
+}
 
 export async function selectModule() {
-  const { data } = await axiosInstance.get(`/select/v1/module`);
-  return data;
+  return selectRequest(`/select/v1/module`);
 }
 
 export async function selectMenuPermission() {
-  const { data } = await axiosInstance.get(`/select/v1/menu-permission`);
-  return data;
+  return selectRequest(`/select/v1/menu-permission`);
 }
 
 export async function selectRole() {
-  const { data } = await axiosInstance.get(`/select/v1/role`);
-  return data;
+  return selectRequest(`/select/v1/role`);
 }
 
 export async function selectCoa(type?: string) {
-  const { data } = await axiosInstance.get(`/select/v1/coa`, {
-    params: {
-      type,
-    },
+  return selectRequest(`/select/v1/coa`, {
+    type,
   });
-  return data;
 }
 
 export async function selectBank() {
-  const { data } = await axiosInstance.get(`/select/v1/bank`);
-  return data;
+  return selectRequest(`/select/v1/bank`);
 }
 
 export async function selectTypeTrx(in_out?: string) {
-  const { data } = await axiosInstance.get(`/select/v1/type-trx`, {
-    params: {
-      in_out,
-    },
+  return selectRequest(`/select/v1/type-trx`, {
+    in_out,
   });
-  return data;
 }
 
 export async function selectBankAccount() {
-  const { data } = await axiosInstance.get(`/select/v1/bank-account`);
-  return data;
+  return selectRequest(`/select/v1/bank-account`);
 }
 
 export async function selectTitipanPelunasan(
@@ -50,14 +52,11 @@ export async function selectTitipanPelunasan(
   size: number,
   search?: string,
 ) {
-  const { data } = await axiosInstance.get(`/select/v1/titipan-pelunasan`, {
-    params: {
-      page,
-      size,
-      search,
-    },
+  return selectRequest(`/select/v1/titipan-pelunasan`, {
+    page,
+    size,
+    search,
   });
-  return data;
 }
 
 export async function selectUnpaidBidder(
@@ -65,92 +64,87 @@ export async function selectUnpaidBidder(
   size: number,
   search?: string,
 ) {
-  const { data } = await axiosInstance.get(`/select/v1/unpaid-bidder`, {
-    params: {
-      page,
-      size,
-      search,
-    },
+  return selectRequest(`/select/v1/unpaid-bidder`, {
+    page,
+    size,
+    search,
   });
-  return data;
 }
 
 export async function selectUnpaidPayment(method?: string) {
-  const { data } = await axiosInstance.get(`/select/v1/unpaid-payment`, {
-    params: {
-      method,
-    },
+  return selectRequest(`/select/v1/unpaid-payment`, {
+    method,
   });
-  return data;
 }
 
 export async function selectSupplier() {
-  const { data } = await axiosInstance.get(`/select/v1/supplier`);
-  return data;
+  return selectRequest(`/select/v1/supplier`);
 }
 
 export async function selectPph() {
-  const { data } = await axiosInstance.get(`/select/v1/pph`);
-  return data;
+  return selectRequest(`/select/v1/pph`);
 }
 
 export async function selectRv(page: number, size: number, search?: string) {
-  const { data } = await axiosInstance.get(`/select/v1/rv`, {
-    params: {
-      page,
-      size,
-      search,
-    },
+  return selectRequest(`/select/v1/rv`, {
+    page,
+    size,
+    search,
   });
-  return data;
 }
 
-export async function selectByadUnit(branch_name: string) {
-  const { data } = await axiosInstance.get(`/select/v1/byad-unit`, {
-    params: {
-      branch_name,
-    },
+export async function selectByadUnit(
+  branch_name: string,
+  from_date?: string,
+  to_date?: string,
+) {
+  return selectRequest(`/select/v1/byad-unit`, {
+    branch_name,
+    from_date,
+    to_date,
   });
-  return data;
 }
 
 export async function selectBranch() {
-  const { data } = await axiosInstance.get(`/select/v1/branch`);
-  return data;
+  return selectRequest(`/select/v1/branch`);
 }
 export type branchShowType = Awaited<ReturnType<typeof selectBranch>>;
 
 export async function selectByad(page: number, size: number) {
-  const { data } = await axiosInstance.get(`/select/v1/byad`, {
-    params: {
-      page,
-      size,
-    },
+  return selectRequest(`/select/v1/byad`, {
+    page,
+    size,
   });
-  return data;
 }
 
 export async function selectUser() {
-  const { data } = await axiosInstance.get(`/select/v1/user`);
-  return data;
+  return selectRequest(`/select/v1/user`);
 }
 
 export async function selectPrepayment() {
-  const { data } = await axiosInstance.get(`/select/v1/prepayment`);
-  return data;
+  return selectRequest(`/select/v1/prepayment`);
 }
 
 export async function selectPaidOffUnit(
   page: number,
   size: number,
   search?: string,
+  from_date?: string,
+  to_date?: string,
 ) {
-  const { data } = await axiosInstance.get(`/select/v1/paid-off-unit`, {
-    params: {
-      page,
-      size,
-      search,
-    },
+  return selectRequest(`/select/v1/paid-off-unit`, {
+    page,
+    size,
+    from_date,
+    to_date,
+    search,
   });
-  return data;
+}
+
+export async function selectMoneyInTransit() {
+  return selectRequest(`/select/v1/money-in-transit`);
+}
+
+export async function selectExternal() {
+  return selectRequest(`/select/v1/external`);
 }

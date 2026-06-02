@@ -3,11 +3,15 @@ import FormSkeleton from "@/components/form-skeleton";
 import ByadForm from "../_components/ByadForm";
 import { selectBranch } from "@/data/select";
 import { connection } from "next/server";
+import { redirectIfUnauthorized } from "@/lib/server-auth";
 
 const RenderForm = async () => {
   await connection();
 
-  const { data } = await selectBranch();
+  const result = await selectBranch();
+  await redirectIfUnauthorized(result);
+
+  const { data } = result;
 
   return <ByadForm branches={data} />;
 };
