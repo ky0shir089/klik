@@ -51,18 +51,31 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   {
     header: "Invoice No",
     accessorFn: (row) => row.invoice?.invoice_no,
-    cell: ({ row }) => (
-      <Link
-        className={buttonVariants({
-          variant: "link",
-          size: "sm",
-          className: "underline hover:text-blue-500",
-        })}
-        href={`/finance/list-invoice/${row.original?.lpj_invoice_id}`}
-      >
-        {row.original.invoice?.invoice_no}
-      </Link>
-    ),
+    cell: ({ row }) =>
+      row.original.invoice?.status === "REQUEST" &&
+      row.original.invoice?.wf_approval?.approve_count === 0 ? (
+        <Link
+          className={buttonVariants({
+            variant: "link",
+            size: "sm",
+            className: "underline hover:text-blue-500",
+          })}
+          href={`/finance/lpj/${row.original?.id}`}
+        >
+          {row.original.invoice?.invoice_no}
+        </Link>
+      ) : (
+        <Link
+          className={buttonVariants({
+            variant: "link",
+            size: "sm",
+            className: "underline hover:text-blue-500",
+          })}
+          href={`/finance/list-invoice/${row.original?.invoice.id}`}
+        >
+          {row.original.invoice?.invoice_no}
+        </Link>
+      ),
   },
   {
     header: () => <div className="text-right">LPJ Amount</div>,

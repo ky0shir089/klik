@@ -64,7 +64,7 @@ const LpjForm = ({ data, typeTrxes, pphs }: iAppProps) => {
   const [coas, setCoas] = useState<coaShowType[]>(selectedCoa || []);
   const [supplierAccounts, setSupplierAccounts] = useState<
     bankAccountShowType[]
-  >([]);
+  >(data?.pv?.supplier_account ? [data.pv.supplier_account] : []);
 
   const details = useMemo(
     () =>
@@ -250,6 +250,7 @@ const LpjForm = ({ data, typeTrxes, pphs }: iAppProps) => {
                     <FormLabel>Select PV</FormLabel>
                     <PvSelector
                       value={field.value}
+                      initialLabel={data?.pv_no}
                       onSelect={handlePvSelect}
                       disabled={!!data?.pv_id}
                     />

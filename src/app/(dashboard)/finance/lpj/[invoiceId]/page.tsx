@@ -32,6 +32,7 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
     id: data.id,
     pv_id: data.prepayment_pv_id,
     balance: data.balance,
+    pv_no: data.pv.pv_no,
   };
 
   return <LpjForm data={invoice} typeTrxes={typeTrxes} pphs={pphs} />;

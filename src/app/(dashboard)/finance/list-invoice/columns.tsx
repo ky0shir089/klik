@@ -55,14 +55,15 @@ export const columns: ColumnDef<invoiceShowType>[] = [
   },
   {
     header: "Action",
-    cell: ({ row }) => (
-      <Link
-        className={buttonVariants({ variant: "link", size: "sm" })}
-        href={`/finance/list-invoice/${row.original.id}`}
-      >
-        <Eye />
-        View
-      </Link>
-    ),
+    cell: ({ row }) =>
+      row.original.payment_method !== "PREPAYMENT" ? (
+        <Link
+          className={buttonVariants({ variant: "link", size: "sm" })}
+          href={`/finance/list-invoice/${row.original.id}`}
+        >
+          <Eye />
+          View
+        </Link>
+      ) : null,
   },
 ];

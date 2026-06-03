@@ -31,11 +31,12 @@ import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect"
 
 interface PvSelectorProps {
   value?: number | null;
+  initialLabel?: string;
   onSelect: (pv: pvShowType) => void;
   disabled?: boolean;
 }
 
-export const PvSelector = ({ value, onSelect, disabled }: PvSelectorProps) => {
+export const PvSelector = ({ value, initialLabel, onSelect, disabled }: PvSelectorProps) => {
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
   const size = Number(searchParams.get("size")) || 10;
@@ -77,7 +78,7 @@ export const PvSelector = ({ value, onSelect, disabled }: PvSelectorProps) => {
   ]);
 
   const selectedPvName =
-    pvOptions.find((item) => item.prepayment_pv_id === value)?.pv.pv_no || "";
+    pvOptions.find((item) => item.prepayment_pv_id === value)?.pv.pv_no || initialLabel || "";
 
   return (
     <div className="flex items-center gap-2">
