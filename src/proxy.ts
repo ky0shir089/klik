@@ -6,7 +6,7 @@ import { SESSION_ACCESS_TOKEN_COOKIE_NAME } from '@/lib/session-cookies';
  * Proxy implementation (replacing deprecated middleware)
  * Intercepts requests to remember the last visited URL before redirecting to login.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // 1. Exempt public routes and internal Next.js assets to prevent loops

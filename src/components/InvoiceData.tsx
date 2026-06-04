@@ -44,13 +44,22 @@ const InvoiceData = ({ data }: invoiceShowType) => {
             </TableRow>
 
             {data.payment_method === "BANK" ? (
-              <TableRow>
-                <TableHead>Nomor Rekening</TableHead>
-                <TableCell>
-                  {data.supplier_account.bank.name} -{" "}
-                  {data.supplier_account.account_number}
-                </TableCell>
-              </TableRow>
+              <>
+                <TableRow>
+                  <TableHead>Nama Rekening</TableHead>
+                  <TableCell>
+                    {data.supplier_account.account_name}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableHead>Nomor Rekening</TableHead>
+                  <TableCell>
+                    {data.supplier_account.bank.name} -{" "}
+                    {data.supplier_account.account_number}
+                  </TableCell>
+                </TableRow>
+              </>
             ) : null}
 
             <TableRow>

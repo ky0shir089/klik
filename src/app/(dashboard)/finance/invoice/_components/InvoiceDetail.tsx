@@ -2,6 +2,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -22,12 +23,12 @@ import {
 import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { coaShowType } from "@/data/coa";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { invoiceSchemaType } from "@/lib/formSchema";
 import { pphShowType } from "@/data/pph";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash, X } from "lucide-react";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { RvSelector } from "./RvSelector";
 
 interface iAppProps {
@@ -389,6 +390,26 @@ const InvoiceDetail = ({ coas, pphs }: iAppProps) => {
     name: "details",
   });
 
+  const watchedDetails = useWatch({
+    control,
+    name: "details",
+  });
+
+  const totals = useMemo(() => {
+    return (
+      watchedDetails?.reduce(
+        (acc, item) => {
+          acc.item += Number(item.item_amount) || 0;
+          acc.pph += Number(item.pph_amount) || 0;
+          acc.ppn += Number(item.ppn_amount) || 0;
+          acc.total += Number(item.total_amount) || 0;
+          return acc;
+        },
+        { item: 0, pph: 0, ppn: 0, total: 0 },
+      ) || { item: 0, pph: 0, ppn: 0, total: 0 }
+    );
+  }, [watchedDetails]);
+
   return (
     <>
       <div className="flex items-start w-full">
@@ -414,6 +435,17 @@ const InvoiceDetail = ({ coas, pphs }: iAppProps) => {
                 />
               ))}
             </TableBody>
+
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={2} className="font-semibold text-primary">
+                  Total
+                </TableCell>
+                <TableCell className="font-semibold text-right">
+                  {totals.item.toLocaleString("id-ID")}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
         </div>
 
@@ -442,6 +474,20 @@ const InvoiceDetail = ({ coas, pphs }: iAppProps) => {
                 />
               ))}
             </TableBody>
+
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={2} />
+                <TableCell className="font-semibold text-right">
+                  {totals.pph.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell />
+                <TableCell className="font-semibold text-right">
+                  {totals.ppn.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell />
+              </TableRow>
+            </TableFooter>
           </Table>
         </div>
 
@@ -466,6 +512,15 @@ const InvoiceDetail = ({ coas, pphs }: iAppProps) => {
                 />
               ))}
             </TableBody>
+
+            <TableFooter>
+              <TableRow>
+                <TableCell className="font-semibold text-right">
+                  {totals.total.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell />
+              </TableRow>
+            </TableFooter>
           </Table>
         </div>
       </div>

@@ -173,7 +173,7 @@ export type invoiceSchemaType = z.infer<typeof invoiceSchema>;
 export const invoiceStatusSchema = z.object({
   status: z.string(),
   signature: z.record(z.string(), z.array(z.array(z.number()))).nullable(),
-  wf_history_id: z.number().positive(),
+  wf_history_id: z.number().positive().nullable(),
 });
 export type invoiceStatusSchemaType = z.infer<typeof invoiceStatusSchema>;
 

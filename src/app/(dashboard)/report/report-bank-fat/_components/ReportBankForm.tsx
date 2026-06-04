@@ -65,7 +65,7 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
       <CardContent>
         <form className="flex flex-col gap-6" onSubmit={onSubmit}>
           <div className="flex flex-col gap-6">
-            <div className="grid w-full max-w-sm items-center gap-3">
+            <div className="grid items-center w-full max-w-sm gap-3">
               <Label htmlFor="from">Dari</Label>
               <Input
                 id="from"
@@ -75,7 +75,7 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
               />
             </div>
 
-            <div className="grid w-full max-w-sm items-center gap-3">
+            <div className="grid items-center w-full max-w-sm gap-3">
               <Label htmlFor="to">Sampai</Label>
               <Input
                 id="to"
@@ -85,7 +85,7 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
               />
             </div>
 
-            <div className="grid w-full max-w-sm items-center gap-3">
+            <div className="grid items-center w-full max-w-sm gap-3">
               <Label htmlFor="to">Bank</Label>
               <Select
                 value={bank ? String(bank) : ""}
@@ -94,11 +94,11 @@ const ReportBankForm = ({ banks }: { banks: bankShowType[] }) => {
                   const selectedBank = banks.find(
                     (item) => item.id === Number(val),
                   );
-                  const removeBank = selectedBank?.description.replace(
-                    "Bank ",
-                    "",
-                  );
-                  const slug = removeBank?.toLowerCase().replace(" - ", ":");
+                  const slug = selectedBank?.description
+                    .replace(/Bank\s+/i, "")
+                    .toLowerCase()
+                    .replace(/\s*-\s*/g, ":")
+                    .replace(/\s+/g, "");
                   setPermission(slug);
                 }}
               >

@@ -46,6 +46,7 @@ const InvoiceAction = ({ data }: iAppProps) => {
   function onSubmit(status: string) {
     const values = {
       ...data,
+      wf_history_id: null,
       status,
     };
 

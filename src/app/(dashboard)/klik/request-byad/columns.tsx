@@ -128,7 +128,7 @@ const Column = ({ data, meta }: iAppProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="border rounded-md overflow-x-auto">
+      <div className="overflow-x-auto border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
@@ -175,13 +175,13 @@ const Column = ({ data, meta }: iAppProps) => {
                 <TableCell colSpan={4} className="font-semibold text-primary">
                   Total Terpilih
                 </TableCell>
-                <TableCell className="text-right font-semibold">
+                <TableCell className="font-semibold text-right">
                   {sumTotalUnit}
                 </TableCell>
-                <TableCell className="text-right font-semibold">
+                <TableCell className="font-semibold text-right">
                   {sumTotalAmount.toLocaleString("id-ID")}
                 </TableCell>
-                <TableCell className="text-right font-semibold">
+                <TableCell className="font-semibold text-right">
                   {sumByadAmount.toLocaleString("id-ID")}
                 </TableCell>
               </TableRow>
@@ -192,7 +192,7 @@ const Column = ({ data, meta }: iAppProps) => {
 
       <div className="min-h-10">
         {rowSelection.length > 0 && (
-          <Button className="w-full" disabled={isPending} onClick={payByad}>
+          <Button className="w-full cursor-pointer" disabled={isPending} onClick={payByad}>
             <LoadingSwap isLoading={isPending}>
               Pengajuan BYAD ({rowSelection.length})
             </LoadingSwap>
