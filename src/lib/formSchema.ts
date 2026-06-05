@@ -18,6 +18,24 @@ export const changePasswordSchema = z
   });
 export type changePasswordSchemaType = z.infer<typeof changePasswordSchema>;
 
+export const forgotPasswordSchema = z.object({
+  phone: z.string().min(10, "Phone number is required"),
+});
+export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(64),
+    phone: z.string().min(10, "Phone number is required"),
+    password: z.string().min(8),
+    password_confirmation: z.string().min(8),
+  })
+  .refine((data) => data.password === data.password_confirmation, {
+    message: "Passwords don't match",
+    path: ["password_confirmation"],
+  });
+export type resetPasswordSchemaType = z.infer<typeof resetPasswordSchema>;
+
 export const moduleSchema = z.object({
   name: z.string().min(1),
   icon: z.string().optional(),
