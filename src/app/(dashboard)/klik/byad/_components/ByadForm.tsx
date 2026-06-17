@@ -97,10 +97,12 @@ const getSelectAllState = (
 const UnitRow = memo(
   ({
     item,
+    index,
     isChecked,
     onCheckedChange,
   }: {
     item: ByadUnit;
+    index: number;
     isChecked: boolean;
     onCheckedChange: (unit: ByadUnit, checked: boolean) => void;
   }) => {
@@ -114,6 +116,7 @@ const UnitRow = memo(
             }
           />
         </TableCell>
+        <TableCell>{index + 1}</TableCell>
         <TableCell>{item?.auction.auction_date}</TableCell>
         <TableCell>{item.auction.customer.name}</TableCell>
         <TableCell>{item.police_number}</TableCell>
@@ -214,6 +217,7 @@ const UnitTable = memo(
                     disabled={isFetchingUnits || units.length === 0}
                   />
                 </TableHead>
+                <TableHead>No</TableHead>
                 <TableHead>Tgl Lelang</TableHead>
                 <TableHead>Nama Bidder</TableHead>
                 <TableHead>Nopol</TableHead>
@@ -226,21 +230,22 @@ const UnitTable = memo(
             <TableBody>
               {isFetchingUnits ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">
+                  <TableCell colSpan={9} className="h-24 text-center">
                     <Loader2 className="mx-auto animate-spin" />
                   </TableCell>
                 </TableRow>
               ) : units.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">
+                  <TableCell colSpan={9} className="h-24 text-center">
                     Tidak ada data unit
                   </TableCell>
                 </TableRow>
               ) : (
-                units.map((item) => (
+                units.map((item, index) => (
                   <UnitRow
                     key={item.id}
                     item={item}
+                    index={index}
                     isChecked={selectedUnitIds.has(item.id)}
                     onCheckedChange={handleRowCheck}
                   />
@@ -295,7 +300,7 @@ const FormSummary = memo(function FormSummary({
           thousandSeparator="."
           decimalSeparator=","
           readOnly
-          className="bg-muted font-semibold"
+          className="font-semibold bg-muted"
         />
       </div>
 
@@ -307,7 +312,7 @@ const FormSummary = memo(function FormSummary({
           thousandSeparator="."
           decimalSeparator=","
           readOnly
-          className="bg-muted font-semibold"
+          className="font-semibold bg-muted"
         />
       </div>
     </>
@@ -581,9 +586,7 @@ const ByadForm = ({ data, branches }: ByadFormProps) => {
               />
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="byad-unit-date-from">
-                  Dari Tanggal Lelang
-                </Label>
+                <Label htmlFor="byad-unit-date-from">Dari Tanggal Lelang</Label>
                 <Input
                   id="byad-unit-date-from"
                   type="date"
@@ -596,9 +599,7 @@ const ByadForm = ({ data, branches }: ByadFormProps) => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="byad-unit-date-to">
-                  Sampai Tanggal Lelang
-                </Label>
+                <Label htmlFor="byad-unit-date-to">Sampai Tanggal Lelang</Label>
                 <Input
                   id="byad-unit-date-to"
                   type="date"
