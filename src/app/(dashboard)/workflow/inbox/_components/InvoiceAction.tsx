@@ -116,6 +116,7 @@ const InvoiceAction = ({ data, user, spp }: iAppProps) => {
             <Link
               href={`/klik/list-payment/${spp.id}`}
               className="text-xs text-blue-500 underline"
+              prefetch={false}
             >
               View Detail
             </Link>

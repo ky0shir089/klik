@@ -71,7 +71,7 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="w-8 h-8 rounded-lg">
+                <Avatar className="size-8 rounded-lg">
                   <AvatarImage
                     src={`https://avatar.vercel.sh/${user.user_id}.svg?text=${initial}`}
                     alt={user.name}
@@ -89,7 +89,7 @@ export function NavUser({
 
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/logout">
+              <Link href="/logout" prefetch={false}>
                 <LogOut />
                 Log out
               </Link>
