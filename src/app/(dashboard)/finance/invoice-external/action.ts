@@ -64,7 +64,10 @@ export async function memo(id: number) {
     );
 
     const file = new File([response.data], "export.pdf", {
-      type: response.headers["content-type"] || "application/octet-stream",
+      type:
+        typeof response.headers["content-type"] === "string"
+          ? response.headers["content-type"]
+          : "application/octet-stream",
     });
 
     return file;
@@ -84,7 +87,10 @@ export async function downloadListUnit(fromDate: string, toDate: string) {
     );
 
     const file = new File([response.data], "list-unit.xlsx", {
-      type: response.headers["content-type"] || "application/octet-stream",
+      type:
+        typeof response.headers["content-type"] === "string"
+          ? response.headers["content-type"]
+          : "application/octet-stream",
     });
 
     return file;

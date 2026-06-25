@@ -15,7 +15,10 @@ export async function reportRv(values: {
 
     const fileName = `report-rv-titipan-${values.from}-to-${values.to}.xlsx`;
     const file = new File([res.data], fileName, {
-      type: res.headers["content-type"] || "application/octet-stream",
+      type:
+        typeof res.headers["content-type"] === "string"
+          ? res.headers["content-type"]
+          : "application/octet-stream",
     });
 
     return file;

@@ -10,7 +10,10 @@ export async function reportGl(values: { from: string; to: string }) {
     });
 
     const file = new File([res.data], "export.xlsx", {
-      type: res.headers["content-type"] || "application/octet-stream",
+      type:
+        typeof res.headers["content-type"] === "string"
+          ? res.headers["content-type"]
+          : "application/octet-stream",
     });
 
     return file;
