@@ -70,7 +70,7 @@ const Column = ({ data, meta }: iAppProps) => {
     [itemsToSum],
   );
 
-  async function downloadPdf() {
+  async function submit() {
     startTransition(async () => {
       const values = {
         spps: rowSelection,
@@ -107,7 +107,6 @@ const Column = ({ data, meta }: iAppProps) => {
             <TableHead>Balai Lelang</TableHead>
             <TableHead className="text-right">Total Unit</TableHead>
             <TableHead className="text-right">Total Amount</TableHead>
-            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -148,8 +147,8 @@ const Column = ({ data, meta }: iAppProps) => {
         <TableFooter>
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
-            <TableCell>{sumTotalUnit}</TableCell>
-            <TableCell>{sumTotalAmount.toLocaleString("id-ID")}</TableCell>
+            <TableCell className="text-right">{sumTotalUnit}</TableCell>
+            <TableCell className="text-right">{sumTotalAmount.toLocaleString("id-ID")}</TableCell>
             <TableCell />
           </TableRow>
         </TableFooter>
@@ -159,7 +158,7 @@ const Column = ({ data, meta }: iAppProps) => {
         <Button
           className="cursor-pointer"
           disabled={isPending}
-          onClick={downloadPdf}
+          onClick={submit}
         >
           <LoadingSwap isLoading={isPending}>Pengajuan Pelunasan</LoadingSwap>
         </Button>

@@ -20,12 +20,15 @@ import { invoiceShowType } from "@/data/invoice";
 import InvoiceData from "@/components/InvoiceData";
 import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
+import { sppShowType } from "@/data/spp";
+import Link from "next/link";
 
 interface iAppProps {
   data: invoiceShowType;
+  spp?: sppShowType;
 }
 
-const InvoiceAction = ({ data }: iAppProps) => {
+const InvoiceAction = ({ data, spp }: iAppProps) => {
   const router = useRouter();
   const handleExpiredSession = useExpiredSessionRedirect();
   const downloadFile = useAuthenticatedFileDownload();
@@ -74,6 +77,15 @@ const InvoiceAction = ({ data }: iAppProps) => {
 
       <CardContent>
         <InvoiceData data={data} />
+
+        {spp ? (
+          <Link
+            href={`/klik/list-payment/${spp.id}`}
+            className="text-xs text-blue-500 underline"
+          >
+            View Detail
+          </Link>
+        ) : null}
 
         <Button
           className="w-full mt-6 bg-teal-500 cursor-pointer hover:bg-teal-600"

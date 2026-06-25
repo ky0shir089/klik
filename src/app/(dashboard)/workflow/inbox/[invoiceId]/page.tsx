@@ -9,6 +9,7 @@ import InvoiceAction from "../_components/InvoiceAction";
 import { Suspense } from "react";
 import FormSkeleton from "@/components/form-skeleton";
 import { getSessionUser } from "@/lib/session-user";
+import { sppInbox } from "@/data/inbox";
 
 interface PageProps {
   params: Promise<{ invoiceId: number }>;
@@ -33,7 +34,12 @@ const RenderForm = async ({ invoiceId }: { invoiceId: number }) => {
 
   const { data } = result;
 
-  return <InvoiceAction data={data} user={sessionUser} />;
+  let spp = [];
+  if (data.trx_id == 2) {
+    spp = await sppInbox(data.invoice_no);
+  }
+
+  return <InvoiceAction data={data} user={sessionUser} spp={spp.data} />;
 };
 
 const EditInvoicePage = async ({ params }: PageProps) => {

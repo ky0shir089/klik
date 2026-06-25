@@ -315,7 +315,7 @@ export const workflowSchema = z.object({
         sequence: z.number().positive().min(1),
       }),
     )
-    .min(2, "Select at least two Users")
+    .min(1, "Select at least one Users")
     .refine(
       (items) => new Set(items.map((i) => i.user_id)).size === items.length,
       {

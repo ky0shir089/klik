@@ -31,13 +31,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
+import { sppShowType } from "@/data/spp";
+import Link from "next/link";
 
 interface iAppProps {
   data: invoiceShowType;
   user: { id: number };
+  spp?: sppShowType;
 }
 
-const InvoiceAction = ({ data, user }: iAppProps) => {
+const InvoiceAction = ({ data, user, spp }: iAppProps) => {
   const router = useRouter();
   const handleExpiredSession = useExpiredSessionRedirect();
 
@@ -109,6 +112,14 @@ const InvoiceAction = ({ data, user }: iAppProps) => {
 
         <CardContent>
           <InvoiceData data={data} />
+          {spp ? (
+            <Link
+              href={`/klik/list-payment/${spp.id}`}
+              className="text-xs text-blue-500 underline"
+            >
+              View Detail
+            </Link>
+          ) : null}
         </CardContent>
 
         {data.status === "REQUEST" ? (

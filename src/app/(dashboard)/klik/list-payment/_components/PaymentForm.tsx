@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { paymentShowType } from "@/data/repayment";
 import { cn } from "@/lib/utils";
-import React, { useTransition } from "react";
+import { useTransition } from "react";
 import { pdf, sppAttachment } from "../action";
 import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
@@ -110,9 +110,7 @@ const PaymentForm = ({ data }: iAppProps) => {
                       ) => (
                         <TableRow key={sub.id}>
                           <TableCell>{index + 1}</TableCell>
-                          <TableCell>
-                            {sub.unit.auction.auction_date}
-                          </TableCell>
+                          <TableCell>{sub.unit.auction.auction_date}</TableCell>
                           <TableCell>{sub.unit.police_number}</TableCell>
                           <TableCell>{sub.unit.chassis_number}</TableCell>
                           <TableCell>{sub.unit.engine_number}</TableCell>

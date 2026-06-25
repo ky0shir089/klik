@@ -27,7 +27,7 @@ export default async function DashboardLayout({
 
   const sessionUser = user!;
   const result = await navigation();
-
+  
   await redirectIfUnauthorized(result);
 
   const navigationItems = Array.isArray(result?.data) ? result.data : [];

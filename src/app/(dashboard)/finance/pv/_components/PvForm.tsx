@@ -47,8 +47,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { paymentShowType } from "@/data/repayment";
-import PaymentForm from "@/app/(dashboard)/klik/list-payment/_components/PaymentForm";
-import { Eye } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import InvoiceAction from "../../list-invoice/_components/InvoiceAction";
 import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 
@@ -62,7 +61,6 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams);
   const handleExpiredSession = useExpiredSessionRedirect();
 
   const [isPending, startTransition] = useTransition();
@@ -127,10 +125,18 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
     [data, router, form, handleExpiredSession],
   );
 
-  async function createURL(paymentId: string, typeTrx: string) {
-    params.set("paymentId", paymentId);
-    params.set("typeTrx", typeTrx);
-    router.replace(pathname + "?" + params);
+  function createURL(paymentId: string, typeTrx: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (paymentId) {
+      params.set("paymentId", paymentId);
+      params.set("typeTrx", typeTrx);
+    } else {
+      params.delete("paymentId");
+      params.delete("typeTrx");
+    }
+    startTransition(() => {
+      router.replace(pathname + "?" + params.toString(), { scroll: false });
+    });
   }
 
   return (
@@ -175,8 +181,13 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                 value={field.value}
                 onValueChange={(val) => {
                   field.onChange(val);
+                  const params = new URLSearchParams(searchParams.toString());
                   params.set("method", val);
-                  router.replace(pathname + "?" + params);
+                  startTransition(() => {
+                    router.replace(pathname + "?" + params.toString(), {
+                      scroll: false,
+                    });
+                  });
                 }}
               >
                 <FormControl className="w-full">
@@ -234,6 +245,7 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
               <TableHead>Bank</TableHead>
               <TableHead>Nomor Rekening</TableHead>
               <TableHead className="text-right">Total Amount</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -275,6 +287,10 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                 </TableCell>
                 <TableCell>
                   <Dialog
+                    open={
+                      searchParams.get("paymentId") ===
+                      String(item.processable_id)
+                    }
                     onOpenChange={(open) => {
                       if (open) {
                         createURL(
@@ -290,27 +306,29 @@ const PvForm = ({ bankAccounts, data, payment }: iAppProps) => {
                       <Button
                         variant="outline"
                         size="icon"
-                        aria-label="Submit"
+                        aria-label="View Detail"
                         className="rounded-full cursor-pointer size-4"
                       >
-                        <Eye />
+                        <Eye className="size-4" />
                       </Button>
                     </DialogTrigger>
-                    {payment ? (
-                      <DialogContent className="min-w-fit">
-                        <DialogHeader>
-                          <DialogTitle></DialogTitle>
-                          <DialogDescription></DialogDescription>
-                        </DialogHeader>
+                    <DialogContent className="min-w-fit">
+                      <DialogHeader>
+                        <DialogTitle>Detail Transaksi</DialogTitle>
+                        <DialogDescription />
+                      </DialogHeader>
+                      {payment &&
+                      searchParams.get("paymentId") ===
+                        String(item.processable_id) ? (
                         <div className="no-scrollbar -mx-4 w-screen max-h-[50vh] overflow-y-auto px-4">
-                          {item.trx_dtl_id == 2 ? (
-                            <PaymentForm data={payment} />
-                          ) : (
-                            <InvoiceAction data={payment} />
-                          )}
+                          <InvoiceAction data={payment} />
                         </div>
-                      </DialogContent>
-                    ) : null}
+                      ) : (
+                        <div className="flex items-center justify-center h-40">
+                          <Loader2 className="animate-spin size-8 text-muted-foreground" />
+                        </div>
+                      )}
+                    </DialogContent>
                   </Dialog>
                 </TableCell>
               </TableRow>
