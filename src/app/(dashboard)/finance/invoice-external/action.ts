@@ -5,17 +5,12 @@ import {
   invoiceExternalSchema,
   invoiceExternalSchemaType,
 } from "@/lib/formSchema";
-import { parseAxiosError } from "@/lib/parseAxiosError";
+import { executeApiCall } from "@/lib/execute-api";
 
 export async function invoiceExternalStore(values: invoiceExternalSchemaType) {
   const validation = invoiceExternalSchema.safeParse(values);
 
-  if (!validation.success) {
-    return {
-      success: false,
-      message: "invalid form data",
-    };
-  }
+  if (!validation.success) return { success: false, message: "invalid form data" };
 
   const formData = new FormData();
   formData.append("date", values.date);
@@ -38,24 +33,19 @@ export async function invoiceExternalStore(values: invoiceExternalSchemaType) {
     });
   }
 
-  try {
-    const { data } = await axiosInstance.post(
-      `/finance/v1/invoice-external`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+  return executeApiCall(() => axiosInstance.post(
+    `/finance/v1/invoice-external`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+    },
+  ).then(r => r.data));
 }
 
 export async function memo(id: number) {
-  try {
+  return executeApiCall(async () => {
     const response = await axiosInstance.get(
       `/finance/v1/memo-external/${id}`,
       {
@@ -71,13 +61,11 @@ export async function memo(id: number) {
     });
 
     return file;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  });
 }
 
 export async function downloadListUnit(fromDate: string, toDate: string) {
-  try {
+  return executeApiCall(async () => {
     const response = await axiosInstance.post(
       `/report/v1/list-unit-pelunasan`,
       { from: fromDate, to: toDate },
@@ -94,18 +82,9 @@ export async function downloadListUnit(fromDate: string, toDate: string) {
     });
 
     return file;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  });
 }
 
 export async function invoiceExternalReject(id: number) {
-  try {
-    const { data } = await axiosInstance.put(
-      `/finance/v1/invoice-external/${id}`,
-    );
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  return executeApiCall(() => axiosInstance.put(`/finance/v1/invoice-external/${id}`).then(r => r.data));
 }

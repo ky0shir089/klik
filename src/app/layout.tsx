@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
 
@@ -38,7 +38,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Suspense>
-          <ThemeProvider
+          <NextThemesProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
@@ -46,7 +46,7 @@ export default function RootLayout({
           >
             {children}
             <Toaster position="top-center" richColors closeButton />
-          </ThemeProvider>
+          </NextThemesProvider>
         </Suspense>
       </body>
     </html>

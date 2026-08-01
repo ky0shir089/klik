@@ -28,13 +28,13 @@ import {
 import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 import { LoadingSwap } from "@/components/ui/loading-swap";
-import { Check, ChevronsUpDown, Paperclip, Loader2 } from "lucide-react";
+import { Check, ChevronsUpDown, Paperclip, Loader2, X } from "lucide-react";
 import { invoiceShowType } from "@/data/invoice";
 import Link from "next/link";
 import { env } from "@/lib/env";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supplierShowType } from "@/data/supplier";
-import { SupplierSelector } from "./SupplierSelector";
+import { SupplierSelector } from "@/components/supplier-selector";
 import { downloadListUnit, invoiceExternalStore } from "../action";
 import {
   Popover,
@@ -106,36 +106,55 @@ const InvoiceExternalForm = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [fetchedUnits, setFetchedUnits] = useState<Unit[]>(initialUnits || []);
   const [isLoadingUnits, setIsLoadingUnits] = useState(false);
+  const [selectedUnitCache, setSelectedUnitCache] = useState<Unit[]>([]);
 
   useEffect(() => {
     let ignore = false;
     async function fetchUnits() {
       if (!fromDate || !toDate) {
         setFetchedUnits(initialUnits || []);
+        setIsLoadingUnits(false);
         return;
       }
 
+      const searchTerms = Array.from(
+        new Set(
+          debouncedSearchQuery
+            .split(",")
+            .map((query) => query.trim())
+            .filter(Boolean),
+        ),
+      );
+      const queries = searchTerms.length ? searchTerms : [""];
+
       setIsLoadingUnits(true);
       try {
-        const response = await selectPaidOffUnit(
-          1,
-          10,
-          debouncedSearchQuery,
-          fromDate,
-          toDate,
+        const responses = await Promise.all(
+          queries.map((query) =>
+            selectPaidOffUnit(1, 10, query, fromDate, toDate),
+          ),
         );
-        if (handleExpiredSession(response)) {
+        if (responses.some((response) => handleExpiredSession(response))) {
           return;
         }
 
-        const { data: result } = response;
-        if (result?.data && !ignore) {
-          setFetchedUnits(result.data);
+        const unitsById = new Map<number, Unit>();
+        responses.forEach((response) => {
+          const { data: result } = response;
+          result?.data?.forEach((unit: Unit) => {
+            unitsById.set(unit.id, unit);
+          });
+        });
+
+        if (!ignore) {
+          setFetchedUnits(Array.from(unitsById.values()));
         }
       } catch (error) {
         console.error("Failed to fetch units:", error);
       } finally {
-        setIsLoadingUnits(false);
+        if (!ignore) {
+          setIsLoadingUnits(false);
+        }
       }
     }
 
@@ -156,14 +175,26 @@ const InvoiceExternalForm = ({
   const selectedUnitsData = useMemo(() => {
     if (!selectedUnitIds?.length) return [];
 
-    // Combine initial and fetched units to ensure we have data for all selections
-    const allAvailable = [...initialUnits, ...fetchedUnits];
+    const allAvailable = [
+      ...selectedUnitCache,
+      ...initialUnits,
+      ...fetchedUnits,
+    ];
     const unitMap = new Map(allAvailable.map((u) => [u.id, u]));
 
     return selectedUnitIds
       .map((id) => unitMap.get(id))
       .filter((u): u is Unit => !!u);
-  }, [selectedUnitIds, initialUnits, fetchedUnits]);
+  }, [selectedUnitIds, selectedUnitCache, initialUnits, fetchedUnits]);
+
+  const displayUnits = useMemo(() => {
+    const unitsById = new Map<number, Unit>();
+    [...selectedUnitsData, ...fetchedUnits].forEach((unit) => {
+      unitsById.set(unit.id, unit);
+    });
+
+    return Array.from(unitsById.values());
+  }, [selectedUnitsData, fetchedUnits]);
 
   const totals = useMemo(() => {
     const selectedFeeSum = selectedUnitsData.reduce(
@@ -421,32 +452,45 @@ const InvoiceExternalForm = ({
                         Pilih unit yang akan dikecualikan dari pencairan
                       </FormLabel>
                       <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                "w-full justify-between h-auto min-h-10 py-2 px-3",
-                                !field.value?.length && "text-muted-foreground",
-                              )}
+                        <div className="relative">
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-full justify-between h-auto min-h-10 py-2 px-3",
+                                  !field.value?.length && "text-muted-foreground",
+                                  field.value?.length && "pr-16",
+                                )}
+                              >
+                                <span className="flex-1 text-left whitespace-normal">
+                                  {field.value && field.value.length > 0
+                                    ? selectedUnitsData
+                                        .map((u) => u.police_number)
+                                        .join(", ")
+                                    : "Select Unit..."}
+                                </span>
+                                <ChevronsUpDown className="ml-2 opacity-50 size-4 shrink-0" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          {field.value?.length ? (
+                            <button
+                              type="button"
+                              aria-label="Clear selected units"
+                              className="absolute right-8 top-1/2 rounded-sm p-1 text-muted-foreground -translate-y-1/2 hover:text-foreground"
+                              onClick={() => field.onChange([])}
                             >
-                              <span className="flex-1 text-left whitespace-normal">
-                                {field.value && field.value.length > 0
-                                  ? selectedUnitsData
-                                      .map((u) => u.police_number)
-                                      .join(", ")
-                                  : "Select Unit..."}
-                              </span>
-                              <ChevronsUpDown className="ml-2 opacity-50 size-4 shrink-0" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
+                              <X className="size-4" />
+                            </button>
+                          ) : null}
+                        </div>
                         <PopoverContent className="w-full p-0" align="start">
                           <Command shouldFilter={false}>
                             {/* Disable internal filtering */}
                             <CommandInput
-                              placeholder="Search Nopol/Nosin/Noka..."
+                              placeholder="Search Nopol/Nosin/Noka, pisahkan dengan koma..."
                               value={searchQuery}
                               onValueChange={setSearchQuery}
                             />
@@ -455,7 +499,7 @@ const InvoiceExternalForm = ({
                                 <div className="flex items-center justify-center py-6">
                                   <Loader2 className="size-4 animate-spin text-muted-foreground" />
                                 </div>
-                              ) : fetchedUnits.length === 0 ? (
+                              ) : displayUnits.length === 0 ? (
                                 <CommandEmpty>
                                   {!fromDate || !toDate
                                     ? "Pilih tanggal lelang terlebih dahulu."
@@ -463,11 +507,19 @@ const InvoiceExternalForm = ({
                                 </CommandEmpty>
                               ) : (
                                 <CommandGroup>
-                                  {fetchedUnits.map((unit) => (
+                                  {displayUnits.map((unit) => (
                                     <CommandItem
                                       key={unit.id}
                                       value={unit.police_number}
                                       onSelect={() => {
+                                        setSelectedUnitCache((current) => {
+                                          if (current.some((u) => u.id === unit.id)) {
+                                            return current;
+                                          }
+
+                                          return [...current, unit];
+                                        });
+
                                         const currentSelectedIds =
                                           field.value || [];
                                         const updatedSelectedIds =

@@ -1,10 +1,10 @@
 "use server";
 
 import axiosInstance from "@/lib/axios";
-import { parseAxiosError } from "@/lib/parseAxiosError";
+import { executeApiCall } from "@/lib/execute-api";
 
 export async function byadAttachment(id: number) {
-  try {
+  return executeApiCall(async () => {
     const response = await axiosInstance.get(`/klik/v1/byad-attachment/${id}`, {
       responseType: "arraybuffer",
     });
@@ -17,7 +17,5 @@ export async function byadAttachment(id: number) {
     });
 
     return file;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  });
 }

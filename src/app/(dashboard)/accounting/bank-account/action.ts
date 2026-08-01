@@ -2,49 +2,17 @@
 
 import axiosInstance from "@/lib/axios";
 import { bankAccountSchema, bankAccountSchemaType } from "@/lib/formSchema";
-import { parseAxiosError } from "@/lib/parseAxiosError";
+import { executeApiCall } from "@/lib/execute-api";
 
 export async function bankAccountStore(values: bankAccountSchemaType) {
   const validation = bankAccountSchema.safeParse(values);
 
-  if (!validation.success) {
-    return {
-      success: false,
-      message: "invalid form data",
-    };
-  }
-
-  try {
-    const { data } = await axiosInstance.post(
-      `/accounting/v1/bank-account`,
-      values
-    );
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  if (!validation.success) return { success: false, message: "invalid form data" };
+  return executeApiCall(() => axiosInstance.post(`/accounting/v1/bank-account`, values).then(r => r.data));
 }
 
-export async function bankAccountUpdate(
-  id: number,
-  values: bankAccountSchemaType
-) {
+export async function bankAccountUpdate(id: number, values: bankAccountSchemaType) {
   const validation = bankAccountSchema.safeParse(values);
-
-  if (!validation.success) {
-    return {
-      success: false,
-      message: "invalid form data",
-    };
-  }
-
-  try {
-    const { data } = await axiosInstance.put(
-      `/accounting/v1/bank-account/${id}`,
-      values
-    );
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  if (!validation.success) return { success: false, message: "invalid form data" };
+  return executeApiCall(() => axiosInstance.put(`/accounting/v1/bank-account/${id}`, values).then(r => r.data));
 }

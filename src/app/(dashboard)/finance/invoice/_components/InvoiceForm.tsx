@@ -34,10 +34,10 @@ import InvoiceDetail, { defaultDetailItem } from "./InvoiceDetail";
 import { pphShowType } from "@/data/pph";
 import { Paperclip } from "lucide-react";
 import { invoiceShowType } from "@/data/invoice";
-import { invoiceUpdate, memo } from "../../list-invoice/_components/action";
+import { invoiceUpdate, memo } from "../../list-invoice/action";
 import Link from "next/link";
 import { env } from "@/lib/env";
-import { SupplierSelector } from "./SupplierSelector";
+import { SupplierSelector } from "@/components/supplier-selector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supplierShowType } from "@/data/supplier";
 

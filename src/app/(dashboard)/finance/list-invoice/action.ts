@@ -6,11 +6,13 @@ import {
   invoiceSchemaType,
   invoiceStatusSchema,
   invoiceStatusSchemaType,
+  paidAttachmentSchema,
+  paidAttachmentSchemaType,
 } from "@/lib/formSchema";
-import { executeApiCall } from "@/lib/execute-api";
+import { parseAxiosError } from "@/lib/parseAxiosError";
 
 export async function memo(id: number) {
-  return executeApiCall(async () => {
+  try {
     const response = await axiosInstance.get(`/finance/v1/memo-invoice/${id}`, {
       responseType: "arraybuffer",
     });
@@ -23,12 +25,20 @@ export async function memo(id: number) {
     });
 
     return file;
-  });
+  } catch (error) {
+    return parseAxiosError(error);
+  }
 }
 
 export async function invoiceUpdate(id: number, values: invoiceSchemaType) {
   const validation = invoiceSchema.safeParse(values);
-  if (!validation.success) return { success: false, message: "invalid form data" };
+
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "invalid form data",
+    };
+  }
 
   const formData = new FormData();
   formData.append("date", values.date);
@@ -52,15 +62,20 @@ export async function invoiceUpdate(id: number, values: invoiceSchemaType) {
   formData.append("status", values.status);
   formData.append("details", JSON.stringify(values.details));
 
-  return executeApiCall(() => axiosInstance.post(
-    `/finance/v1/invoice/${id}?_method=PUT`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
+  try {
+    const { data } = await axiosInstance.post(
+      `/finance/v1/invoice/${id}?_method=PUT`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    },
-  ).then(r => r.data));
+    );
+    return data;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
 }
 
 export async function statusUpdate(
@@ -68,9 +83,53 @@ export async function statusUpdate(
   values: invoiceStatusSchemaType,
 ) {
   const validation = invoiceStatusSchema.safeParse(values);
-  if (!validation.success) return { success: false, message: "invalid form data" };
-  return executeApiCall(() => axiosInstance.put(
-    `/finance/v1/invoice/${id}`,
-    values,
-  ).then(r => r.data));
+
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "invalid form data",
+    };
+  }
+
+  try {
+    const { data } = await axiosInstance.put(
+      `/finance/v1/invoice/${id}`,
+      values,
+    );
+    return data;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
+}
+
+export async function attachmentUpload(values: paidAttachmentSchemaType) {
+  const validation = paidAttachmentSchema.safeParse(values);
+
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "invalid form data",
+    };
+  }
+
+  const formData = new FormData();
+  formData.append("invoice_id", values.invoice_id.toString());
+  if (values.attachment) {
+    formData.append("attachment", values.attachment);
+  }
+
+  try {
+    const { data } = await axiosInstance.post(
+      `/finance/v1/paid-attachment`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return data;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
 }

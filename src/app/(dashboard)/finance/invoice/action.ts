@@ -2,17 +2,12 @@
 
 import axiosInstance from "@/lib/axios";
 import { invoiceSchema, invoiceSchemaType } from "@/lib/formSchema";
-import { parseAxiosError } from "@/lib/parseAxiosError";
+import { executeApiCall } from "@/lib/execute-api";
 
 export async function invoiceStore(values: invoiceSchemaType) {
   const validation = invoiceSchema.safeParse(values);
 
-  if (!validation.success) {
-    return {
-      success: false,
-      message: "invalid form data",
-    };
-  }
+  if (!validation.success) return { success: false, message: "invalid form data" };
 
   const formData = new FormData();
   formData.append("date", values.date);
@@ -35,14 +30,9 @@ export async function invoiceStore(values: invoiceSchemaType) {
   }
   formData.append("details", JSON.stringify(values.details));
 
-  try {
-    const { data } = await axiosInstance.post(`/finance/v1/invoice`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  return executeApiCall(() => axiosInstance.post(`/finance/v1/invoice`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }).then(r => r.data));
 }

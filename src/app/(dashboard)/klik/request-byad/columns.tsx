@@ -17,7 +17,7 @@ import { sppShowType } from "@/data/spp";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { metaProps } from "@/components/ui/data-table";
-import Pagination from "./Pagination";
+import { Pagination } from "@/components/pagination";
 import { byadPaymentStore } from "./action";
 import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 

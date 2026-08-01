@@ -1,23 +1,7 @@
 "use server";
 
-import axiosInstance from "@/lib/axios";
-import { parseAxiosError } from "@/lib/parseAxiosError";
+import { downloadReport } from "@/lib/download-report";
 
 export async function reportGl(values: { from: string; to: string }) {
-  try {
-    const res = await axiosInstance.post(`/report/v1/report-gl`, values, {
-      responseType: "arraybuffer",
-    });
-
-    const file = new File([res.data], "export.xlsx", {
-      type:
-        typeof res.headers["content-type"] === "string"
-          ? res.headers["content-type"]
-          : "application/octet-stream",
-    });
-
-    return file;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  return downloadReport(`/report/v1/report-gl`, values, "export.xlsx");
 }

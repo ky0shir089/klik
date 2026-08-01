@@ -148,3 +148,8 @@ export async function selectMoneyInTransit() {
 export async function selectExternal() {
   return selectRequest(`/select/v1/external`);
 }
+
+export async function selectXendit() {
+  return selectRequest(`/select/v1/xendit`);
+}
+export type xenditType = Awaited<ReturnType<typeof selectXendit>>;

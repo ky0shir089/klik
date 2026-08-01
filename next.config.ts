@@ -4,13 +4,16 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   // cacheComponents: true,
-  allowedDevOrigins: ["192.168.77.251"],
+  allowedDevOrigins: [
+    "192.168.22.23",
+    "napkin-excess-overdrive.ngrok-free.dev",
+  ],
   images: {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "192.168.77.251",
+        hostname: "192.168.22.23",
       },
       {
         protocol: "http",

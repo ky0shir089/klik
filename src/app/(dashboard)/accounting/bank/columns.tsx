@@ -5,7 +5,7 @@ import { bankShowType } from "@/data/bank";
 import { ColumnDef } from "@tanstack/react-table";
 import { ClipboardEdit } from "lucide-react";
 import Link from "next/link";
-import { getImage } from "@/lib/get-image";
+import { env } from "@/lib/env";
 import Image from "next/image";
 
 export const columns: ColumnDef<bankShowType>[] = [
@@ -22,7 +22,7 @@ export const columns: ColumnDef<bankShowType>[] = [
     cell: ({ row }) => (
       <Image
         alt="logo"
-        src={getImage(row.original.logo)}
+        src={`${env.NEXT_PUBLIC_BASE_URL}/storage/${row.original.logo}`}
         width={64}
         height={64}
         className="w-16 h-auto object-contain"

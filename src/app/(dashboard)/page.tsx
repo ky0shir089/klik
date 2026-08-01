@@ -1,13 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { dashboard } from "@/data/dashboard";
-import { redirectIfUnauthorized } from "@/lib/server-auth";
 import { Activity, CreditCard, DollarSign, FileText } from "lucide-react";
 
-const DashboardPage = async () => {
-  const result = await dashboard();
-  await redirectIfUnauthorized(result);
+const mockData = {
+  totalInvoices: 45231890,
+  invoicesCount: 2350,
+  monthlyInvoicesCount: 265,
+  pendingPV: 12,
+  activeNow: 573,
+  recentInvoices: [
+    { id: "INV/2024/001", customer: "PT. Sinar Jaya", amount: 1999000 },
+    { id: "INV/2024/002", customer: "CV. Maju Mundur", amount: 39000 },
+  ],
+};
 
-  const { data } = result;
+const DashboardPage = async () => {
+  const { data } = { data: mockData };
   const currencyFormatter = new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",

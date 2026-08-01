@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, HelpCircle } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,7 +20,6 @@ import { navigationType } from "@/data/navigation";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import DynamicIcon from "./dynamic-icon";
 import { menuShowType } from "@/data/menu";
 
 export function NavMain({ items }: { items: navigationType[] }) {
@@ -42,7 +42,10 @@ export function NavMain({ items }: { items: navigationType[] }) {
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={item.name}>
-                  <DynamicIcon name={item.icon} />
+                  {(() => {
+                    const Icon = (LucideIcons[item.icon as keyof typeof LucideIcons] as React.ComponentType<{className?: string}>) ?? HelpCircle;
+                    return <Icon />;
+                  })()}
                   <span>{item.name}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>

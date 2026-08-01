@@ -1,65 +1,77 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { metaProps } from "@/components/ui/data-table";
+import { Button } from "@/components/ui/button"
+import type { metaProps } from "@/components/ui/data-table"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-} from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+} from "lucide-react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useState } from "react"
 
-const Pagination = ({ meta }: { meta: metaProps }) => {
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const searchParams = useSearchParams();
+interface PaginationProps {
+  meta: metaProps
+  pageParam?: string
+  sizeParam?: string
+  pageSizes?: number[]
+}
+
+export function Pagination({
+  meta,
+  pageParam = "page",
+  sizeParam = "size",
+  pageSizes = [10, 30, 50, 100, 200, -1],
+}: PaginationProps) {
+  const pathname = usePathname()
+  const { replace } = useRouter()
+  const searchParams = useSearchParams()
 
   const [currentPage, setCurrentPage] = useState(
-    Number(searchParams.get("page")) || 1
-  );
+    Number(searchParams.get(pageParam)) || 1,
+  )
   const [pageSize, setPageSize] = useState(
-    Number(searchParams.get("size")) || 10
-  );
+    Number(searchParams.get(sizeParam)) || 10,
+  )
 
   function createPageURL(pageNumber: number | string, size: number | string) {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", pageNumber.toString());
-    params.set("size", size.toString());
-    replace(`${pathname}?${params.toString()}`);
+    const params = new URLSearchParams(searchParams)
+    params.set(pageParam, pageNumber.toString())
+    params.set(sizeParam, size.toString())
+    replace(`${pathname}?${params.toString()}`)
   }
 
   return (
-    <div className="flex items-center justify-between px-2 mt-4">
+    <div className="mt-2 flex items-center justify-between px-1">
       <div className="hidden text-sm text-muted-foreground sm:flex">
-        Showing {meta?.from} to {meta?.to} of {meta?.total} results
+        Showing {meta.from} to {meta.to} of {meta.total} results
       </div>
 
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Per page</p>
           <Select
-            value={`${meta?.per_page}`}
+            value={`${meta.per_page}`}
             onValueChange={(value) => {
-              setPageSize(Number(value));
-              createPageURL(1, Number(value));
+              setPageSize(Number(value))
+              createPageURL(1, Number(value))
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 30, 50, 100, 200, -1].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
+              {pageSizes.map((s) => (
+                <SelectItem key={s} value={`${s}`}>
+                  {s}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -72,10 +84,10 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
             size="icon"
             className="hidden size-8 lg:flex"
             onClick={() => {
-              setCurrentPage(1);
-              createPageURL(1, pageSize);
+              setCurrentPage(1)
+              createPageURL(1, pageSize)
             }}
-            disabled={meta?.prev_page_url ? false : true}
+            disabled={!meta.prev_page_url}
           >
             <span className="sr-only">Go to first page</span>
             <ChevronsLeft />
@@ -85,26 +97,26 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
             size="icon"
             className="size-8"
             onClick={() => {
-              setCurrentPage(currentPage - 1);
-              createPageURL(currentPage - 1, pageSize);
+              setCurrentPage(currentPage - 1)
+              createPageURL(currentPage - 1, pageSize)
             }}
-            disabled={meta?.prev_page_url ? false : true}
+            disabled={!meta.prev_page_url}
           >
             <span className="sr-only">Go to previous page</span>
             <ChevronLeft />
           </Button>
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {currentPage} of {meta?.last_page}
+            Page {currentPage} of {meta.last_page}
           </div>
           <Button
             variant="outline"
             size="icon"
             className="size-8"
             onClick={() => {
-              setCurrentPage(currentPage + 1);
-              createPageURL(currentPage + 1, pageSize);
+              setCurrentPage(currentPage + 1)
+              createPageURL(currentPage + 1, pageSize)
             }}
-            disabled={meta?.next_page_url ? false : true}
+            disabled={!meta.next_page_url}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRight />
@@ -114,10 +126,10 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
             size="icon"
             className="hidden size-8 lg:flex"
             onClick={() => {
-              setCurrentPage(meta?.last_page);
-              createPageURL(meta?.last_page, pageSize);
+              setCurrentPage(meta.last_page)
+              createPageURL(meta.last_page, pageSize)
             }}
-            disabled={meta?.next_page_url ? false : true}
+            disabled={!meta.next_page_url}
           >
             <span className="sr-only">Go to last page</span>
             <ChevronsRight />
@@ -125,7 +137,5 @@ const Pagination = ({ meta }: { meta: metaProps }) => {
         </div>
       </div>
     </div>
-  );
-};
-
-export default Pagination;
+  )
+}

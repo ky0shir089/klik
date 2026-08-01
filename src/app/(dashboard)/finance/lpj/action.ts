@@ -2,17 +2,12 @@
 
 import axiosInstance from "@/lib/axios";
 import { lpjSchema, lpjSchemaType } from "@/lib/formSchema";
-import { parseAxiosError } from "@/lib/parseAxiosError";
+import { executeApiCall } from "@/lib/execute-api";
 
 export async function lpjStore(values: lpjSchemaType) {
   const validation = lpjSchema.safeParse(values);
 
-  if (!validation.success) {
-    return {
-      success: false,
-      message: "invalid form data",
-    };
-  }
+  if (!validation.success) return { success: false, message: "invalid form data" };
 
   const formData = new FormData();
   formData.append("date", values.date);
@@ -29,31 +24,20 @@ export async function lpjStore(values: lpjSchemaType) {
   }
   formData.append("details", JSON.stringify(values.details));
 
-  try {
-    const { data } = await axiosInstance.post(
-      `/finance/v1/settlement`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+  return executeApiCall(() => axiosInstance.post(
+    `/finance/v1/settlement`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+    },
+  ).then(r => r.data));
 }
 
 export async function lpjUpdate(id: number, values: lpjSchemaType) {
   const validation = lpjSchema.safeParse(values);
-
-  if (!validation.success) {
-    return {
-      success: false,
-      message: "invalid form data",
-    };
-  }
+  if (!validation.success) return { success: false, message: "invalid form data" };
 
   const formData = new FormData();
   formData.append("date", values.date);
@@ -70,18 +54,13 @@ export async function lpjUpdate(id: number, values: lpjSchemaType) {
   }
   formData.append("details", JSON.stringify(values.details));
 
-  try {
-    const { data } = await axiosInstance.post(
-      `/finance/v1/settlement/${id}?_method=PUT`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+  return executeApiCall(() => axiosInstance.post(
+    `/finance/v1/settlement/${id}?_method=PUT`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
-    return data;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+    },
+  ).then(r => r.data));
 }

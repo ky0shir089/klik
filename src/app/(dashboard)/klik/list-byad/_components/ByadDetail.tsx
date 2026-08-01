@@ -22,7 +22,7 @@ import { paymentShowType } from "@/data/repayment";
 import { cn } from "@/lib/utils";
 import { useTransition } from "react";
 import { byadAttachment } from "../action";
-import { memo } from "@/app/(dashboard)/finance/list-invoice/_components/action";
+import { memo } from "@/app/(dashboard)/finance/list-invoice/action";
 import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
 
 interface iAppProps {

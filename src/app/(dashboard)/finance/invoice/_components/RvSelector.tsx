@@ -30,7 +30,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useExpiredSessionRedirect } from "@/hooks/use-expired-session-redirect";
 import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
-import Pagination from "./Pagination";
+import { Pagination } from "@/components/pagination";
 import { useSearchParams } from "next/navigation";
 
 interface RvSelectorProps {

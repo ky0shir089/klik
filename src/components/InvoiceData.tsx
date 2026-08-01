@@ -47,9 +47,7 @@ const InvoiceData = ({ data }: invoiceShowType) => {
               <>
                 <TableRow>
                   <TableHead>Nama Rekening</TableHead>
-                  <TableCell>
-                    {data.supplier_account.account_name}
-                  </TableCell>
+                  <TableCell>{data.supplier_account.account_name}</TableCell>
                 </TableRow>
 
                 <TableRow>
@@ -76,7 +74,7 @@ const InvoiceData = ({ data }: invoiceShowType) => {
 
             {data.attachment ? (
               <TableRow>
-                <TableHead>Attachment</TableHead>
+                <TableHead>Attachment 1</TableHead>
                 <TableCell>
                   <div className="flex items-center gap-1">
                     <Paperclip className="size-4" />
@@ -87,6 +85,26 @@ const InvoiceData = ({ data }: invoiceShowType) => {
                       className="text-blue-600"
                     >
                       {data.attachment.filename}
+                    </Link>
+                    ,
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : null}
+
+            {data.paid_attachment ? (
+              <TableRow>
+                <TableHead>Attachment 2</TableHead>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Paperclip className="size-4" />
+                    <Link
+                      href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.paid_attachment.attachment.path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600"
+                    >
+                      {data.paid_attachment.attachment.filename}
                     </Link>
                   </div>
                 </TableCell>

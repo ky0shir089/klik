@@ -7,7 +7,7 @@ export async function customerIndex(
   page: number,
   size: number,
   tab: string,
-  search?: string
+  search?: string,
 ) {
   try {
     const { data } = await axiosInstance.get(`/klik/v1/customer`, {
@@ -16,6 +16,35 @@ export async function customerIndex(
         size,
         tab,
         search,
+      },
+    });
+    return data;
+  } catch (error) {
+    return parseAxiosError(error);
+  }
+}
+
+export async function vaAuto({
+  currentPage,
+  size,
+  search,
+  from_date,
+  to_date,
+}: {
+  currentPage: number;
+  size: number;
+  search?: string;
+  from_date?: string;
+  to_date?: string;
+}) {
+  try {
+    const { data } = await axiosInstance.get(`/klik/v1/va-auto`, {
+      params: {
+        page: currentPage,
+        size,
+        search,
+        from_date,
+        to_date,
       },
     });
     return data;

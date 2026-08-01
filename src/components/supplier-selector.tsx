@@ -102,7 +102,7 @@ export const SupplierSelector = ({
   }, [debouncedSearchQuery, open, value, handleExpiredSession]);
 
   return (
-    <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <FormControl className="w-full">
           <Button
@@ -113,8 +113,8 @@ export const SupplierSelector = ({
               "w-full justify-between font-normal",
               !value && "text-muted-foreground",
             )}
-            disabled={disabled}
             type="button"
+            disabled={disabled}
           >
             <span className="truncate flex-1 text-left">
               {value ? selectedName : "Pilih Supplier..."}

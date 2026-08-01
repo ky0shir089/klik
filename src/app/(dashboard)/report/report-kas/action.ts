@@ -1,7 +1,6 @@
 "use server";
 
-import axiosInstance from "@/lib/axios";
-import { parseAxiosError } from "@/lib/parseAxiosError";
+import { downloadReport } from "@/lib/download-report";
 
 export async function reportCash(values: {
   from: string;
@@ -9,21 +8,6 @@ export async function reportCash(values: {
   cash: number;
   permission: string;
 }) {
-  try {
-    const res = await axiosInstance.post(`/report/v1/report-kas`, values, {
-      responseType: "arraybuffer",
-    });
-
-    const fileName = `kas-report-${values.from}-to-${values.to}.xlsx`;
-    const file = new File([res.data], fileName, {
-      type:
-        typeof res.headers["content-type"] === "string"
-          ? res.headers["content-type"]
-          : "application/octet-stream",
-    });
-
-    return file;
-  } catch (error) {
-    return parseAxiosError(error);
-  }
+  const fileName = `kas-report-${values.from}-to-${values.to}.xlsx`;
+  return downloadReport(`/report/v1/report-kas`, values, fileName);
 }

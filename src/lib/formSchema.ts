@@ -367,3 +367,21 @@ export const invoiceExternalSchema = z.object({
   units: z.array(z.number().positive()).nullable(),
 });
 export type invoiceExternalSchemaType = z.infer<typeof invoiceExternalSchema>;
+
+export const paidAttachmentSchema = z.object({
+  invoice_id: z.number().positive(),
+  attachment: z.union([z.instanceof(File), z.null()]),
+});
+export type paidAttachmentSchemaType = z.infer<typeof paidAttachmentSchema>;
+
+export const vaStoreSchema = z.object({
+  rv_id: z.number().positive().optional(),
+  references: z.array(z.string()).min(1, "Select at least one Reference"),
+});
+export type vaStoreSchemaType = z.infer<typeof vaStoreSchema>;
+
+export const withdrawSchema = z.object({
+  start_date: z.iso.date(),
+  end_date: z.iso.date(),
+});
+export type withdrawSchemaType = z.infer<typeof withdrawSchema>;

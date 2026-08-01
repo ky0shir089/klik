@@ -32,14 +32,14 @@ import { pphShowType } from "@/data/pph";
 import { Paperclip } from "lucide-react";
 import { invoiceShowType } from "@/data/invoice";
 import { pvShowType } from "@/data/pv";
-import { memo } from "../../list-invoice/_components/action";
+import { memo } from "../../list-invoice/action";
 import Link from "next/link";
 import { env } from "@/lib/env";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InvoiceDetail, { defaultDetailItem } from "./LpjDetail";
 import { PvSelector } from "./PvSelector";
 import { lpjStore, lpjUpdate } from "../action";
-import { SupplierSelector } from "./SupplierSelector";
+import { SupplierSelector } from "@/components/supplier-selector";
 import { supplierShowType } from "@/data/supplier";
 import { bankAccountShowType } from "@/data/bank-account";
 

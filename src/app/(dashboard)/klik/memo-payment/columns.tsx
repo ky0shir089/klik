@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useMemo, useState, useTransition } from "react";
-import Pagination from "./Pagination";
+import { Pagination } from "@/components/pagination";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { sppShowType } from "@/data/spp";
 import Link from "next/link";
