@@ -82,7 +82,21 @@ const UploadSppForm = () => {
       if (result.success) {
         toast.success(result.message);
       } else {
-        toast.error(result.message);
+        const errors =
+          Array.isArray(result.data) &&
+          result.data.length > 0 &&
+          result.data.every(
+            (error: unknown): error is string => typeof error === "string",
+          )
+            ? result.data
+            : [
+                typeof result.message === "string"
+                  ? result.message.match(/^[\s\S]*?\./)?.[0].trim() ||
+                    result.message
+                  : "Upload gagal",
+              ];
+
+        toast.error(errors[0]);
         setResults(result.data);
       }
 

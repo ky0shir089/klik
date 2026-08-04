@@ -58,7 +58,7 @@ const Summary = ({ results }: { results: string[] }) => {
 const UploadRvForm = () => {
   const [isPending, startTransition] = useTransition();
   const [formKey, setFormKey] = useState(0);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleExpiredSession = useExpiredSessionRedirect();
 
@@ -82,8 +82,22 @@ const UploadRvForm = () => {
       if (result.success) {
         toast.success(result.message);
       } else {
-        toast.error(result.message);
-        setResults(result.data);
+        const errors =
+          Array.isArray(result.data) &&
+          result.data.length > 0 &&
+          result.data.every(
+            (error: unknown): error is string => typeof error === "string"
+          )
+            ? result.data
+            : [
+                typeof result.message === "string"
+                  ? result.message.match(/^[\s\S]*?\./)?.[0].trim() ||
+                    result.message
+                  : "Upload gagal",
+              ];
+
+        toast.error(errors[0]);
+        setResults(errors);
       }
 
       form.reset();

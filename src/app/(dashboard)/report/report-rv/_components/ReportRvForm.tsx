@@ -74,7 +74,7 @@ const ReportRvForm = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="57">Jaminan</SelectItem>
-                  <SelectItem value="58">Pelunasan</SelectItem>
+                  <SelectItem value="157">Pelunasan</SelectItem>
                 </SelectContent>
               </Select>
             </div>
