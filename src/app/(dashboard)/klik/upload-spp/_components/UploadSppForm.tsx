@@ -97,7 +97,7 @@ const UploadSppForm = () => {
               ];
 
         toast.error(errors[0]);
-        setResults(result.data);
+        setResults(errors);
       }
 
       form.reset();

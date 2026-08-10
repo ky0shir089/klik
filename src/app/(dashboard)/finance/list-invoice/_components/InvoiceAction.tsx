@@ -145,15 +145,13 @@ const InvoiceAction = ({ data, spp }: iAppProps) => {
           </div>
         ) : null}
 
-        {data.status !== "PAID" ? (
-          <Button
-            className="w-full bg-teal-500 cursor-pointer hover:bg-teal-600"
-            disabled={isPending}
-            onClick={downloadMemo}
-          >
-            <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
-          </Button>
-        ) : null}
+        <Button
+          className="w-full bg-teal-500 cursor-pointer hover:bg-teal-600"
+          disabled={isPending}
+          onClick={downloadMemo}
+        >
+          <LoadingSwap isLoading={isPending}>Cetak Memo</LoadingSwap>
+        </Button>
       </CardContent>
 
       {data.status === "APPROVE" ? (

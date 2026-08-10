@@ -85,7 +85,7 @@ const RemoveRvForm = ({ data }: iAppProps) => {
 
           <TableRow>
             <TableHead>Amount</TableHead>
-            <TableCell>{data.ending_balance.toLocaleString("id-ID")}</TableCell>
+            <TableCell>{Number(data.ending_balance).toLocaleString("id-ID")}</TableCell>
           </TableRow>
 
           <TableRow>
