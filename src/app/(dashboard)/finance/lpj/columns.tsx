@@ -71,7 +71,7 @@ export const columns: ColumnDef<invoiceShowType>[] = [
             size: "sm",
             className: "underline hover:text-blue-500",
           })}
-          href={`/finance/list-invoice/${row.original?.invoice.id}`}
+          href={`/finance/list-invoice/${row.original?.invoice?.id}`}
         >
           {row.original.invoice?.invoice_no}
         </Link>

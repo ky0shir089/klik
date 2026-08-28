@@ -96,17 +96,24 @@ const InvoiceData = ({ data }: invoiceShowType) => {
               <TableRow>
                 <TableHead>Attachment 2</TableHead>
                 <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Paperclip className="size-4" />
-                    <Link
-                      href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${data.paid_attachment.attachment.path}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600"
-                    >
-                      {data.paid_attachment.attachment.filename}
-                    </Link>
-                  </div>
+                  {data.paid_attachment.map(
+                    (item: {
+                      id: number;
+                      attachment: { path: string; filename: string };
+                    }) => (
+                      <div key={item.id} className="flex items-center gap-1">
+                        <Paperclip className="size-4" />
+                        <Link
+                          href={`${env.NEXT_PUBLIC_BASE_URL}/storage/${item.attachment.path}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600"
+                        >
+                          {item.attachment.filename}
+                        </Link>
+                      </div>
+                    ),
+                  )}
                 </TableCell>
               </TableRow>
             ) : null}

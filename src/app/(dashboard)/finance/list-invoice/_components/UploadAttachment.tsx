@@ -26,8 +26,6 @@ import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { attachmentUpload } from "../action";
 
-const MAX_FILE_SIZE = 1024 * 1024;
-
 function formatFileSize(size: number) {
   return `${Math.max(1, Math.round(size / 1024)).toLocaleString("id-ID")} KB`;
 }
@@ -42,58 +40,50 @@ export default function UploadAttachment({ invoice_id }: { invoice_id: number })
     resolver: zodResolver(paidAttachmentSchema),
     defaultValues: {
       invoice_id: invoice_id,
-      attachment: null,
+      attachments: [],
     },
   });
 
   const selectedAttachment = useWatch({
     control: form.control,
-    name: "attachment",
+    name: "attachments",
   });
-  const hasFileError = Boolean(form.formState.errors.attachment);
+  const hasFileError = Boolean(form.formState.errors.attachments);
 
   function clearFileInput() {
     setFileInputKey((key) => key + 1);
   }
 
   function resetAttachment() {
-    form.setValue("attachment", null, {
+    form.setValue("attachments", [], {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
     });
-    form.clearErrors("attachment");
+    form.clearErrors("attachments");
     clearFileInput();
   }
 
-  function handleFileChange(file: File | null) {
-    if (!file) {
+  function handleFileChange(files: FileList | null) {
+    const attachments = Array.from(files ?? []);
+    if (!attachments.length) {
       resetAttachment();
       return;
     }
 
-    if (!file.name.toLowerCase().endsWith(".pdf")) {
-      form.setValue("attachment", null, { shouldDirty: true });
-      form.setError("attachment", {
+    const validation = paidAttachmentSchema.shape.attachments.safeParse(attachments);
+    if (!validation.success) {
+      form.setValue("attachments", [], { shouldDirty: true });
+      form.setError("attachments", {
         type: "manual",
-        message: "PDF format only.",
+        message: validation.error.issues[0].message,
       });
       clearFileInput();
       return;
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      form.setValue("attachment", null, { shouldDirty: true });
-      form.setError("attachment", {
-        type: "manual",
-        message: "Max file size 1MB.",
-      });
-      clearFileInput();
-      return;
-    }
-
-    form.clearErrors("attachment");
-    form.setValue("attachment", file, {
+    form.clearErrors("attachments");
+    form.setValue("attachments", attachments, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
@@ -101,8 +91,8 @@ export default function UploadAttachment({ invoice_id }: { invoice_id: number })
   }
 
   function onSubmit(values: paidAttachmentSchemaType) {
-    if (!values.attachment) {
-      form.setError("attachment", {
+    if (!values.attachments.length) {
+      form.setError("attachments", {
         type: "manual",
         message: "Select payment proof PDF first.",
       });
@@ -118,7 +108,7 @@ export default function UploadAttachment({ invoice_id }: { invoice_id: number })
       if (result.success) {
         form.reset({
           invoice_id,
-          attachment: null,
+          attachments: [],
         });
         clearFileInput();
         toast.success(result.message);
@@ -142,7 +132,7 @@ export default function UploadAttachment({ invoice_id }: { invoice_id: number })
       >
         <FormField
           control={form.control}
-          name="attachment"
+          name="attachments"
           render={({ field }) => (
             <FormItem>
               <FormControl>
@@ -153,11 +143,10 @@ export default function UploadAttachment({ invoice_id }: { invoice_id: number })
                   onBlur={field.onBlur}
                   type="file"
                   accept=".pdf,application/pdf"
+                  multiple
                   className="peer sr-only"
                   disabled={isPending}
-                  onChange={(e) =>
-                    handleFileChange(e.target.files?.[0] ?? null)
-                  }
+                  onChange={(e) => handleFileChange(e.target.files)}
                 />
               </FormControl>
               <FormLabel
@@ -172,40 +161,58 @@ export default function UploadAttachment({ invoice_id }: { invoice_id: number })
                 </span>
                 <span className="min-w-0 space-y-1">
                   <span className="block text-sm font-semibold text-teal-950">
-                    {field.value
+                    {field.value.length
                       ? "Ganti bukti pembayaran"
                       : "Pilih bukti pembayaran"}
                   </span>
                   <span className="block text-xs text-muted-foreground">
-                    PDF saja, maksimal 1MB. Klik area ini untuk browse file.
+                    PDF saja, maksimal 1MB per file. Klik area ini untuk browse file.
                   </span>
                 </span>
               </FormLabel>
 
-              {field.value ? (
-                <div className="flex items-center justify-between gap-3 rounded-lg border border-teal-200 bg-white px-3 py-2 shadow-xs">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <FileCheck2 className="size-4 shrink-0 text-teal-600" />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-teal-950">
-                        {field.value.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatFileSize(field.value.size)} siap upload
-                      </p>
+              {field.value.length ? (
+                <div className="space-y-2">
+                  {field.value.map((file, index) => (
+                    <div
+                      key={`${file.name}-${file.lastModified}`}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-teal-200 bg-white px-3 py-2 shadow-xs"
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        <FileCheck2 className="size-4 shrink-0 text-teal-600" />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-teal-950">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(file.size)} siap upload
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-muted-foreground hover:text-destructive"
+                        disabled={isPending}
+                        onClick={() => {
+                          form.setValue(
+                            "attachments",
+                            field.value.filter((_, itemIndex) => itemIndex !== index),
+                            {
+                              shouldDirty: true,
+                              shouldTouch: true,
+                              shouldValidate: true,
+                            },
+                          );
+                          clearFileInput();
+                        }}
+                        aria-label={`Remove ${file.name}`}
+                      >
+                        <X className="size-4" />
+                      </Button>
                     </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className="text-muted-foreground hover:text-destructive"
-                    disabled={isPending}
-                    onClick={resetAttachment}
-                    aria-label="Remove selected attachment"
-                  >
-                    <X className="size-4" />
-                  </Button>
+                  ))}
                 </div>
               ) : null}
 
@@ -220,7 +227,7 @@ export default function UploadAttachment({ invoice_id }: { invoice_id: number })
         <Button
           type="submit"
           className="w-full bg-teal-600 cursor-pointer hover:bg-teal-700"
-          disabled={isPending || !selectedAttachment || hasFileError}
+          disabled={isPending || !selectedAttachment.length || hasFileError}
         >
           <LoadingSwap isLoading={isPending}>Upload bukti bayar</LoadingSwap>
         </Button>

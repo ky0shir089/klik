@@ -112,11 +112,29 @@ export async function attachmentUpload(values: paidAttachmentSchemaType) {
     };
   }
 
+  const signatures = await Promise.all(
+    values.attachments.map(async (attachment) =>
+      new Uint8Array(await attachment.slice(0, 5).arrayBuffer()),
+    ),
+  );
+  if (
+    signatures.some(
+      (bytes) =>
+        bytes.length < 5 ||
+        String.fromCharCode(...bytes) !== "%PDF-",
+    )
+  ) {
+    return {
+      success: false,
+      message: "PDF format only.",
+    };
+  }
+
   const formData = new FormData();
   formData.append("invoice_id", values.invoice_id.toString());
-  if (values.attachment) {
-    formData.append("attachment", values.attachment);
-  }
+  values.attachments.forEach((attachment) => {
+    formData.append("attachments[]", attachment);
+  });
 
   try {
     const { data } = await axiosInstance.post(

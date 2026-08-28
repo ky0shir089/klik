@@ -370,7 +370,18 @@ export type invoiceExternalSchemaType = z.infer<typeof invoiceExternalSchema>;
 
 export const paidAttachmentSchema = z.object({
   invoice_id: z.number().positive(),
-  attachment: z.union([z.instanceof(File), z.null()]),
+  attachments: z
+    .array(z.instanceof(File))
+    .min(1, "Select at least one payment proof PDF.")
+    .max(9, "Max 9 files.")
+    .refine(
+      (files) => files.every((file) => file.name.toLowerCase().endsWith(".pdf")),
+      "PDF format only.",
+    )
+    .refine(
+      (files) => files.every((file) => file.size <= 1024 * 1024),
+      "Max file size 1MB per file.",
+    ),
 });
 export type paidAttachmentSchemaType = z.infer<typeof paidAttachmentSchema>;
 

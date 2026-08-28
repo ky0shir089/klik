@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   // cacheComponents: true,
   allowedDevOrigins: [
-    "192.168.22.23",
+    "192.168.22.16",
     "napkin-excess-overdrive.ngrok-free.dev",
   ],
   images: {
@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "192.168.22.23",
+        hostname: "192.168.22.16",
       },
       {
         protocol: "http",
@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "2mb",
+      bodySizeLimit: "10mb",
     },
   },
 };
