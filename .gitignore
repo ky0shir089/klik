@@ -24,6 +24,7 @@
 .DS_Store
 *.pem
 .claude
+/graphify-out/
 
 # debug
 npm-debug.log*

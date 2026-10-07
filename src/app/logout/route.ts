@@ -3,7 +3,8 @@ import {
   SESSION_EXPIRED_REASON,
 } from "@/lib/auth-redirect";
 import { clearSessionCookies } from "@/lib/session-cookies";
-import { NextRequest, NextResponse } from "next/server";
+import { redirect } from "next/navigation";
+import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   await clearSessionCookies();
@@ -16,5 +17,5 @@ export async function GET(request: NextRequest) {
     reason: reason === SESSION_EXPIRED_REASON ? reason : null,
   });
 
-  return NextResponse.redirect(new URL(destination, request.url));
+  redirect(destination);
 }

@@ -5,15 +5,16 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   // cacheComponents: true,
   allowedDevOrigins: [
-    "192.168.22.16",
+    "192.168.22.15",
     "napkin-excess-overdrive.ngrok-free.dev",
+    "immense-crab-lively.ngrok-free.app"
   ],
   images: {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "192.168.22.16",
+        hostname: "192.168.22.15",
       },
       {
         protocol: "http",

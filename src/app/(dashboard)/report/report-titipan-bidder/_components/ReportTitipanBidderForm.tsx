@@ -2,16 +2,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { reportRv } from "../action";
+import { reportTitipanBidder } from "../action";
 import { useTransition } from "react";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useAuthenticatedFileDownload } from "@/hooks/use-authenticated-file-download";
@@ -22,25 +21,23 @@ const ReportRvForm = () => {
   const downloadFile = useAuthenticatedFileDownload();
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
-  const [type, setType] = useState<string>("ALL");
 
   function onSubmit() {
     const values = {
       from,
       to,
-      type,
     };
 
     startTransition(async () => {
-      const file = await reportRv(values);
-      downloadFile(file, "report-rv.xlsx");
+      const file = await reportTitipanBidder(values);
+      downloadFile(file, "report-titipan-bidder.xlsx");
     });
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Report RV Titipan</CardTitle>
+        <CardTitle className="text-2xl">Report Titipan Bidder</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -64,19 +61,6 @@ const ReportRvForm = () => {
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
               />
-            </div>
-
-            <div className="grid items-center w-full max-w-sm gap-3">
-              <Label htmlFor="to">Type</Label>
-              <Select onValueChange={(value) => setType(value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="57">Jaminan</SelectItem>
-                  <SelectItem value="157">Pelunasan</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </form>
